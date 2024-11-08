@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest } from "./definitions";
+import { BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
+import { useRouter } from "next/navigation";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
@@ -24,8 +25,17 @@ export async function registerUser(registerData: RegisterRequest) {
 }
 
 export async function loginUser(loginData: LoginRequest) {
-    const response = await axios.post(`${BASE_URL}/auth/login`, loginData);
-    return response.data;
+    try {
+        const response = await axios.post(`${BASE_URL}/auth/login`, loginData);
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            // If the error response from the server has data, pass it along
+            throw new Error(error.response.data?.message || "Login failed. Please try again.");
+        }
+        // Generic error if something unexpected happens
+        throw new Error("An unexpected error occurred. Please try again later.");
+    }
 }
 
 /** User-related endpoints */
@@ -51,7 +61,7 @@ export async function getUserById(id: string) {
     return response.data;
 }
 
-export async function getLoggedUserProfile() {
+export async function getLoggedUserProfile():Promise<UserDetails> {
     const response = await axios.get(`${BASE_URL}/users/user-profile`, {
         headers: getHeader()
     });
@@ -272,8 +282,11 @@ export async function deleteReview(id: string) {
 /** Role-related functions */
 
 export function logout() {
+    const router = useRouter();
     const logoutFn = useAuthStore.getState().logout;
-    logoutFn();
+
+    logoutFn();  // Clear authentication state
+    router.push('/');  // Redirect to home page
 }
 
 export function isAuthenticated() {

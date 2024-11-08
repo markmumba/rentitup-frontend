@@ -75,7 +75,7 @@ export interface MachineImageResponse {
 }
 
 export interface OwnerResponse {
-        id: number;
+        id: string;
         email: string;
         fullName: string;
         phone: string;
@@ -94,4 +94,13 @@ export interface MachineResponse {
         owner: OwnerResponse;
         categoryId: number;
         machineImages: MachineImageResponse[];
+}
+
+export interface UserDetails{
+        id: string;
+        email: string;
+        fullName: string;
+        phone: string;
+        role: string;
+
 }

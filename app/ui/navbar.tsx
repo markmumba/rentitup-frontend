@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../lib/service';
+import { isAdmin, isAuthenticated, isCustomer, isOwner, logout } from '../lib/service';
 import { Menu, X } from 'lucide-react';
 
 export function Navbar() {
@@ -16,17 +16,21 @@ export function Navbar() {
 
     const NavLinks = () => (
         <>
-            <Link href="/login">
-                <Button variant="default">Login</Button>
-            </Link>
+            {!isAuthenticated &&
+                <>
+                    <Link href="/login">
+                        <Button variant="default">Login</Button>
+                    </Link>
 
-            <Link href="/register">
-                <Button variant="ghost">Register</Button>
-            </Link>
+                    <Link href="/register">
+                        <Button variant="ghost">Register</Button>
+                    </Link>
 
-            <Link href="/categories">
-                <Button variant="ghost">Categories</Button>
-            </Link>
+                    <Link href="/categories">
+                        <Button variant="ghost">Categories</Button>
+                    </Link>
+                </>
+            }
 
             {isAuthenticated() && (
                 <>
@@ -61,6 +65,9 @@ export function Navbar() {
 
                     <Link href="/owners">
                         <Button variant="ghost">Profile</Button>
+                    </Link>
+                    <Link href="/">
+                        <Button variant="ghost" onClick={logout}>logout</Button>
                     </Link>
                 </>
             )}
