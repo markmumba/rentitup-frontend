@@ -48,5 +48,20 @@ export interface CategoryListResponse {
         description:string;
 }
 
+export interface CategoryResponse {
+        id: string;
+        name:string;
+        description:string;
+        priceCalculationType: string;
+        machines:MachineListResponse[];
+}
 
-
+export interface MachineListResponse {
+        id:string;
+        name:string;
+        basePrice:string;
+        isAvailable:boolean;
+        machineImageUrl:string;
+        condition:string;
+        categoryId:string;
+}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { CategoryListResponse } from "../lib/definitions";
 import { getAllCategories } from "../lib/service";
-import { CategoryAccordion } from "../ui/categories/categoryCard";
+import { CategoryAccordion } from "../ui/categories/categoryListAccordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -35,6 +35,27 @@ export default function Categories() {
     const handleRetry = () => {
         getCategories();
     };
+    if (error) {
+        return (
+            <div className="container mx-auto p-6">
+                <Alert variant="destructive">
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                        {error}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleRetry}
+                            className="ml-2"
+                        >
+                            Try Again
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto p-6">
             <Card>
