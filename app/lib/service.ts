@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
+import { BookingRequest, CategoryListResponse, CategoryRequest, LoginRequest, MachineRequest, RegisterRequest, ReviewRequest } from "./definitions";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
@@ -13,7 +14,7 @@ export function getHeader() {
 
 /** Authentication endpoints */
 
-export async function registerUser(registerData: registerRequest) {
+export async function registerUser(registerData: RegisterRequest) {
     try {
         const response = await axios.post(`${BASE_URL}/auth/register`, registerData);
         return response.data;
@@ -22,7 +23,7 @@ export async function registerUser(registerData: registerRequest) {
     }
 }
 
-export async function loginUser(loginData: loginRequest) {
+export async function loginUser(loginData: LoginRequest) {
     const response = await axios.post(`${BASE_URL}/auth/login`, loginData);
     return response.data;
 }
@@ -57,7 +58,7 @@ export async function getLoggedUserProfile() {
     return response.data;
 }
 
-export async function updateUser(id: string, registerData: registerRequest) {
+export async function updateUser(id: string, registerData: RegisterRequest) {
     const response = await axios.put(`${BASE_URL}/users/${id}`, registerData, {
         headers: getHeader()
     });
@@ -73,15 +74,15 @@ export async function deleteUser(id: string) {
 
 /** Category-related endpoints */
 
-export async function createCategory(categoryRequest: categoryRequest) {
+export async function createCategory(categoryRequest: CategoryRequest) {
     const response = await axios.post(`${BASE_URL}/categories`, categoryRequest, {
         headers: getHeader()
     });
     return response.data;
 }
 
-export async function getAllCategories() {
-    const response = await axios.get(`${BASE_URL}/categories`);
+export async function getAllCategories(): Promise<CategoryListResponse[]> {
+    const response = await axios.get<CategoryListResponse[]>(`${BASE_URL}/categories`);
     return response.data;
 }
 
@@ -111,7 +112,7 @@ export async function getMachineById(machineId: string) {
     return response.data;
 }
 
-export async function createMachine(machineRequest: machineRequest) {
+export async function createMachine(machineRequest: MachineRequest) {
     const response = await axios.post(`${BASE_URL}/machines`, machineRequest, {
         headers: getHeader()
     });
@@ -171,7 +172,7 @@ export async function getAllBookings() {
 }
 
 
-export async function createBookings(bookingRequest: bookingRequest) {
+export async function createBookings(bookingRequest: BookingRequest) {
 
     const response = await axios.post(`${BASE_URL}/bookings`, bookingRequest,
         { headers: getHeader() })
@@ -206,7 +207,7 @@ export async function getBookingByStatus(userId: string, status: string) {
     return response.data;
 }
 
-export async function updateBooking(id: string, bookingRequest: bookingRequest) {
+export async function updateBooking(id: string, bookingRequest: BookingRequest) {
     const response = await axios.put(`${BASE_URL}/bookings/${id}`, bookingRequest,
         { headers: getHeader() })
     return response.data;
@@ -244,7 +245,7 @@ export async function getReviewsForMachine(machineId: string) {
     return response.data
 }
 
-export async function createReview(bookingId: string, reviewRequest: reviewRequest) {
+export async function createReview(bookingId: string, reviewRequest: ReviewRequest) {
     const response = await axios.post(`${BASE_URL}/bookings/${bookingId}/reviews`, reviewRequest,
         { headers: getHeader() })
     return response.data;
@@ -255,7 +256,7 @@ export async function getReviewById(id: string) {
     return response.data
 }
 
-export async function updateReview(id: string, reviewRequest: reviewRequest) {
+export async function updateReview(id: string, reviewRequest: ReviewRequest) {
     const response = await axios.put(`${BASE_URL}/reviews/${id}`, reviewRequest,
         { headers: getHeader() })
 

@@ -17,14 +17,19 @@ export function Navbar() {
                 <Link href="/login">
                     <Button variant="default" >Login</Button>
                 </Link>
+
                 <Link href="/register">
                     <Button variant="ghost">Register</Button>
+                </Link>
+
+                <Link href="/categories">
+                    <Button variant="ghost">Categories</Button>
                 </Link>
                 {isAuthenticated() &&
                     <>
                         {isCustomer() &&
                             <>
-                                <Link href="/book">
+                                <Link href="/categories">
                                     <Button variant="ghost">Categories</Button>
                                 </Link>
 

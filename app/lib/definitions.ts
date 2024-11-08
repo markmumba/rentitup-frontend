@@ -1,6 +1,4 @@
-
-
-interface registerRequest {
+export interface RegisterRequest {
         email: string;
         password: string;
         fullName: string;
@@ -8,39 +6,47 @@ interface registerRequest {
         role: string;
 }
 
-interface loginRequest {
+export interface LoginRequest {
         email: string;
         password: string;
 }
 
-interface categoryRequest {
+export interface CategoryRequest {
         name: string;
         description: string;
         priceCalculationType: string;
 }
 
-
-interface machineRequest {
-        name: string,
-        description :string,
-        basePrice : string,
-        condition :string,
-        specification:string,
-        categoryId:string,
-        ownerId:string
+export interface MachineRequest {
+        name: string;
+        description: string;
+        basePrice: string;
+        condition: string;
+        specification: string;
+        categoryId: string;
+        ownerId: string;
 }
 
-interface bookingRequest {
-        startDate : string;
-        endDate :string;
+export interface BookingRequest {
+        startDate: string;
+        endDate: string;
         pickUpLocation: string;
         totalAmount: string;
-        machineId:string;
-        customerId:string;
+        machineId: string;
+        customerId: string;
 }
 
-interface reviewRequest {
+export interface ReviewRequest {
         machineRating: number;
-        comment :string;
-        reviewerId:string;
+        comment: string;
+        reviewerId: string;
 }
+
+export interface CategoryListResponse {
+        id: string;
+        name:string;
+        description:string;
+}
+
+
+
