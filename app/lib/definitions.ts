@@ -62,6 +62,7 @@ export interface MachineListResponse {
         basePrice:string;
         isAvailable:boolean;
         machineImageUrl:string;
+        description:string;
         condition:string;
         categoryId:string;
 }

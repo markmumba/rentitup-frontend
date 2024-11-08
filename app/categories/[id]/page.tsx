@@ -65,7 +65,7 @@ export default function CategoryPage() {
       <div className="p-6 space-y-6">
         {category && (
           <>
-            <div className="space-y-2">
+            <div className="space-y-2 mx-10">
               <h1 className="text-3xl font-bold tracking-tight">{category.name}</h1>
               <p className="text-muted-foreground ">{category.description}</p>
               <p className="text-muted-foreground">
