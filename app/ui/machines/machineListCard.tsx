@@ -2,12 +2,14 @@ import { MachineListResponse } from "@/app/lib/definitions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 
 
 export function MachineListCard({ machine }: { machine: MachineListResponse }) {
+  const router = useRouter();
   return (
-    <Card>
+    <Card onClick={() => router.push(`/machines/${machine.id}`)}>
       <CardHeader>
         <CardTitle className="text-xl">{machine.name}</CardTitle>
         <CardDescription>

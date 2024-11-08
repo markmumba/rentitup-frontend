@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineRequest, RegisterRequest, ReviewRequest } from "./definitions";
+import { BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest } from "./definitions";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
@@ -86,7 +86,7 @@ export async function getAllCategories(): Promise<CategoryListResponse[]> {
     return response.data;
 }
 
-export async function getCategoryById(id: string):Promise<CategoryResponse> {
+export async function getCategoryById(id: string): Promise<CategoryResponse> {
     const response = await axios.get<CategoryResponse>(`${BASE_URL}/categories/${id}`);
     return response.data;
 }
@@ -107,8 +107,8 @@ export async function getMachinesByOwner(ownerId: string) {
     return response.data;
 }
 
-export async function getMachineById(machineId: string) {
-    const response = await axios.get(`${BASE_URL}/machines/${machineId}`);
+export async function getMachineById(machineId: string): Promise<MachineResponse> {
+    const response = await axios.get<MachineResponse>(`${BASE_URL}/machines/${machineId}`);
     return response.data;
 }
 
