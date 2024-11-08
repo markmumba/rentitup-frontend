@@ -15,7 +15,6 @@ export default function Dashboard() {
             const response = await getLoggedUserProfile()
             console.log(response)
             setUserDetails(response)
-
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to load machine');
         }
@@ -26,16 +25,19 @@ export default function Dashboard() {
 
     return (
         <>
-            {userDetails && (
-                <>
-                    <p>
-                        {userDetails.email}
-                        {userDetails.fullName}
-                        {userDetails.phone}
-                        {userDetails.role}
-                    </p>
-                </>
+              <div>
+            {error && <p>Error: {error}</p>}
+            {userDetails ? (
+                <div>
+                    <p>Email: {userDetails.email}</p>
+                    <p>Full Name: {userDetails.fullName}</p>
+                    <p>Phone: {userDetails.phone}</p>
+                    <p>Role: {userDetails.role}</p>
+                </div>
+            ) : (
+                <p>Loading user profile...</p>
             )}
+        </div>
         </>
     )
 }

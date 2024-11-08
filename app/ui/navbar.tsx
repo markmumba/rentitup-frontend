@@ -4,11 +4,16 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { isAdmin, isAuthenticated, isCustomer, isOwner, logout } from '../lib/service';
+import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../lib/service';
 import { Menu, X } from 'lucide-react';
+import { LogoutButton } from './logoutbutton';
+import { useAuthStore } from '../lib/store';
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+
+    const token = useAuthStore(state => state.token);
+    const role = useAuthStore(state => state.role);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -16,7 +21,7 @@ export function Navbar() {
 
     const NavLinks = () => (
         <>
-            {!isAuthenticated &&
+            {!isAuthenticated() &&
                 <>
                     <Link href="/login">
                         <Button variant="default">Login</Button>
@@ -34,8 +39,11 @@ export function Navbar() {
 
             {isAuthenticated() && (
                 <>
+                    <p>user is authenticated</p>
+
                     {isCustomer() && (
                         <>
+                            <p>user is customer</p>
                             <Link href="/categories">
                                 <Button variant="ghost">Categories</Button>
                             </Link>
@@ -47,13 +55,17 @@ export function Navbar() {
                     )}
 
                     {isOwner() && (
-                        <Link href="/book">
-                            <Button variant="ghost">Orders</Button>
-                        </Link>
+                        <>
+                            <p>user is owner</p>
+                            <Link href="/bookings">
+                                <Button variant="ghost">Orders</Button>
+                            </Link>
+                        </>
                     )}
 
                     {isAdmin() && (
                         <>
+                            <p>user is admin</p>
                             <Link href="/owners">
                                 <Button variant="ghost">Owners</Button>
                             </Link>
@@ -63,11 +75,11 @@ export function Navbar() {
                         </>
                     )}
 
-                    <Link href="/owners">
+                    <Link href="/profile">
                         <Button variant="ghost">Profile</Button>
                     </Link>
                     <Link href="/">
-                        <Button variant="ghost" onClick={logout}>logout</Button>
+                        <LogoutButton />
                     </Link>
                 </>
             )}

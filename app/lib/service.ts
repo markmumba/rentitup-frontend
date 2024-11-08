@@ -182,7 +182,7 @@ export async function getAllBookings() {
 }
 
 
-export async function createBookings(bookingRequest: BookingRequest) {
+export async function createBooking(bookingRequest: BookingRequest) {
 
     const response = await axios.post(`${BASE_URL}/bookings`, bookingRequest,
         { headers: getHeader() })
@@ -281,13 +281,6 @@ export async function deleteReview(id: string) {
 
 /** Role-related functions */
 
-export function logout() {
-    const router = useRouter();
-    const logoutFn = useAuthStore.getState().logout;
-
-    logoutFn();  // Clear authentication state
-    router.push('/');  // Redirect to home page
-}
 
 export function isAuthenticated() {
     const token = useAuthStore.getState().token;

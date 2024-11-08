@@ -24,7 +24,6 @@ export default function Login() {
     async function handleLogin(data: LoginRequest) {
         try {
             setIsLoading(true)
-            console.log(data);
             const response = await loginUser(data);
             setToken(response.token);
             setRole(response.role);
