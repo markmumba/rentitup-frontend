@@ -28,13 +28,14 @@ export interface MachineRequest {
 }
 
 export interface BookingRequest {
-        startDate: string;
-        endDate: string;
-        pickUpLocation: string;
-        totalAmount: string;
         machineId: string;
-        customerId: string;
-}
+        startDate?: string;
+        endDate?: string;
+        pickUpLocation?: string;
+        totalAmount?: string;
+        customerId?: string;
+    }
+    
 
 export interface ReviewRequest {
         machineRating: number;

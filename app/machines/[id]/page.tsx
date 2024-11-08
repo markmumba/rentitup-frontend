@@ -1,7 +1,7 @@
 'use client'
-import { MachineImageResponse, MachineResponse } from "@/app/lib/definitions";
-import { getMachineById } from "@/app/lib/service";
-import { useParams } from "next/navigation"
+import { BookingRequest, MachineImageResponse, MachineResponse } from "@/app/lib/definitions";
+import { getMachineById, isAuthenticated } from "@/app/lib/service";
+import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 import {
     Card,
@@ -14,10 +14,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export default function MachinePage() {
     const params = useParams();
     const machineId = params.id as string;
+    const router = useRouter();
 
     const [machine, setMachine] = useState<MachineResponse>();
     const [isLoading, setIsLoading] = useState(true);
@@ -51,6 +54,14 @@ export default function MachinePage() {
         setIsModalOpen(false);
         setSelectedImage(null);
     };
+
+    const handleBooking = () => {
+        if (!isAuthenticated()) {
+            router.push("/login")
+        } else {
+            router.push(`/booking?machineId=${machineId}`)
+        }
+    }
 
 
     if (isLoading) {
@@ -89,9 +100,11 @@ export default function MachinePage() {
                         <CardContent>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <img
+                                    <Image
                                         src={machine.machineImages.find((img) => img.isPrimary)?.url || '/api/placeholder/800/500'}
                                         alt={machine.name}
+                                        width={800}
+                                        height={500}
                                         className="w-full h-[300px] object-cover rounded-md"
                                     />
                                 </div>
@@ -117,6 +130,10 @@ export default function MachinePage() {
                                                 {machine.isAvailable ? 'Available' : 'Not Available'}
                                             </Badge>
                                         </div>
+
+                                        {machine.isAvailable && (
+                                            <Button onClick={handleBooking}>Book</Button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -142,13 +159,19 @@ export default function MachinePage() {
                         {machine.machineImages
                             .filter((img) => !img.isPrimary)
                             .map((img) => (
-                                <img
+                                <div
                                     key={img.id}
-                                    src={img.url}
-                                    alt={`Machine Image ${img.id}`}
-                                    className="w-full h-[200px] object-cover rounded-md cursor-pointer"
+                                    className="cursor-pointer"
                                     onClick={() => openModal(img)}
-                                />
+                                >
+                                    <Image
+                                        src={img.url}
+                                        alt={`Machine Image ${img.id}`}
+                                        width={400}
+                                        height={300}
+                                        className="w-full h-[200px] object-cover rounded-md"
+                                    />
+                                </div>
                             ))}
                     </div>
                     <ImageModal open={isModalOpen} onClose={closeModal} image={selectedImage} />
@@ -181,9 +204,11 @@ const ImageModal = ({ open, onClose, image }: { open: boolean; onClose: () => vo
                     </button>
                 </div>
                 {image && (
-                    <img
+                    <Image
                         src={image.url}
                         alt={`Machine Image ${image.id}`}
+                        width={800}
+                        height={600}
                         className="w-full h-auto object-contain"
                     />
                 )}
