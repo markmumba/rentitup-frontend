@@ -1,75 +1,63 @@
-
+'use client';
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
+  PackagePlus, 
   Truck, 
-  Hammer, 
-  Scissors, 
-  TreePine,
+  Building2, 
+  Hammer,
   Construction,
-  PaintBucket,
-  Wrench,
-  Package
+  Combine
 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function CategoriesSection() {
+  const router = useRouter();
+
   const categories = [
     {
-      icon: <Construction className="h-8 w-8" />,
-      name: "Construction Equipment",
-      description: "Excavators, Bulldozers, Cranes",
-      count: 456,
-      gradient: "from-orange-500 to-amber-500"
-    },
-    {
-      icon: <TreePine className="h-8 w-8" />,
-      name: "Landscaping Tools",
-      description: "Lawn Mowers, Tillers, Chippers",
-      count: 289,
-      gradient: "from-green-500 to-emerald-500"
-    },
-    {
-      icon: <Truck className="h-8 w-8" />,
-      name: "Transportation",
-      description: "Trucks, Trailers, Forklifts",
-      count: 167,
+      id: 1,
+      icon: <PackagePlus className="h-8 w-8" />,
+      name: "Material Handling Equipment",
+      description: "Forklifts, pallet jacks, and hand trucks for efficient material transport",
       gradient: "from-blue-500 to-cyan-500"
     },
     {
-      icon: <PaintBucket className="h-8 w-8" />,
-      name: "Painting Equipment",
-      description: "Sprayers, Sanders, Scaffolding",
-      count: 145,
-      gradient: "from-purple-500 to-pink-500"
+      id: 2,
+      icon: <Truck className="h-8 w-8" />,
+      name: "Earth Moving Equipment",
+      description: "Excavators, bulldozers, and skid-steer loaders",
+      gradient: "from-orange-500 to-amber-500"
     },
     {
+      id: 3,
+      icon: <Building2 className="h-8 w-8" />,
+      name: "Concrete & Masonry Equipment",
+      description: "Cement mixers, concrete saws, and mortar mixers",
+      gradient: "from-gray-500 to-slate-500"
+    },
+    {
+      id: 4,
       icon: <Hammer className="h-8 w-8" />,
       name: "Power Tools",
-      description: "Drills, Saws, Nail Guns",
-      count: 392,
+      description: "Drills, angle grinders, and electric saws",
       gradient: "from-red-500 to-rose-500"
     },
     {
-      icon: <Scissors className="h-8 w-8" />,
-      name: "Garden Tools",
-      description: "Pruners, Hedge Trimmers, Blowers",
-      count: 234,
-      gradient: "from-lime-500 to-green-500"
+      id: 5,
+      icon: <Construction className="h-8 w-8" />,
+      name: "Lifting & Hoisting Equipment",
+      description: "Cranes, hoists, and jacks for heavy lifting",
+      gradient: "from-yellow-500 to-amber-500"
     },
     {
-      icon: <Wrench className="h-8 w-8" />,
-      name: "Maintenance",
-      description: "Pressure Washers, Generators",
-      count: 178,
-      gradient: "from-teal-500 to-cyan-500"
-    },
-    {
-      icon: <Package className="h-8 w-8" />,
-      name: "Moving Equipment",
-      description: "Dollies, Hand Trucks, Pallet Jacks",
-      count: 123,
-      gradient: "from-indigo-500 to-blue-500"
+      id: 6,
+      icon: <Combine className="h-8 w-8" />,
+      name: "Compaction Equipment",
+      description: "Plate compactors, rollers, and rammers",
+      gradient: "from-green-500 to-emerald-500"
     }
   ];
 
@@ -78,18 +66,18 @@ export default function CategoriesSection() {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Popular Categories</h2>
+          <h2 className="text-3xl font-bold mb-4">Equipment Categories</h2>
           <p className="text-slate-600 max-w-2xl mx-auto">
-            Browse through our most popular equipment categories. From construction machinery 
-            to garden tools, find exactly what you need for your project.
+            Explore our comprehensive range of construction and industrial equipment. 
+            Find the right tools and machinery for your specific project needs.
           </p>
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {categories.map((category) => (
             <Card 
-              key={index}
+              key={category.id}
               className="group relative overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
               <div className="p-6">
@@ -102,18 +90,16 @@ export default function CategoriesSection() {
 
                 {/* Category Info */}
                 <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
-                <p className="text-slate-600 mb-4">{category.description}</p>
+                <p className="text-slate-600 mb-4 line-clamp-2">{category.description}</p>
 
-                {/* Item Count & CTA */}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">
-                    {category.count} items available
-                  </span>
+                {/* CTA */}
+                <div className="flex justify-end">
                   <Button 
                     variant="ghost" 
                     className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    onClick={() => router.push(`/categories/${category.id}`)}
                   >
-                    Browse →
+                    View Equipment →
                   </Button>
                 </div>
               </div>
@@ -123,13 +109,15 @@ export default function CategoriesSection() {
 
         {/* View All Button */}
         <div className="text-center mt-12">
-          <Button 
-            size="lg"
-            variant="outline"
-            className="border-blue-600 text-blue-600 hover:bg-blue-50"
-          >
-            View All Categories
-          </Button>
+          <Link href="/categories">
+            <Button 
+              size="lg"
+              variant="outline"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+            >
+              View All Categories
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

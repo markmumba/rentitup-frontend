@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 export function MachineListCard({ machine }: { machine: MachineListResponse }) {
   const router = useRouter();
   return (
-    <Card onClick={() => router.push(`/machines/${machine.id}`)}>
+    <Card className="hover:bg-gray-100"  onClick={() => router.push(`/machines/${machine.id}`)}>
       <CardHeader>
         <CardTitle className="text-xl">{machine.name}</CardTitle>
         <CardDescription>
@@ -33,7 +33,7 @@ export function MachineListCard({ machine }: { machine: MachineListResponse }) {
           {machine.description}
         </CardDescription>
         <Badge
-          variant={machine.isAvailable ? "secondary" : "destructive"}
+          variant={machine.isAvailable ? "success" : "destructive"}
           className="mt-2"
         >
           {machine.isAvailable ? "Available" : "Unavailable"}

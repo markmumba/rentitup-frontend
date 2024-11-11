@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
+import { BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineListResponse, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
 import { useRouter } from "next/navigation";
 
 const BASE_URL = "http://localhost:8080/api/v1";
@@ -127,6 +127,11 @@ export async function createMachine(machineRequest: MachineRequest) {
         headers: getHeader()
     });
     return response.data;
+}
+
+export async function getMachineBySearch(searchTerm :string): Promise<MachineListResponse[]> {
+    const response = await axios.get<MachineListResponse[]>(` ${BASE_URL}/machines/search?nameOfMachine=${searchTerm}`)
+    return response.data
 }
 
 export async function changeAvailability() {
