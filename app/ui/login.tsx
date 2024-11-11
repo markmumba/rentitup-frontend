@@ -43,8 +43,10 @@ export function LoginForm(
 
 
     function handleSubmit(values: z.infer<typeof loginSchema>) {
+        console.log("This is the loginform page ",values)
         onSubmit(values);
     }
+
 
     return (
         <>

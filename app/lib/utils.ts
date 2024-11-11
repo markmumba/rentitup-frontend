@@ -29,3 +29,6 @@ export function shortenDescription(description: string) {
     return description.slice(0, maxlength - 3) + "..."
 }
 
+export function calculateTotal(basePrice:string,calculationType:string,time:string) {
+
+}

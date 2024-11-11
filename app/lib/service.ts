@@ -183,10 +183,17 @@ export async function getAllBookings() {
 
 
 export async function createBooking(bookingRequest: BookingRequest) {
-
-    const response = await axios.post(`${BASE_URL}/bookings`, bookingRequest,
-        { headers: getHeader() })
-    return response.data;
+    try {
+        const response = await axios.post(`${BASE_URL}/bookings`, bookingRequest, {
+            headers: getHeader()
+        });
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message || "Booking failed. Please try again.");
+        }
+        throw new Error("Network error. Please check your connection.");
+    }
 }
 
 export async function getBookingsByUser(userId: string) {

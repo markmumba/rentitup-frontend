@@ -13,7 +13,6 @@ export default function Dashboard() {
     async function getUserDetails() {
         try {
             const response = await getLoggedUserProfile()
-            console.log(response)
             setUserDetails(response)
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to load machine');

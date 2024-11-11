@@ -57,11 +57,13 @@ export default function MachinePage() {
 
     const handleBooking = () => {
         if (!isAuthenticated()) {
-            router.push("/login")
-        } else {
-            router.push(`/booking?machineId=${machineId}`)
+            const currentPath =encodeURIComponent(window.location.pathname + window.location.search);
+            router.push(`/login?redirect=${currentPath}`);
+        }else{
+            router.push(`/booking?machineId=${machineId}`);
         }
     }
+
 
 
     if (isLoading) {
