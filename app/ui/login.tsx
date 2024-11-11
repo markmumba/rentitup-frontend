@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { LoginRequest } from "../lib/definitions"
+import Link from "next/link"
 
 
 const loginSchema = z.object({
@@ -43,7 +44,7 @@ export function LoginForm(
 
 
     function handleSubmit(values: z.infer<typeof loginSchema>) {
-        console.log("This is the loginform page ",values)
+        console.log("This is the loginform page ", values)
         onSubmit(values);
     }
 
@@ -85,9 +86,22 @@ export function LoginForm(
                     <Button type="submit" className="w-full">
                         {isLoading ? "Loading... " : "Login"}
                     </Button>
-                    <p>Forgot password</p>
+
                 </form>
             </Form>
+
+            <div className="text-center text-muted-foreground underline relative">
+                <div className="p-2">
+                    <p>Forgot password</p>
+                </div>
+                <div className="p-2">
+                    <Link href="/register" >Go back to register</Link>
+                </div>
+                
+                <div className="p-2">
+                    <Link href="/" >Go back home </Link>
+                </div>
+            </div>
 
         </>
     )

@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { RegisterRequest } from "../lib/definitions"
+import Link from "next/link"
 
 const registrationSchema = z.object({
     email: z
@@ -76,6 +77,7 @@ export function RegistrationForm(
 
     return (
 
+        <>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 w-full md:max-w-2xl mx-auto p-2">
                 <FormField
@@ -179,5 +181,15 @@ export function RegistrationForm(
 
             </form>
         </Form>
+        <div className="text-center text-muted-foreground underline relative">
+                <div className="p-2">
+                    <Link href="/login" >Go back to login</Link>
+                </div>
+                <div className="p-2">
+                    <Link href="/" >Go back home </Link>
+                </div>
+            </div>
+
+        </>
     )
 }
