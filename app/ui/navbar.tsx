@@ -75,7 +75,7 @@ export function Navbar() {
                         </>
                     )}
 
-                    <Link href="/profile">
+                    <Link href="dashboard/profile">
                         <Button variant="ghost">Profile</Button>
                     </Link>
                     <Link href="/">
@@ -92,7 +92,7 @@ export function Navbar() {
                 <div className="flex items-center justify-between">
                     {/* Logo */}
                     <div className="flex items-center">
-                        <Link href="/" className="font-bold text-3xl">
+                    <Link href={isAuthenticated() ? "/dashboard" : "/"} className="font-bold text-3xl">
                             Rentitup
                         </Link>
                     </div>
