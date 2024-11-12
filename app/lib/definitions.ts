@@ -34,8 +34,8 @@ export interface BookingRequest {
         pickUpLocation?: string;
         totalAmount?: string;
         customerId?: string;
-    }
-    
+}
+
 
 export interface ReviewRequest {
         machineRating: number;
@@ -96,20 +96,70 @@ export interface MachineResponse {
         machineImages: MachineImageResponse[];
 }
 
-export interface UserDetails{
+
+export interface UserDetails {
         id: string;
+        avatarUrl: string;
         email: string;
         fullName: string;
         phone: string;
         role: string;
-
+        ownedMachines: Array<{
+            id: number;
+            name: string;
+            description: string;
+            basePrice: number;
+            condition: string;
+            specification: string;
+            isAvailable: boolean;
+            machineImages: Array<{
+                id: number;
+                url: string;
+                isPrimary: boolean;
+            }>;
+        }>;
+    }
+export interface BookingListResponse {
+        id: string;
+        bookingCode: string;
+        startDate: string;
+        endDate: string;
+        status: string;
+        totalAmount: string;
 }
 
-export interface BookingListResponse {
-        id:string;
-        bookingCode:string;
-        startDate:string;
-        endDate:string;
-        status:string;
-        totalAmount:string;
+
+
+export interface BookingUserResponse {
+        id: number;
+        name: string;
+        email: string;
+        role: string;
+}
+
+export interface BookingMachineResponse {
+        id: number;
+        name: string;
+        imageUrl:string;
+        specification: string;
+        owner: BookingUserResponse;
+}
+
+export interface BookingResponse {
+        id: number;
+        bookingCode: string;
+        startDate: string;
+        endDate: string;
+        pickUpLocation: string;
+        status: string;
+        totalAmount: number;
+        machine: BookingMachineResponse;
+        customer: BookingUserResponse;
+}
+
+export enum BookingStatus {
+        PENDING = 'PENDING',
+        CONFIRMED = 'CONFIRMED',
+        CANCELLED = 'CANCELLED',
+        COMPLETED = 'COMPLETED'
 }
