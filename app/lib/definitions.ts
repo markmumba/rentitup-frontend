@@ -105,15 +105,15 @@ export interface UserDetails {
         phone: string;
         role: string;
         ownedMachines: Array<{
-            id: number;
+            id: string;
             name: string;
             description: string;
-            basePrice: number;
+            basePrice: string;
             condition: string;
             specification: string;
             isAvailable: boolean;
             machineImages: Array<{
-                id: number;
+                id: string;
                 url: string;
                 isPrimary: boolean;
             }>;

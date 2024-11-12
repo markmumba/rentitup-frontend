@@ -62,25 +62,25 @@ export default function HeroSection() {
 
           <div className="flex-1 grid grid-cols-2 gap-4">
             <Card className="p-6 hover:shadow-lg transition-shadow">
-              <TractorIcon className="h-8 w-8 text-blue-600 mb-4" />
+              <TractorIcon className="h-8 w-8 text-green-600 mb-4" />
               <h3 className="font-semibold text-lg mb-2">Wide Selection</h3>
               <p className="text-slate-600">Access to various machinery from trusted owners</p>
             </Card>
 
             <Card className="p-6 hover:shadow-lg transition-shadow">
-              <Timer className="h-8 w-8 text-blue-600 mb-4" />
+              <Timer className="h-8 w-8 text-green-600 mb-4" />
               <h3 className="font-semibold text-lg mb-2">Real-time Booking</h3>
               <p className="text-slate-600">Check availability and book instantly</p>
             </Card>
 
             <Card className="p-6 hover:shadow-lg transition-shadow">
-              <Shield className="h-8 w-8 text-blue-600 mb-4" />
+              <Shield className="h-8 w-8 text-green-600 mb-4" />
               <h3 className="font-semibold text-lg mb-2">Secure Platform</h3>
               <p className="text-slate-600">Verified owners and secure payments</p>
             </Card>
 
             <Card className="p-6 hover:shadow-lg transition-shadow">
-              <svg className="h-8 w-8 text-blue-600 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="h-8 w-8 text-green-600 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 13l4 4L19 7" />
               </svg>
               <h3 className="font-semibold text-lg mb-2">Quality Assured</h3>

@@ -68,7 +68,6 @@ export default function CustomerDetails() {
             </p>
           </div>
         </div>
-        
         <BookingList userId={String(userDetails.id)} />
       </div>
     );
