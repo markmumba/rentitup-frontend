@@ -30,7 +30,7 @@ export default function HeroSection() {
           <div className="flex-1 space-y-8">
             <h1 className="text-5xl font-bold tracking-tight text-slate-900">
               Rent Any Machine,
-              <span className="text-blue-600 block mt-2">Anytime, Anywhere</span>
+              <span className="text-green-500 block mt-2">Anytime, Anywhere</span>
             </h1>
 
             <p className="text-xl text-slate-600 max-w-xl">
@@ -52,7 +52,7 @@ export default function HeroSection() {
               </div>
               <Button
                 size="lg"
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-green-600 hover:bg-blue-700"
                 onClick={handleSearch}
               >
                 Search

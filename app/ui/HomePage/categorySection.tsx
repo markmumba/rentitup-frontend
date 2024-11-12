@@ -96,7 +96,7 @@ export default function CategoriesSection() {
                 <div className="flex justify-end">
                   <Button 
                     variant="ghost" 
-                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    className="text-green-600 hover:text-green-700 hover:bg-blue-50"
                     onClick={() => router.push(`/categories/${category.id}`)}
                   >
                     View Equipment →
@@ -113,7 +113,7 @@ export default function CategoriesSection() {
             <Button 
               size="lg"
               variant="outline"
-              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              className="border-green-600 text-green-600 hover:bg-blue-50"
             >
               View All Categories
             </Button>

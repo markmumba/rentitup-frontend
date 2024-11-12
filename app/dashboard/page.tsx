@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getLoggedUserProfile, isAdmin, isAuthenticated, isCustomer, isOwner } from "../lib/service"
 import { UserDetails } from "../lib/definitions";
-import { CustomerDetails } from "../ui/Dashboard/Customer/userdetails";
+import CustomerDetails from "../ui/Dashboard/Customer/MainPage";
 
 
 export default function Dashboard() {

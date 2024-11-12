@@ -104,3 +104,12 @@ export interface UserDetails{
         role: string;
 
 }
+
+export interface BookingListResponse {
+        id:string;
+        bookingCode:string;
+        startDate:string;
+        endDate:string;
+        status:string;
+        totalAmount:string;
+}

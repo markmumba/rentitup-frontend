@@ -72,7 +72,7 @@ export default function TestimonialsSection() {
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="relative p-6">
               {/* Quote Icon */}
-              <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
+              <div className="absolute -top-4 -left-4 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">
                 <Quote className="w-4 h-4" />
               </div>
 
@@ -116,7 +116,7 @@ export default function TestimonialsSection() {
         </div>
 
         {/* Stats Section */}
-        <Card className="bg-blue-600 text-white p-8 rounded-xl">
+        <Card className="bg-green-600 text-white p-8 rounded-xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
@@ -131,7 +131,7 @@ export default function TestimonialsSection() {
         <div className="mt-16 text-center">
           <h3 className="text-2xl font-bold mb-6">Ready to Get Started?</h3>
           <div className="flex gap-4 justify-center">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button size="lg" className="bg-green-600 hover:bg-green-700">
               Rent Equipment
             </Button>
             <Button size="lg" variant="outline">

@@ -85,11 +85,11 @@ export default function HowItWorksSection() {
         <div className="bg-white rounded-xl p-8 shadow-lg">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">10,000+</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">10,000+</div>
               <div className="text-slate-600">Successful Rentals</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">4.8/5</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">4.8/5</div>
               <div className="flex justify-center mb-2">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
@@ -98,7 +98,7 @@ export default function HowItWorksSection() {
               <div className="text-slate-600">Average Rating</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">2,500+</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">2,500+</div>
               <div className="text-slate-600">Verified Equipment Owners</div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function HowItWorksSection() {
 
         {/* CTA */}
         <div className="text-center mt-16">
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8">
+          <Button size="lg" className="bg-green-600 hover:bg-green-700 text-lg px-8">
             Start Renting Now
           </Button>
         </div>

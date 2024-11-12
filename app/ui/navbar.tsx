@@ -44,11 +44,8 @@ export function Navbar() {
                     {isCustomer() && (
                         <>
                             <p>user is customer</p>
-                            <Link href="/categories">
-                                <Button variant="ghost">Categories</Button>
-                            </Link>
 
-                            <Link href="/book">
+                            <Link href="/categories">
                                 <Button variant="ghost">Book</Button>
                             </Link>
                         </>

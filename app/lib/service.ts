@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineListResponse, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
+import { BookingListResponse, BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineListResponse, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
 import { useRouter } from "next/navigation";
 
 const BASE_URL = "http://localhost:8080/api/v1";
@@ -61,7 +61,7 @@ export async function getUserById(id: string) {
     return response.data;
 }
 
-export async function getLoggedUserProfile():Promise<UserDetails> {
+export async function getLoggedUserProfile(): Promise<UserDetails> {
     const response = await axios.get(`${BASE_URL}/users/user-profile`, {
         headers: getHeader()
     });
@@ -129,7 +129,7 @@ export async function createMachine(machineRequest: MachineRequest) {
     return response.data;
 }
 
-export async function getMachineBySearch(searchTerm :string): Promise<MachineListResponse[]> {
+export async function getMachineBySearch(searchTerm: string): Promise<MachineListResponse[]> {
     const response = await axios.get<MachineListResponse[]>(` ${BASE_URL}/machines/search?nameOfMachine=${searchTerm}`)
     return response.data
 }
@@ -201,13 +201,13 @@ export async function createBooking(bookingRequest: BookingRequest) {
     }
 }
 
-export async function getBookingsByUser(userId: string) {
-
-    const response = await axios.get(`${BASE_URL}/bookings/users/${userId}`,
-        { headers: getHeader() })
-    return response.data;
+export async function getBookingsByUser(userId: string): Promise<BookingListResponse[] > {
+        const response = await axios.get<BookingListResponse[]>(`${BASE_URL}/bookings/user/${userId}`, {
+            headers: getHeader()
+        });
+        return response.data;
+   
 }
-
 export async function getBookingsForOwner(ownerId: string) {
     const response = await axios.get(`${BASE_URL}/bookings/owner/${ownerId}`,
         { headers: getHeader() })
