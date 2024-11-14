@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, DollarSign, MapPin, Package, User, Edit, Trash2 } from 'lucide-react';
+import { Calendar, DollarSign, MapPin, Package, User, Edit, Trash2, ChevronsUpDown, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import {
     AlertDialog,
@@ -15,10 +15,23 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useParams, useRouter } from 'next/navigation';
-import { deleteBooking, getBooking, getLoggedUserProfile, getUserById, isAdmin, isCustomer, isOwner } from '@/app/lib/service';
+import {
+    deleteBooking,
+    getBooking,
+    getBookingStatusList,
+    getLoggedUserProfile,
+    getUserById,
+    isAdmin,
+    isCustomer,
+    isOwner, updateStatus
+} from '@/app/lib/service';
 import { BookingResponse } from '@/app/lib/definitions';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
+import StatusBadge from '@/app/ui/Dashboard/Owner/statusBadge';
 
 export default function SingleBookingPage() {
     const params = useParams();
@@ -29,6 +42,10 @@ export default function SingleBookingPage() {
     const [error, setError] = useState<string | null>(null);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [statusList, setStatusList] = useState<string[]>([]);
+    const [status, setStatus] = useState();
+   
+
 
     async function getBookingDetails() {
         try {
@@ -38,10 +55,25 @@ export default function SingleBookingPage() {
             setError(error instanceof Error ? error.message : 'Failed to load booking');
         }
     }
+    async function getStatusList() {
+        try {
+            const response = await getBookingStatusList();
+            setStatusList(response || []);
+        } catch (error) {
+            setError(error instanceof Error ? error.message : 'Failed to load booking status list');
+            setStatusList([]);
+        }
+    }
+
+
 
     useEffect(() => {
         getBookingDetails();
+        if (isOwner()) {
+            getStatusList();
+        }
     }, []);
+
 
     const handleUpdate = () => {
         router.push(`/bookings/${bookingId}/edit`);
@@ -60,10 +92,6 @@ export default function SingleBookingPage() {
         }
     };
 
-    async function getUserId() {
-        const response = await getLoggedUserProfile();
-        return response.id;
-    }
     const canModifyBooking = () => {
         if (!booking) return false;
         return booking.status === 'PENDING' && isCustomer();
@@ -89,14 +117,36 @@ export default function SingleBookingPage() {
         );
     }
 
-    const getStatusColor = (status: string) => {
-        const colors = {
-            PENDING: 'bg-yellow-500',
-            CONFIRMED: 'bg-green-500',
-            CANCELLED: 'bg-red-500',
-            COMPLETED: 'bg-blue-500'
-        };
-        return colors[status as keyof typeof colors] || 'bg-gray-500';
+
+
+    // Component for rendering user details
+    const UserDetailsSection = ({ title, user }: { title: string; user: { name: string; email: string } }) => (
+        <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+                <User className="h-5 w-5" />
+                {title}
+            </h3>
+            <div className="pl-7 space-y-2">
+                <p>Name: {user.name}</p>
+                <p>Email: {user.email}</p>
+            </div>
+        </div>
+    );
+
+    const renderUserDetails = () => {
+        if (isAdmin()) {
+            return (
+                <>
+                    <UserDetailsSection title="Customer Details" user={booking.customer} />
+                    <UserDetailsSection title="Owner Details" user={booking.machine.owner} />
+                </>
+            );
+        } else if (isCustomer()) {
+            return <UserDetailsSection title="Owner Details" user={booking.machine.owner} />;
+        } else if (isOwner()) {
+            return <UserDetailsSection title="Customer Details" user={booking.customer} />;
+        }
+        return null;
     };
 
     return (
@@ -106,11 +156,9 @@ export default function SingleBookingPage() {
                     <div className="flex justify-between items-center">
                         <div>
                             <CardTitle className="text-2xl">Booking Details</CardTitle>
-                            <p className="text-sm text-gray-500">Booking Code: {booking.bookingCode}</p>
+                            <p className="text-sm text-gray-500">Booking Code: {booking?.bookingCode}</p>
                         </div>
-                        <Badge className={`${getStatusColor(booking.status)} text-white`}>
-                            {booking.status}
-                        </Badge>
+                        <StatusBadge booking={booking} statusList={statusList}/>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -157,32 +205,8 @@ export default function SingleBookingPage() {
                         </div>
                     </div>
 
-                    {/* User Details - Conditional Rendering */}
-                    {(isAdmin() || (!isOwner() && booking.customer.id.toString() === String(getUserId()))) && (
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold flex items-center gap-2">
-                                <User className="h-5 w-5" />
-                                Customer Details
-                            </h3>
-                            <div className="pl-7 space-y-2">
-                                <p>Name: {booking.customer.name}</p>
-                                <p>Email: {booking.customer.email}</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {(isAdmin() || (isOwner() && booking.machine.owner.id.toString() === String(getUserId()))) && (
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold flex items-center gap-2">
-                                <User className="h-5 w-5" />
-                                Owner Details
-                            </h3>
-                            <div className="pl-7 space-y-2">
-                                <p>Name: {booking.machine.owner.name}</p>
-                                <p>Email: {booking.machine.owner.email}</p>
-                            </div>
-                        </div>
-                    )}
+                    {/* User Details - Updated Logic */}
+                    {renderUserDetails()}
 
                     {/* Payment Details */}
                     <div className="space-y-4">
@@ -196,6 +220,8 @@ export default function SingleBookingPage() {
                             </p>
                         </div>
                     </div>
+
+
                 </CardContent>
 
                 {canModifyBooking() && (

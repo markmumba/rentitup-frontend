@@ -84,7 +84,7 @@ export interface OwnerResponse {
 }
 
 export interface MachineResponse {
-        id: number;
+        id: string;
         name: string;
         description: string;
         basePrice: string;
@@ -92,35 +92,23 @@ export interface MachineResponse {
         specification: string;
         isAvailable: boolean;
         owner: OwnerResponse;
-        categoryId: number;
+        categoryId: string;
         machineImages: MachineImageResponse[];
 }
 
 
+
 export interface UserDetails {
-        id: string;
-        avatarUrl: string;
+        id: number;
         email: string;
         fullName: string;
         phone: string;
         role: string;
-        ownedMachines: Array<{
-            id: string;
-            name: string;
-            description: string;
-            basePrice: string;
-            condition: string;
-            specification: string;
-            isAvailable: boolean;
-            machineImages: Array<{
-                id: string;
-                url: string;
-                isPrimary: boolean;
-            }>;
-        }>;
-    }
+        ownedMachines: MachineResponse[];
+}
+
 export interface BookingListResponse {
-        id: string;
+        id: number;
         bookingCode: string;
         startDate: string;
         endDate: string;
@@ -131,7 +119,7 @@ export interface BookingListResponse {
 
 
 export interface BookingUserResponse {
-        id: number;
+        id: string;
         name: string;
         email: string;
         role: string;
@@ -140,19 +128,19 @@ export interface BookingUserResponse {
 export interface BookingMachineResponse {
         id: number;
         name: string;
-        imageUrl:string;
+        imageUrl: string;
         specification: string;
         owner: BookingUserResponse;
 }
 
 export interface BookingResponse {
-        id: number;
+        id: string;
         bookingCode: string;
         startDate: string;
         endDate: string;
         pickUpLocation: string;
         status: string;
-        totalAmount: number;
+        totalAmount: string;
         machine: BookingMachineResponse;
         customer: BookingUserResponse;
 }

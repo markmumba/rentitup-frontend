@@ -22,13 +22,12 @@ export default function Dashboard() {
 
                     {isOwner() && (
                         <>
-                /** owners dashboard */
                             <OwnerDetails />
                         </>
                     )}
                     {isAdmin() && (
                         <>
-                /** admin dashboard */
+
                         </>
                     )}
                 </>

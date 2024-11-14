@@ -242,7 +242,7 @@ export async function deleteBooking(id: string) {
 }
 
 export async function updateStatus(id: string, status: string) {
-    const response = await axios.put(`${BASE_URL}/bookings/${id}/status-update?status=${status}`,
+    const response = await axios.put(`${BASE_URL}/bookings/${id}/status-update?status=${status}`,{},
         { headers: getHeader() })
     return response.data;
 }
@@ -254,10 +254,11 @@ export async function getBookingCode(code: string) {
 
 }
 
-export async function getBookingStatusList() {
-    const response = await axios.get(`${BASE_URL}/bookings/booking-status-list`,
+export async function getBookingStatusList():Promise<string[]> {
+    const response = await axios.get<string[]>(`${BASE_URL}/bookings/booking-status-list`,
         { headers: getHeader() })
     return response.data;
+
 }
 
 
