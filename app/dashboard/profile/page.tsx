@@ -2,23 +2,11 @@
 import { UserDetails } from "@/app/lib/definitions";
 import { getLoggedUserProfile } from "@/app/lib/service";
 import { useEffect, useState } from "react";
-
-
-
-
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { BanknoteIcon, Info, Laptop, Mail, Phone, Shield } from "lucide-react";
+import { BanknoteIcon, Info, Mail, Phone } from "lucide-react";
 
 export default function Profile() {
     const [userDetails, setUserDetails] = useState<UserDetails>();
@@ -72,7 +60,7 @@ export default function Profile() {
                 <CardHeader className="pb-4">
                     <div className="flex items-center space-x-4">
                         <Avatar className="h-20 w-20">
-                            <AvatarImage src={userDetails.avatarUrl} />
+                            <AvatarImage src={userDetails.fullName} />
                             <AvatarFallback>
                                 {userDetails.fullName?.split(' ').map(n => n[0]).join('')}
                             </AvatarFallback>
@@ -110,7 +98,7 @@ export default function Profile() {
                             {userDetails.ownedMachines?.length || 0} machines
                         </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {userDetails.ownedMachines?.map((machine) => (
                             <Card key={machine.id} className="overflow-hidden">
@@ -120,7 +108,7 @@ export default function Profile() {
                                         alt={machine.name}
                                         className="object-cover w-full h-full"
                                     />
-                                    <Badge 
+                                    <Badge
                                         className="absolute top-2 right-2"
                                         variant={machine.isAvailable ? "success" : "secondary"}
                                     >

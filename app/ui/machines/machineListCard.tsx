@@ -13,7 +13,7 @@ export function MachineListCard({ machine }: { machine: MachineListResponse }) {
       <CardHeader>
         <CardTitle className="text-xl">{machine.name}</CardTitle>
         <CardDescription>
-          Base Price: ${machine.basePrice}
+          Base Price: ksh{machine.basePrice}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

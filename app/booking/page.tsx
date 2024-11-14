@@ -9,11 +9,16 @@ import { BookingForm } from "../ui/Booking/bookingform";
 export default function BookingPage() {
 
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
     const searchParams = useSearchParams();
     const machineId = searchParams.get("machineId") ?? "";
+    const basePrice = searchParams.get("basePrice") ?? "";
+    const rate = searchParams.get("rate") ?? "";
+
+
     const [customerId, setCustomerId] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [time , setTime ] = useState();
 
 
 
@@ -55,6 +60,8 @@ export default function BookingPage() {
         }
 
         fetchUserProfile();
+
+        // calculateTotal(basePrice,rate,)
     }, []);
 
     if (!customerId) {
@@ -83,7 +90,9 @@ export default function BookingPage() {
                 isLoading={isLoading}
                 machineId={machineId}
                 customerId={customerId}
-            />
+                priceCalculationType={rate}
+                basePrice ={basePrice}
+            /> 
         </div>
     );
 }

@@ -1,6 +1,6 @@
 'use client'
 import { BookingRequest, MachineImageResponse, MachineResponse } from "@/app/lib/definitions";
-import { getMachineById, isAuthenticated } from "@/app/lib/service";
+import { getCategoryById, getMachineById, isAuthenticated, isCustomer, isOwner } from "@/app/lib/service";
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 import {
@@ -27,6 +27,7 @@ export default function MachinePage() {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<MachineImageResponse | null>(null);
+    const [categoryPriceType, setCategoryPriceType] = useState("");
 
     async function getMachine() {
         try {
@@ -40,10 +41,26 @@ export default function MachinePage() {
             setIsLoading(false);
         }
     }
+    async function getcategoryPriceType() {
+        try {
+            const data = await getCategoryById(machine?.categoryId!);
+            setCategoryPriceType(data.priceCalculationType)
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load machine');
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     useEffect(() => {
         getMachine();
     }, []);
+
+    useEffect(() => {
+        if (machine?.categoryId) {
+            getcategoryPriceType();
+        }
+    }, [machine]);
 
     const openModal = (image: MachineImageResponse) => {
         setSelectedImage(image);
@@ -57,10 +74,10 @@ export default function MachinePage() {
 
     const handleBooking = () => {
         if (!isAuthenticated()) {
-            const currentPath =encodeURIComponent(window.location.pathname + window.location.search);
+            const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
             router.push(`/login?redirect=${currentPath}`);
-        }else{
-            router.push(`/booking?machineId=${machineId}`);
+        } else {
+            router.push(`/booking?machineId=${machineId}&basePrice=${machine?.basePrice}&rate=${categoryPriceType}`);
         }
     }
 
@@ -123,7 +140,7 @@ export default function MachinePage() {
                                         <div>
                                             <h3 className="text-lg font-medium">Pricing</h3>
                                             <p className="text-muted-foreground">
-                                                Base Price: ${machine.basePrice}
+                                                Base Price: ksh{machine.basePrice}
                                             </p>
                                         </div>
                                         <div>
@@ -132,28 +149,40 @@ export default function MachinePage() {
                                                 {machine.isAvailable ? 'Available' : 'Not Available'}
                                             </Badge>
                                         </div>
+                                        {isCustomer() && (
+                                            <>
+                                                {machine.isAvailable && (
+                                                    <Button onClick={handleBooking}>Book</Button>
+                                                )}
+                                            </>
+                                        )}
 
-                                        {machine.isAvailable && (
-                                            <Button onClick={handleBooking}>Book</Button>
+                                        {isOwner() && (
+                                            <>
+                                                <Button onClick={handleBooking}>Update machine </Button>
+                                            </>
                                         )}
                                     </div>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter>
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <h3 className="text-lg font-medium">Owner</h3>
-                                    <p className="text-muted-foreground">{machine.owner.fullName}</p>
-                                    <p className="text-muted-foreground">{machine.owner.email}</p>
-                                    <p className="text-muted-foreground">{machine.owner.phone}</p>
-                                    <Badge variant="secondary">{machine.owner.role}</Badge>
+                        {isOwner() ? (<>
+                        </>) : (<>
+                            <CardFooter>
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <h3 className="text-lg font-medium">Owner</h3>
+                                        <p className="text-muted-foreground">{machine.owner.fullName}</p>
+                                        <p className="text-muted-foreground">{machine.owner.email}</p>
+                                        <p className="text-muted-foreground">{machine.owner.phone}</p>
+                                        <Badge variant="secondary">{machine.owner.role}</Badge>
+                                    </div>
+                                    {machine.owner.verifiedAt && (
+                                        <Badge variant="success">Verified</Badge>
+                                    )}
                                 </div>
-                                {machine.owner.verifiedAt && (
-                                    <Badge variant="success">Verified</Badge>
-                                )}
-                            </div>
-                        </CardFooter>
+                            </CardFooter>
+                        </>)}
                     </Card>
 
                     <h2 className="text-2xl font-bold">Additional Images</h2>

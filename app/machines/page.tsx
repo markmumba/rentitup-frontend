@@ -106,7 +106,7 @@ export default function Machines() {
                       </span>
                     </div>
                     <p className="text-xl font-bold text-blue-600">
-                      ${machine.basePrice}
+                      ksh{machine.basePrice}
                     </p>
                     <Button 
                       variant="outline" 
