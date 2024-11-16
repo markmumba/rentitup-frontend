@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
@@ -26,7 +26,9 @@ export function Orders({ ownerId, userDetails }: {
         setIsLoading(true);
         const response = await getBookingsForOwner(ownerId);
         if (isMounted) {
-          setBookingList(response || []);
+          // Sort bookings by ID in descending order before setting state
+          const sortedBookings = [...(response || [])].sort((a, b) => b.id - a.id);
+          setBookingList(sortedBookings);
         }
       } catch (error) {
         if (isMounted) {
@@ -48,6 +50,7 @@ export function Orders({ ownerId, userDetails }: {
     return () => { isMounted = false; };
   }, [ownerId]);
 
+  // Filter sorted bookings by status
   const pendingBookings = bookingList.filter(booking => booking.status.toLowerCase() === 'pending');
   const confirmedBookings = bookingList.filter(booking => booking.status.toLowerCase() === 'confirmed');
 
@@ -63,6 +66,9 @@ export function Orders({ ownerId, userDetails }: {
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
+          Showing bookings from latest to oldest
+        </CardDescription>
       </CardHeader>
       <CardContent className="relative">
         <ScrollArea className="w-full border rounded-md">
@@ -94,7 +100,7 @@ export function Orders({ ownerId, userDetails }: {
                       <TableCell className="font-medium">{booking.bookingCode}</TableCell>
                       <TableCell>{booking.startDate}</TableCell>
                       <TableCell>{booking.endDate}</TableCell>
-                      <TableCell>Ksh{booking.totalAmount}</TableCell>
+                      <TableCell>KES {booking.totalAmount}</TableCell>
                       <TableCell>
                         <Badge variant={booking.status.toLocaleLowerCase() === 'pending' ? 'secondary' : 'success'}>
                           {booking.status}
@@ -145,7 +151,7 @@ export function Orders({ ownerId, userDetails }: {
           </CardHeader>
           <CardContent>
             <div className="text-2xl text-green-500 font-bold">
-              ${totalRevenue.toFixed(2)}
+              KES {totalRevenue.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground">
               Combined base price of all machines

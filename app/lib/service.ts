@@ -90,6 +90,12 @@ export async function createCategory(categoryRequest: CategoryRequest) {
     });
     return response.data;
 }
+export async function getPriceCalculationTypes(): Promise<string[]> {
+    const response = await axios.get<string[]>(`${BASE_URL}/categories/calculation-types`, {
+        headers: getHeader()
+    });
+    return response.data;
+}
 
 export async function getAllCategories(): Promise<CategoryListResponse[]> {
     const response = await axios.get<CategoryListResponse[]>(`${BASE_URL}/categories`);
@@ -100,6 +106,13 @@ export async function getCategoryById(id: string): Promise<CategoryResponse> {
     const response = await axios.get<CategoryResponse>(`${BASE_URL}/categories/${id}`);
     return response.data;
 }
+export async function updateCategory(categoryId: string, categoryRequest: CategoryRequest) {
+    const response = await axios.put(`${BASE_URL}/categories`, categoryRequest, {
+        headers: getHeader()
+    });
+    return response.data;
+}
+
 
 /** Machine-related endpoints */
 
@@ -201,12 +214,12 @@ export async function createBooking(bookingRequest: BookingRequest) {
     }
 }
 
-export async function getBookingsByUser(userId: string): Promise<BookingListResponse[] > {
-        const response = await axios.get<BookingListResponse[]>(`${BASE_URL}/bookings/user/${userId}`, {
-            headers: getHeader()
-        });
-        return response.data;
-   
+export async function getBookingsByUser(userId: string): Promise<BookingListResponse[]> {
+    const response = await axios.get<BookingListResponse[]>(`${BASE_URL}/bookings/user/${userId}`, {
+        headers: getHeader()
+    });
+    return response.data;
+
 }
 export async function getBookingsForOwner(ownerId: string) {
     const response = await axios.get(`${BASE_URL}/bookings/owner/${ownerId}`,
@@ -242,7 +255,7 @@ export async function deleteBooking(id: string) {
 }
 
 export async function updateStatus(id: string, status: string) {
-    const response = await axios.put(`${BASE_URL}/bookings/${id}/status-update?status=${status}`,{},
+    const response = await axios.put(`${BASE_URL}/bookings/${id}/status-update?status=${status}`, {},
         { headers: getHeader() })
     return response.data;
 }
@@ -254,7 +267,7 @@ export async function getBookingCode(code: string) {
 
 }
 
-export async function getBookingStatusList():Promise<string[]> {
+export async function getBookingStatusList(): Promise<string[]> {
     const response = await axios.get<string[]>(`${BASE_URL}/bookings/booking-status-list`,
         { headers: getHeader() })
     return response.data;

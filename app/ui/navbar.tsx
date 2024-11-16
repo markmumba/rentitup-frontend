@@ -63,6 +63,9 @@ export function Navbar() {
                     {isAdmin() && (
                         <>
                             <p>user is admin</p>
+                            <Link href="/categories">
+                                <Button variant="ghost">Categories</Button>
+                            </Link>
                             <Link href="/owners">
                                 <Button variant="ghost">Owners</Button>
                             </Link>
@@ -89,7 +92,7 @@ export function Navbar() {
                 <div className="flex items-center justify-between">
                     {/* Logo */}
                     <div className="flex items-center">
-                    <Link href={isAuthenticated() ? "/dashboard" : "/"} className="font-bold text-3xl">
+                        <Link href={isAuthenticated() ? "/dashboard" : "/"} className="font-bold text-3xl">
                             Rentitup
                         </Link>
                     </div>

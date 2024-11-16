@@ -44,7 +44,7 @@ export default function SingleBookingPage() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [statusList, setStatusList] = useState<string[]>([]);
     const [status, setStatus] = useState();
-   
+
 
 
     async function getBookingDetails() {
@@ -96,6 +96,12 @@ export default function SingleBookingPage() {
         if (!booking) return false;
         return booking.status === 'PENDING' && isCustomer();
     };
+
+    const makePayment = () => {
+        if (!booking) return false;
+        return booking.status === 'CONFIRMED' && isCustomer();
+    }
+
 
     if (error) {
         return (
@@ -158,7 +164,7 @@ export default function SingleBookingPage() {
                             <CardTitle className="text-2xl">Booking Details</CardTitle>
                             <p className="text-sm text-gray-500">Booking Code: {booking?.bookingCode}</p>
                         </div>
-                        <StatusBadge booking={booking} statusList={statusList}/>
+                        <StatusBadge booking={booking} statusList={statusList} />
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -216,7 +222,7 @@ export default function SingleBookingPage() {
                         </h3>
                         <div className="pl-7">
                             <p className="text-xl font-semibold">
-                                Total Amount: ${booking.totalAmount.toLocaleString()}
+                                Total Amount: KES {booking.totalAmount.toLocaleString()}
                             </p>
                         </div>
                     </div>
@@ -243,6 +249,20 @@ export default function SingleBookingPage() {
                             Delete
                         </Button>
                     </CardFooter>
+                )}
+
+                {makePayment() && (
+                    <CardFooter className="flex justify-start space-x-4">
+                        <Button
+                            variant="default"
+                            onClick={handleUpdate}
+                            className="flex items-center gap-2"
+                        >
+                            <DollarSign className="h-4 w-4" />
+                            Make payment
+                        </Button>
+                    </CardFooter>
+
                 )}
             </Card>
 

@@ -5,6 +5,7 @@ import { getLoggedUserProfile, isAdmin, isAuthenticated, isCustomer, isOwner } f
 import { UserDetails } from "../lib/definitions";
 import CustomerDetails from "../ui/Dashboard/Customer/MainPage";
 import OwnerDetails from "../ui/Dashboard/Owner/MainPage";
+import AdminDetails from "../ui/Dashboard/Admin/MainPage";
 
 
 export default function Dashboard() {
@@ -27,7 +28,8 @@ export default function Dashboard() {
                     )}
                     {isAdmin() && (
                         <>
-
+                        /* admin dashboard */
+                            <AdminDetails />
                         </>
                     )}
                 </>

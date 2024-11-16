@@ -53,7 +53,6 @@ const StatusBadge = ({ status }: { status: string }) => {
     );
 };
 
-// Clickable booking row component
 const BookingRow = ({ booking }: { booking: BookingListResponse }) => (
     <TableRow 
         key={booking.id}
@@ -111,7 +110,9 @@ export function BookingList({ userId }: { userId: string }) {
         try {
             setIsLoading(true);
             const response = await getBookingsByUser(userId);
-            setBookingList(response);
+            // Sort bookings by ID in descending order (latest first)
+            const sortedBookings = [...response].sort((a, b) => b.id - a.id);
+            setBookingList(sortedBookings);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Unable to get booking list');
             toast({
@@ -182,7 +183,7 @@ export function BookingList({ userId }: { userId: string }) {
                 <CardHeader>
                     <CardTitle>Recent Bookings</CardTitle>
                     <CardDescription>
-                        Overview of your recent machine bookings
+                        Overview of your recent machine bookings (latest first)
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

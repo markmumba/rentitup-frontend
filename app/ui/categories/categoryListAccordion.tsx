@@ -1,4 +1,5 @@
 import { CategoryListResponse } from "@/app/lib/definitions"
+import { isAdmin } from "@/app/lib/service";
 import { shortenDescription } from "@/app/lib/utils";
 import {
     Accordion,
@@ -25,13 +26,19 @@ export function CategoryAccordion({ category }: { category: CategoryListResponse
                             <p className="text-muted-foreground">
                                 {shortenDescription(category.description)}
                             </p>
-                            <div className="flex justify-end">
+                            <div className="flex justify-end space-x-4">
                                 <Button
                                     onClick={() => router.push(`/categories/${category.id}`)}
                                     variant="default"
                                 >
                                     Browse Category
                                 </Button>
+                                {isAdmin() &&  <Button
+                                    onClick={() => router.push(`/categories/${category.id}/edit`)}
+                                    variant="secondary"
+                                >
+                                    Update Category
+                                </Button>}
                             </div>
                         </div>
                     </AccordionContent>
