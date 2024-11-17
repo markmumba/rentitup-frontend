@@ -107,7 +107,7 @@ export async function getCategoryById(id: string): Promise<CategoryResponse> {
     return response.data;
 }
 export async function updateCategory(categoryId: string, categoryRequest: CategoryRequest) {
-    const response = await axios.put(`${BASE_URL}/categories`, categoryRequest, {
+    const response = await axios.put(`${BASE_URL}/categories/${categoryId}`, categoryRequest, {
         headers: getHeader()
     });
     return response.data;

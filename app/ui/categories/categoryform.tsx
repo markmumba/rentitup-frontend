@@ -32,6 +32,7 @@ const categorySchema = z.object({
     description: z.string().min(1, "Description is required").max(500, "Description is too long"),
     priceCalculationType: z.string().min(1, "Price calculation type is required")
 })
+
 export default function CategoryForm({
     onSubmit,
     isLoading,
@@ -80,6 +81,7 @@ export default function CategoryForm({
 
     useEffect(() => {
         getPriceCalculation();
+        console.log(priceCalculationType);
     }, []);
 
     return (
@@ -106,7 +108,11 @@ export default function CategoryForm({
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Input placeholder="Category description" {...field} />
+                                <Textarea 
+                                    placeholder="Enter category description" 
+                                    className="min-h-[100px]"
+                                    {...field} 
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

@@ -1,3 +1,4 @@
+'use client';
 import { CategoryRequest, CategoryResponse } from "@/app/lib/definitions";
 import { getCategoryById, updateCategory } from "@/app/lib/service";
 import CategoryForm from "@/app/ui/categories/categoryform";
