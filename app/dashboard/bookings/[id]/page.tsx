@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, DollarSign, MapPin, Package, User, Edit, Trash2, ChevronsUpDown, Check } from 'lucide-react';
 import { format } from 'date-fns';
@@ -19,21 +18,27 @@ import {
     deleteBooking,
     getBooking,
     getBookingStatusList,
-    getLoggedUserProfile,
-    getUserById,
     isAdmin,
     isCustomer,
-    isOwner, updateStatus
+    isOwner, 
 } from '@/app/lib/service';
 import { BookingResponse } from '@/app/lib/definitions';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import StatusBadge from '@/app/ui/Dashboard/Owner/statusBadge';
+import { ProtectedRoute } from '@/app/protector';
+import { allRoles } from '@/app/lib/utils';
 
-export default function SingleBookingPage() {
+
+export default function ProtectedSingleBookingPage() {
+    return (
+        <ProtectedRoute allowedRoles={allRoles}>
+            <SingleBookingPage />
+        </ProtectedRoute>
+    )
+}
+
+function SingleBookingPage() {
     const params = useParams();
     const router = useRouter();
     const bookingId = params.id as string;
@@ -43,7 +48,6 @@ export default function SingleBookingPage() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [statusList, setStatusList] = useState<string[]>([]);
-    const [status, setStatus] = useState();
 
 
 

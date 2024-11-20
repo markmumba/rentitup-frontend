@@ -1,16 +1,36 @@
 'use client'
 import { UserDetails } from "@/app/lib/definitions";
-import { getLoggedUserProfile } from "@/app/lib/service";
+import { deleteMachine, getLoggedUserProfile } from "@/app/lib/service";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { BanknoteIcon, Info, Mail, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
+import { ProtectedRoute } from "@/app/protector";
+import { allRoles } from "@/app/lib/utils";
 
-export default function Profile() {
+
+
+export default function ProtectedProfile() {
+    return (
+        <ProtectedRoute allowedRoles={allRoles}>
+            <Profile />
+        </ProtectedRoute>
+    )
+}
+
+function Profile() {
+
+    const router = useRouter();
     const [userDetails, setUserDetails] = useState<UserDetails>();
     const [error, setError] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState<boolean>();
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [machineToDelete, setMachineToDelete] = useState<string | null>(null);
 
     async function getUserDetails() {
         try {
@@ -21,6 +41,29 @@ export default function Profile() {
         }
     }
 
+    const handleDeleteClick = (machineId: string) => {
+        setMachineToDelete(machineId);
+        setShowDeleteDialog(true);
+    };
+
+    const handleUpdateMachine = (machineId: string) => {
+        router.push(`/machines/${machineId}/edit`)
+    }
+
+    const handleDeleteConfirm = async () => {
+        if (machineToDelete) {
+            try {
+                setIsDeleting(true);
+                await deleteMachine(machineToDelete);
+            } catch (error) {
+                setError(error instanceof Error ? error.message : 'Failed to delete machine');
+            } finally {
+                setIsDeleting(false);
+                setShowDeleteDialog(false);
+                setMachineToDelete(null);
+            }
+        }
+    };
     useEffect(() => {
         getUserDetails();
     }, []);
@@ -87,6 +130,11 @@ export default function Profile() {
                         </div>
                     </div>
                 </CardContent>
+                <CardFooter className="justify-end">
+                    <Button className="text-sm">
+                        Add machine
+                    </Button>
+                </CardFooter>
             </Card>
 
             {/* Machines Grid */}
@@ -123,7 +171,7 @@ export default function Profile() {
                                     <div className="flex items-center space-x-2">
                                         <BanknoteIcon className="h-4 w-4 text-muted-foreground" />
                                         <span className="font-medium">
-                                            ${machine.basePrice.toLocaleString()} /day
+                                            KES {machine.basePrice.toLocaleString()} /day
                                         </span>
                                     </div>
                                     <div className="flex items-center space-x-2">
@@ -139,11 +187,43 @@ export default function Profile() {
                                         ))}
                                     </div>
                                 </CardContent>
+                                <CardFooter className="flex space-x-2">
+                                    <Button variant='destructive'
+                                        className="text-xs"
+                                        onClick={() => { handleDeleteClick(machine.id) }}>
+                                        Remove machine
+                                    </Button>
+                                    <Button variant='secondary'
+                                        className="text-xs"
+                                        onClick={() => { handleUpdateMachine(machine.id) }}>
+                                        Update machine
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         ))}
                     </div>
                 </div>
             )}
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the booking.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeleteConfirm}
+                            className="bg-red-500 hover:bg-red-600"
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? 'Deleting...' : 'Delete'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

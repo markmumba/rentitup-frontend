@@ -154,6 +154,20 @@ export async function changeAvailability() {
     return response.data;
 }
 
+export async function updateMachine(machineId: string, machineRequest: MachineRequest) {
+    const response = await axios.put(`${BASE_URL}/machines/${machineId}`, machineRequest,
+        { headers: getHeader() })
+    return response.data;
+}
+
+export async function deleteMachine(machineId: string) {
+    const response = await axios.delete(`${BASE_URL}/machines/${machineId}`, {
+        headers: getHeader()
+    });
+    console.log(response.data)
+    return response.data;
+}
+
 /** Image-related endpoints */
 
 export async function uploadMachineImages(machineId: string, formData: FormData) {
@@ -188,6 +202,7 @@ export async function setIsPrimaryImage(machineId: string, imageId: string) {
     return response.data;
 
 }
+
 
 /** booking endpoints */
 
@@ -306,7 +321,6 @@ export async function deleteReview(id: string) {
 }
 
 /** Role-related functions */
-
 
 export function isAuthenticated() {
     const token = useAuthStore.getState().token;

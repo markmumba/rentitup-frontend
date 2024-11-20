@@ -1,3 +1,4 @@
+'use client';
 import { getLoggedUserProfile } from "@/app/lib/service";
 import { toast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";

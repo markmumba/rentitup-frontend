@@ -93,7 +93,7 @@ const StatusBadge = ({ booking, statusList }:{booking:BookingResponse,statusList
                         className={cn(
                             "justify-between",
                             getStatusColor(booking.status),
-                            "text-white hover:text-white hover:opacity-90"
+                            "text-white hover:text-white hover:opacity-90 rounded-full"
                         )}
                         disabled={isUpdating}
                     >

@@ -54,7 +54,7 @@ export function Navbar() {
                     {isOwner() && (
                         <>
                             <p>user is owner</p>
-                            <Link href="/bookings">
+                            <Link href="/orders">
                                 <Button variant="ghost">Orders</Button>
                             </Link>
                         </>
@@ -75,7 +75,7 @@ export function Navbar() {
                         </>
                     )}
 
-                    <Link href="dashboard/profile">
+                    <Link href="/dashboard/profile">
                         <Button variant="ghost">Profile</Button>
                     </Link>
                     <Link href="/">

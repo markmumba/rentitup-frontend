@@ -5,8 +5,20 @@ import { createBooking, getLoggedUserProfile } from "../lib/service";
 import { toast } from "@/hooks/use-toast";
 import { BookingRequest } from "../lib/definitions";
 import { BookingForm } from "../ui/Booking/bookingform";
+import { ProtectedRoute } from "../protector";
+import { customer } from "../lib/utils";
 
-export default function BookingPage() {
+export default function ProtectedBookingPage() {
+
+    return (
+        <ProtectedRoute allowedRoles={customer}>
+            <BookingPage/>
+        </ProtectedRoute>
+    )
+    
+}
+
+ function BookingPage() {
 
     const router = useRouter();
     const searchParams = useSearchParams();
