@@ -7,10 +7,20 @@ interface AuthState {
     role: string | null;
     setToken: (token: string) => void;
     setRole: (role: string) => void;
-    logout:()=>void;
+    logout: () => void;
 
 }
 
+interface MachineState {
+    isAddingImages: boolean;
+    setIsAddingImages: (value: boolean) => void;
+}
+
+export const useMachineStore = create<MachineState>((set) => ({
+    isAddingImages: false,
+    setIsAddingImages: (value) => set({ isAddingImages: value })
+})
+)
 export const useAuthStore = create(
     persist<AuthState>(
         (set) => ({

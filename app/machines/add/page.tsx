@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { useMachineStore } from "@/app/lib/store";
 
 export default function ProtectedAddMachine() {
     return (
@@ -25,9 +26,12 @@ function AddMachine() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>();
 
+    const {setIsAddingImages} = useMachineStore();
+
     async function handleAddMachine(data:MachineRequest) {
         try {
             setIsLoading(true);
+            setIsAddingImages(true);
             const response = await createMachine(data);
             toast({
                 title: "Machine created successful",
@@ -36,6 +40,7 @@ function AddMachine() {
             const id = String(response.id);
             router.push(`/machines/${id}/uploadImages`)
         } catch (error) {
+            setIsAddingImages(false);
             toast({
                 title: "Machine creation failed",
                 description: error instanceof Error ? error.message : "Please try again later",
