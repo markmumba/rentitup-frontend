@@ -136,8 +136,8 @@ export async function getMachineById(machineId: string): Promise<MachineResponse
     return response.data;
 }
 
-export async function createMachine(machineRequest: MachineRequest) {
-    const response = await axios.post(`${BASE_URL}/machines`, machineRequest, {
+export async function createMachine(machineRequest: MachineRequest): Promise<MachineResponse> {
+    const response = await axios.post<MachineResponse>(`${BASE_URL}/machines`, machineRequest, {
         headers: getHeader()
     });
     return response.data;
@@ -169,9 +169,9 @@ export async function deleteMachine(machineId: string) {
     return response.data;
 }
 
-export async function getMachineConditions () :Promise<string[]> {
-    const response  = await axios.get<string[]>(`${BASE_URL}/machines/machineConditions`,{
-        headers:getHeader()
+export async function getMachineConditions(): Promise<string[]> {
+    const response = await axios.get<string[]>(`${BASE_URL}/machines/machineConditions`, {
+        headers: getHeader()
     });
     return response.data;
 }
@@ -297,10 +297,10 @@ export async function getBookingStatusList(): Promise<string[]> {
 
 }
 
-export async function getBookingsByMachine(machineId:string):Promise<BookingListResponse[]> {
+export async function getBookingsByMachine(machineId: string): Promise<BookingListResponse[]> {
 
     const response = await axios.get<BookingListResponse[]>(`${BASE_URL}/bookings/machine/${machineId}`,
-        {headers:getHeader()});
+        { headers: getHeader() });
 
     return response.data;
 }

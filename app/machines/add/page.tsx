@@ -28,15 +28,13 @@ function AddMachine() {
     async function handleAddMachine(data:MachineRequest) {
         try {
             setIsLoading(true);
-            const response = createMachine(data);
-            
+            const response = await createMachine(data);
             toast({
                 title: "Machine created successful",
                 description: "You can now view your machines"
             })
-
-            router.push('/dashboard/profile')
-
+            const id = String(response.id);
+            router.push(`/machines/${id}/uploadImages`)
         } catch (error) {
             toast({
                 title: "Machine creation failed",
