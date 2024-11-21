@@ -49,6 +49,9 @@ function Profile() {
     const handleUpdateMachine = (machineId: string) => {
         router.push(`/machines/${machineId}/edit`)
     }
+    const handleAddMachine = () => {
+        router.push(`/machines/add`)
+    }
 
     const handleDeleteConfirm = async () => {
         if (machineToDelete) {
@@ -132,7 +135,7 @@ function Profile() {
                 </CardContent>
                 <CardFooter className="justify-end">
                     {isOwner() && (
-                    <Button className="text-sm">
+                    <Button onClick={handleAddMachine} className="text-sm">
                         Add machine
                     </Button>
                     )}

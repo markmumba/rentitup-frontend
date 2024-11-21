@@ -169,6 +169,13 @@ export async function deleteMachine(machineId: string) {
     return response.data;
 }
 
+export async function getMachineConditions () :Promise<string[]> {
+    const response  = await axios.get<string[]>(`${BASE_URL}/machines/machineConditions`,{
+        headers:getHeader()
+    });
+    return response.data;
+}
+
 /** Image-related endpoints */
 
 export async function uploadMachineImages(machineId: string, formData: FormData) {
