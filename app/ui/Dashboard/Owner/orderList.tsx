@@ -54,13 +54,16 @@ export function Orders({ ownerId, userDetails }: {
   const pendingBookings = bookingList.filter(booking => booking.status.toLowerCase() === 'pending');
   const confirmedBookings = bookingList.filter(booking => booking.status.toLowerCase() === 'confirmed');
 
-  const availableMachines = userDetails.ownedMachines.filter(
+  const availableMachines = userDetails?.ownedMachines?.filter(
     machine => machine.isAvailable
-  ).length;
-  const totalRevenue = userDetails.ownedMachines.reduce(
-    (sum, machine) => sum + parseFloat(machine.basePrice),
-    0
-  );
+  ).length || 0;
+
+
+  const totalRevenue = bookingList?.length
+    ? bookingList
+      .filter(booking => booking.status === 'COMPLETED')
+      .reduce((sum, booking) => sum + parseFloat(booking.totalAmount), 0)
+    : 0;
 
   const BookingsTable = ({ bookings, title }: { bookings: BookingListResponse[], title: string }) => (
     <Card>
@@ -139,7 +142,7 @@ export function Orders({ ownerId, userDetails }: {
           <CardContent>
             <div className="text-2xl text-green-500 font-bold">{availableMachines}</div>
             <p className="text-xs text-muted-foreground">
-              out of {userDetails.ownedMachines.length} total machines
+              out of {userDetails?.ownedMachines?.length || 0} total machines
             </p>
           </CardContent>
         </Card>
@@ -206,7 +209,7 @@ export function Orders({ ownerId, userDetails }: {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {userDetails.ownedMachines.map((machine) => (
+                  {userDetails?.ownedMachines?.map((machine) => (
                     <TableRow key={machine.name} className="group">
                       <TableCell className="font-medium">{machine.name}</TableCell>
                       <TableCell>${machine.basePrice}</TableCell>

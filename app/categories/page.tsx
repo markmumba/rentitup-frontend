@@ -2,14 +2,17 @@
 'use client';
 import { useEffect, useState } from "react"
 import { CategoryListResponse } from "../lib/definitions";
-import { getAllCategories } from "../lib/service";
+import { getAllCategories, isAdmin } from "../lib/service";
 import { CategoryAccordion } from "../ui/categories/categoryListAccordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 
 export default function Categories() {
+    const router = useRouter();
 
     const [categoriesList, setCategoriesList] = useState<CategoryListResponse[]>();
     const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +30,10 @@ export default function Categories() {
             setIsLoading(false);
         }
     }
+    const handleAddCategory = () => {
+        router.push("/categories/add");
+    };
+
 
 
     useEffect(() => {
@@ -59,6 +66,12 @@ export default function Categories() {
     return (
         <div className="container mx-auto p-6">
             <Card>
+            {isAdmin() && (
+            <Button variant="secondary" onClick={handleAddCategory} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Category
+            </Button>
+            )}
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center">
                         Choose by Category

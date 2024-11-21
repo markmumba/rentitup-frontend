@@ -163,7 +163,7 @@ export default function AllBookings() {
         <div className="space-y-6">
             {/* Search Bar */}
 
-            <Button onClick={handleAddCategory} className="flex items-center gap-2">
+            <Button variant="secondary" onClick={handleAddCategory} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add Category
             </Button>

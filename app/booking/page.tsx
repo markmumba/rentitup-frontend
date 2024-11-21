@@ -30,7 +30,6 @@ export default function ProtectedBookingPage() {
     const [customerId, setCustomerId] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [time , setTime ] = useState();
 
 
 

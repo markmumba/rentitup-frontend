@@ -12,9 +12,56 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import {
+  MotionDiv,
+  MotionH1,
+  MotionP,
+  MotionCard
+} from '@/components/motion';
 
 export default function CategoriesSection() {
   const router = useRouter();
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const headerVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    },
+    hover: {
+      scale: 1.02,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
 
   const categories = [
     {
@@ -63,30 +110,49 @@ export default function CategoriesSection() {
 
   return (
     <div className="bg-white py-24">
-      <div className="container mx-auto px-4">
+      <MotionDiv
+        className="container mx-auto px-4"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+      >
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Equipment Categories</h2>
-          <p className="text-slate-600 max-w-2xl mx-auto">
+          <MotionH1 
+            className="text-3xl font-bold mb-4"
+            variants={headerVariants}
+          >
+            Equipment Categories
+          </MotionH1>
+          <MotionP 
+            className="text-slate-600 max-w-2xl mx-auto"
+            variants={headerVariants}
+          >
             Explore our comprehensive range of construction and industrial equipment. 
             Find the right tools and machinery for your specific project needs.
-          </p>
+          </MotionP>
         </div>
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.map((category) => (
-            <Card 
+            <MotionCard
               key={category.id}
-              className="group relative overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              variants={cardVariants}
+              whileHover="hover"
+              className="group relative overflow-hidden rounded-lg border border-slate-200 hover:shadow-xl transition-shadow duration-300"
             >
               <div className="p-6">
                 {/* Icon with gradient background */}
-                <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${category.gradient} 
-                  flex items-center justify-center text-white mb-4 
-                  group-hover:scale-110 transition-transform duration-300`}>
+                <MotionDiv
+                  className={`w-16 h-16 rounded-full bg-gradient-to-r ${category.gradient} 
+                    flex items-center justify-center text-white mb-4`}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
                   {category.icon}
-                </div>
+                </MotionDiv>
 
                 {/* Category Info */}
                 <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
@@ -103,12 +169,18 @@ export default function CategoriesSection() {
                   </Button>
                 </div>
               </div>
-            </Card>
+            </MotionCard>
           ))}
         </div>
 
         {/* View All Button */}
-        <div className="text-center mt-12">
+        <MotionDiv 
+          className="text-center mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
           <Link href="/categories">
             <Button 
               size="lg"
@@ -118,8 +190,8 @@ export default function CategoriesSection() {
               View All Categories
             </Button>
           </Link>
-        </div>
-      </div>
+        </MotionDiv>
+      </MotionDiv>
     </div>
   );
-}
+} 

@@ -1,6 +1,6 @@
 'use client'
 import { UserDetails } from "@/app/lib/definitions";
-import { deleteMachine, getLoggedUserProfile } from "@/app/lib/service";
+import { deleteMachine, getLoggedUserProfile, isOwner } from "@/app/lib/service";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -131,9 +131,11 @@ function Profile() {
                     </div>
                 </CardContent>
                 <CardFooter className="justify-end">
+                    {isOwner() && (
                     <Button className="text-sm">
                         Add machine
                     </Button>
+                    )}
                 </CardFooter>
             </Card>
 

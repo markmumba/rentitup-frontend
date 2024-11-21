@@ -2,6 +2,7 @@ import axios from "axios";
 import { useAuthStore } from "./store";
 import { BookingListResponse, BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineListResponse, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
 import { useRouter } from "next/navigation";
+import { machine } from "os";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
@@ -284,11 +285,18 @@ export async function getBookingCode(code: string) {
 
 export async function getBookingStatusList(): Promise<string[]> {
     const response = await axios.get<string[]>(`${BASE_URL}/bookings/booking-status-list`,
-        { headers: getHeader() })
+        { headers: getHeader() });
     return response.data;
 
 }
 
+export async function getBookingsByMachine(machineId:string):Promise<BookingListResponse[]> {
+
+    const response = await axios.get<BookingListResponse[]>(`${BASE_URL}/bookings/machine/${machineId}`,
+        {headers:getHeader()});
+
+    return response.data;
+}
 
 /** Reviews endpoints */
 export async function getReviewsForMachine(machineId: string) {

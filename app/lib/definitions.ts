@@ -104,7 +104,7 @@ export interface UserDetails {
         fullName: string;
         phone: string;
         role: string;
-        ownedMachines: MachineResponse[];
+        ownedMachines: MachineResponse[] ;
 }
 
 export interface BookingListResponse {
