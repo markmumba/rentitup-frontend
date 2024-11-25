@@ -71,14 +71,24 @@ export function Navbar() {
                     )}
 
                     {isOwner() && (
-                        <Link href="/orders">
-                            <Button
-                                variant={isActive('/orders') ? 'default' : 'ghost'}
-                                className={isActive('/orders') ? 'bg-gray-200' : ''}
-                            >
-                                Orders
-                            </Button>
-                        </Link>
+                        <>
+                            <Link href="/orders">
+                                <Button
+                                    variant={isActive('/orders') ? 'default' : 'ghost'}
+                                    className={isActive('/orders') ? 'bg-gray-200' : ''}
+                                >
+                                    Orders
+                                </Button>
+                            </Link>
+                            <Link href="/categories">
+                                <Button
+                                    variant={isActive('/categories') ? 'default' : 'ghost'}
+                                    className={isActive('/categories') ? 'bg-gray-200' : ''}
+                                >
+                                    Book
+                                </Button>
+                            </Link>
+                        </>
                     )}
 
                     {isAdmin() && (

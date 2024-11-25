@@ -30,8 +30,6 @@ function AddMachine() {
     async function handleAddMachine(data: MachineRequest) {
         try {
             setIsLoading(true);
-            setIsAddingImages(true); // Update state
-
             const response = await createMachine(data);
             toast({
                 title: "Machine created successfully",
@@ -39,8 +37,6 @@ function AddMachine() {
             });
 
             const id = String(response.id);
-
-            await new Promise((resolve) => setTimeout(resolve, 50)); 
             router.push(`/machines/${id}/uploadImages`);
         } catch (error) {
             setIsAddingImages(false); // Reset on error

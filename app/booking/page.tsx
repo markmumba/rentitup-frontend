@@ -48,7 +48,7 @@ function BookingPage() {
         } catch (error) {
             toast({
                 title: "Booking failed",
-                description: error instanceof Error ? error.message : "Please try again later",
+                description:  "The dates you are picking are already picked ",
                 variant: "destructive",
             });
         } finally {
