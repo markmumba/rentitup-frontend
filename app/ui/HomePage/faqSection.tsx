@@ -114,12 +114,12 @@ export default function FAQSection() {
   ];
 
   return (
-    <div className="bg-white py-24">
+    <div className="bg-white dark:bg-slate-950 py-24">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-          <p className="text-slate-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 dark:text-white">Frequently Asked Questions</h2>
+          <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             Find answers to common questions about renting and listing equipment on RentItUp.
           </p>
         </div>
@@ -131,9 +131,11 @@ export default function FAQSection() {
               key={category.id}
               variant={activeCategory === category.id ? 'default' : 'outline'}
               onClick={() => setActiveCategory(category.id as FAQCategories)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 dark:text-white dark:hover:bg-slate-800 dark:border-slate-700"
             >
-              {category.icon}
+              {React.cloneElement(category.icon, {
+                className: "h-4 w-4 dark:text-white"
+              })}
               {category.label}
             </Button>
           ))}
@@ -144,22 +146,22 @@ export default function FAQSection() {
           {faqs[activeCategory].map((faq) => (
             <Card 
               key={faq.id}
-              className="mb-4 overflow-hidden"
+              className="mb-4 overflow-hidden dark:bg-slate-800 dark:border-slate-700"
             >
               <button
-                className="w-full p-6 text-left flex justify-between items-center hover:bg-slate-50"
+                className="w-full p-6 text-left flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-700"
                 onClick={() => toggleQuestion(faq.id)}
               >
-                <span className="font-semibold">{faq.question}</span>
+                <span className="font-semibold dark:text-white">{faq.question}</span>
                 {openQuestions.includes(faq.id) ? (
-                  <ChevronUp className="h-5 w-5 text-slate-400" />
+                  <ChevronUp className="h-5 w-5 text-slate-400 dark:text-slate-300" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-slate-400" />
+                  <ChevronDown className="h-5 w-5 text-slate-400 dark:text-slate-300" />
                 )}
               </button>
               
               {openQuestions.includes(faq.id) && (
-                <div className="px-6 pb-6 text-slate-600">
+                <div className="px-6 pb-6 text-slate-600 dark:text-slate-300">
                   {faq.answer}
                 </div>
               )}
@@ -169,17 +171,17 @@ export default function FAQSection() {
 
         {/* Still Have Questions */}
         <div className="mt-16 text-center">
-          <Card className="max-w-2xl mx-auto p-8 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <h3 className="text-xl font-semibold mb-4">Still Have Questions?</h3>
-            <p className="text-slate-600 mb-6">
+          <Card className="max-w-2xl mx-auto p-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900">
+            <h3 className="text-xl font-semibold mb-4 dark:text-white">Still Have Questions?</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
               Our support team is here to help you with any questions you might have.
             </p>
             <div className="flex justify-center gap-4">
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-800 dark:hover:bg-blue-700">
                 <Mail className="h-4 w-4 mr-2" />
                 Contact Support
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" className="dark:border-slate-700 dark:text-white dark:hover:bg-slate-800">
                 <FileText className="h-4 w-4 mr-2" />
                 View Documentation
               </Button>

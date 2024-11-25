@@ -8,6 +8,7 @@ import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../lib/service';
 import { Menu, X } from 'lucide-react';
 import { LogoutButton } from './logoutbutton';
 import { useAuthStore } from '../lib/store';
+import { ModeToggle } from './modalToggle';
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -81,8 +82,10 @@ export function Navbar() {
                     <Link href="/">
                         <LogoutButton />
                     </Link>
+
                 </>
             )}
+            <ModeToggle />
         </>
     );
 

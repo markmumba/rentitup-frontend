@@ -51,7 +51,7 @@ function AddMachineImages() {
                 description: "Machine images added successfully"
             });
 
-            const redirectUrl = searchParams.get("redirect") || "dashboard/profile";
+            const redirectUrl = searchParams.get("redirect") || "/dashboard/profile";
 
             router.push(redirectUrl);
         } catch (error) {

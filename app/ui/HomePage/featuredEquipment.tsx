@@ -14,7 +14,7 @@ import {
 
 export default function FeaturedEquipment() {
   const [activeTab, setActiveTab] = React.useState('trending');
-  
+
   const equipment = [
     {
       title: "CAT Excavator 320",
@@ -83,13 +83,15 @@ export default function FeaturedEquipment() {
   ];
 
   return (
-    <div className="bg-white py-24">
+    <div className="bg-white dark:bg-gray-900 py-24">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="flex justify-between items-center mb-12">
           <div>
-            <h2 className="text-3xl font-bold mb-4">Featured Equipment</h2>
-            <p className="text-slate-600 max-w-2xl">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+              Featured Equipment
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 max-w-2xl">
               Discover our most popular and newly listed machinery. All equipment is verified 
               and maintained to the highest standards.
             </p>
@@ -100,16 +102,16 @@ export default function FeaturedEquipment() {
             <Button
               variant="outline"
               size="icon"
-              className="rounded-full"
+              className="rounded-full dark:border-gray-700"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 dark:text-gray-100" />
             </Button>
             <Button
               variant="outline"
               size="icon"
-              className="rounded-full"
+              className="rounded-full dark:border-gray-700"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 dark:text-gray-100" />
             </Button>
           </div>
         </div>
@@ -119,14 +121,14 @@ export default function FeaturedEquipment() {
           <Button
             variant={activeTab === 'trending' ? 'default' : 'outline'}
             onClick={() => setActiveTab('trending')}
-            className="rounded-full"
+            className={`rounded-full ${activeTab === 'trending' ? '' : 'dark:border-gray-700'}`}
           >
             🔥 Trending
           </Button>
           <Button
             variant={activeTab === 'new' ? 'default' : 'outline'}
             onClick={() => setActiveTab('new')}
-            className="rounded-full"
+            className={`rounded-full ${activeTab === 'new' ? '' : 'dark:border-gray-700'}`}
           >
             ✨ Newly Listed
           </Button>
@@ -140,7 +142,7 @@ export default function FeaturedEquipment() {
               (activeTab === 'new' && item.new)
             )
             .map((item, index) => (
-            <Card key={index} className="group overflow-hidden hover:shadow-xl transition-shadow">
+            <Card key={index} className="group overflow-hidden hover:shadow-xl transition-shadow dark:bg-gray-800">
               {/* Image */}
               <div className="relative">
                 <img 
@@ -148,7 +150,7 @@ export default function FeaturedEquipment() {
                   alt={item.title}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <Badge className="absolute top-4 left-4 bg-white text-slate-900">
+                <Badge className="absolute top-4 left-4 bg-white text-slate-900 dark:bg-gray-700 dark:text-gray-100">
                   {item.category}
                 </Badge>
                 {item.new && (
@@ -161,34 +163,42 @@ export default function FeaturedEquipment() {
               {/* Content */}
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold">{item.title}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{item.title}</h3>
                   <div className="flex items-center">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="ml-1 text-sm font-medium">{item.rating}</span>
-                    <span className="ml-1 text-sm text-slate-500">({item.reviews})</span>
+                    <span className="ml-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {item.rating}
+                    </span>
+                    <span className="ml-1 text-sm text-slate-500 dark:text-slate-400">
+                      ({item.reviews})
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center text-slate-600">
+                  <div className="flex items-center text-slate-600 dark:text-slate-400">
                     <MapPin className="w-4 h-4 mr-1" />
                     <span className="text-sm">{item.location}</span>
                   </div>
-                  <div className="flex items-center text-slate-600">
+                  <div className="flex items-center text-slate-600 dark:text-slate-400">
                     <Clock className="w-4 h-4 mr-1" />
                     <span className="text-sm">Daily Rate</span>
                   </div>
                 </div>
 
                 {/* Owner Info */}
-                <div className="flex items-center justify-between pb-4 border-b">
+                <div className="flex items-center justify-between pb-4 border-b dark:border-gray-700">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 bg-slate-200 rounded-full mr-2" />
+                    <div className="w-8 h-8 bg-slate-200 dark:bg-gray-600 rounded-full mr-2" />
                     <div>
-                      <div className="text-sm font-medium">{item.owner.name}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {item.owner.name}
+                      </div>
                       <div className="flex items-center">
                         <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                        <span className="text-xs ml-1">{item.owner.rating}</span>
+                        <span className="text-xs ml-1 text-gray-900 dark:text-gray-100">
+                          {item.owner.rating}
+                        </span>
                         {item.owner.verified && (
                           <Shield className="w-3 h-3 text-blue-500 ml-2" />
                         )}
@@ -196,10 +206,12 @@ export default function FeaturedEquipment() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       ${item.price}
                     </div>
-                    <div className="text-xs text-slate-500">per day</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                      per day
+                    </div>
                   </div>
                 </div>
 
@@ -214,9 +226,9 @@ export default function FeaturedEquipment() {
 
         {/* View All CTA */}
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg" className="px-8">
+          <Button variant="outline" size="lg" className="px-8 dark:border-gray-700">
             View All Equipment
-            <ChevronRight className="ml-2 h-4 w-4" />
+            <ChevronRight className="ml-2 h-4 w-4 dark:text-gray-100" />
           </Button>
         </div>
       </div>

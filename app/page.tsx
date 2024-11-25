@@ -5,6 +5,7 @@ import HowItWorksSection from "./ui/HomePage/howItWorks";
 import FeaturedEquipment from "./ui/HomePage/featuredEquipment";
 import TestimonialsSection from "./ui/HomePage/testimonialSection";
 import FAQSection from "./ui/HomePage/faqSection";
+import ContactSection from "./ui/HomePage/contactus";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <FeaturedEquipment />
       <TestimonialsSection />
       <FAQSection />
+      <ContactSection />
     </>
   );
 }

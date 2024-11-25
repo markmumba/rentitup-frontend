@@ -35,7 +35,7 @@ function AddMachine() {
             const response = await createMachine(data);
             toast({
                 title: "Machine created successfully",
-                description: "You can now view your machines",
+                description: "Add images for your machine",
             });
 
             const id = String(response.id);
