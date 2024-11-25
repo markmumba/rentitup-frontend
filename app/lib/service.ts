@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingListResponse, BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineListResponse, MachineRequest, MachineResponse, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
+import { BookingListResponse, BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
 import { useRouter } from "next/navigation";
 import { machine } from "os";
 
@@ -155,7 +155,7 @@ export async function changeAvailability() {
     return response.data;
 }
 
-export async function updateMachine(machineId: string, machineRequest: MachineRequest) {
+export async function updateMachine(machineId: string, machineRequest: MachineUpdateRequest) {
     const response = await axios.put(`${BASE_URL}/machines/${machineId}`, machineRequest,
         { headers: getHeader() })
     return response.data;

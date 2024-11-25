@@ -3,7 +3,7 @@ import { uploadMachineImages } from "@/app/lib/service";
 import { owner } from "@/app/lib/utils"
 import { ProtectedRoute } from "@/app/protector"
 import { toast } from "@/hooks/use-toast";
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,8 @@ export default function ProtectedAddMachineImages() {
 function AddMachineImages() {
     const router = useRouter();
     const params = useParams();
+    const searchParams = useSearchParams();
+
     const machineId = params.id as string;
 
     const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +51,9 @@ function AddMachineImages() {
                 description: "Machine images added successfully"
             });
 
-            router.push('/dashboard/profile');
+            const redirectUrl = searchParams.get("redirect") || "dashboard/profile";
+
+            router.push(redirectUrl);
         } catch (error) {
             toast({
                 title: "Image Upload Failed",
@@ -61,16 +65,8 @@ function AddMachineImages() {
         }
     }
 
-    useEffect(() => {
 
-        if (!isAddingImages) {
-            router.push("/dashboard/profile")
-        }
-        return () => setIsAddingImages(false);
 
-    }, [isAddingImages, router, setIsAddingImages]);
-
-    if (!isAddingImages) return null;
     return (
         <div className="container mx-auto px-4 py-8">
             <Card className="max-w-md mx-auto">
@@ -112,6 +108,7 @@ function AddMachineImages() {
                             )}
                         </Button>
                     </div>
+                    {isLoading && <p className="text-muted-foreground">This may take a while </p>}
                 </CardContent>
             </Card>
         </div>

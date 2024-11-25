@@ -95,7 +95,7 @@ export default function HeroSection() {
   };
 
   return (
-    <div className="relative overflow-hidden bg-slate-50 min-h-screen">
+    <div className="relative overflow-hidden bg-gradient-to-t from-green-200 via-green-100    min-h-screen">
       <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
 
       <MotionDiv

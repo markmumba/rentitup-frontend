@@ -1,4 +1,3 @@
-
 'use client';
 import { MachineRequest } from "@/app/lib/definitions";
 import { createMachine } from "@/app/lib/service";
@@ -24,29 +23,34 @@ export default function ProtectedAddMachine() {
 
 function AddMachine() {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState<boolean>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const {setIsAddingImages} = useMachineStore();
+    const { setIsAddingImages } = useMachineStore();
 
-    async function handleAddMachine(data:MachineRequest) {
+    async function handleAddMachine(data: MachineRequest) {
         try {
             setIsLoading(true);
-            setIsAddingImages(true);
+            setIsAddingImages(true); // Update state
+
             const response = await createMachine(data);
             toast({
-                title: "Machine created successful",
-                description: "You can now view your machines"
-            })
+                title: "Machine created successfully",
+                description: "You can now view your machines",
+            });
+
             const id = String(response.id);
-            router.push(`/machines/${id}/uploadImages`)
+
+            await new Promise((resolve) => setTimeout(resolve, 50)); 
+            router.push(`/machines/${id}/uploadImages`);
         } catch (error) {
-            setIsAddingImages(false);
+            setIsAddingImages(false); // Reset on error
             toast({
                 title: "Machine creation failed",
-                description: error instanceof Error ? error.message : "Please try again later",
+                description:
+                    error instanceof Error ? error.message : "Please try again later",
                 variant: "destructive",
             });
-        } finally{
+        } finally {
             setIsLoading(false);
         }
     }
@@ -54,7 +58,7 @@ function AddMachine() {
     return (
         <div className="container mx-auto px-4 py-6 space-y-6">
             <h1 className="text-2xl font-bold mb-4">Add Machine</h1>
-            
+
             <Alert variant="default">
                 <Info className="h-4 w-4" />
                 <AlertTitle>Machine Condition Guide</AlertTitle>
@@ -63,20 +67,16 @@ function AddMachine() {
                         <p className="font-semibold">Understanding Machine Conditions:</p>
                         <ul className="list-disc pl-5 space-y-1">
                             <li>
-                                <span className="font-medium">EXCELLENT:</span> Like new condition. Minimal to no wear, recent maintenance, 
-                                operates at peak performance, no visible damage or signs of extensive use.
+                                <span className="font-medium">EXCELLENT:</span> Like new condition.
                             </li>
                             <li>
-                                <span className="font-medium">GOOD:</span> Well-maintained machine with normal wear. 
-                                Fully functional, regular maintenance history, minor cosmetic imperfections.
+                                <span className="font-medium">GOOD:</span> Well-maintained.
                             </li>
                             <li>
-                                <span className="font-medium">FAIR:</span> Shows significant wear, may require some repairs or maintenance. 
-                                Still operational but might have mechanical or cosmetic issues.
+                                <span className="font-medium">FAIR:</span> Shows significant wear.
                             </li>
                             <li>
-                                <span className="font-medium">POOR:</span> Extensive wear, multiple repair needs, potential major mechanical issues. 
-                                Requires significant repair or refurbishment to be fully functional.
+                                <span className="font-medium">POOR:</span> Extensive wear.
                             </li>
                         </ul>
                     </div>
@@ -89,9 +89,9 @@ function AddMachine() {
                 <AlertDescription>
                     <div className="space-y-2">
                         <p>
-                            Before adding a machine, please carefully review our 
-                            <Link 
-                                href="/categories" 
+                            Before adding a machine, please review our
+                            <Link
+                                href="/categories"
                                 className="font-semibold text-blue-600 ml-1 hover:underline"
                             >
                                 Categories Page
@@ -112,10 +112,7 @@ function AddMachine() {
                 </AlertDescription>
             </Alert>
 
-            <MachineForm
-                onSubmit={handleAddMachine} 
-                isLoading={isLoading}
-            />
+            <MachineForm onSubmit={handleAddMachine} isLoading={isLoading} />
         </div>
-    )
+    );
 }

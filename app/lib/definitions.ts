@@ -26,6 +26,14 @@ export interface MachineRequest {
         categoryId: string;
         ownerId: string;
 }
+export interface MachineUpdateRequest {
+        name: string;
+        description: string;
+        basePrice: string;
+        condition: string;
+        specification: string;
+        categoryId:string;
+}
 
 export interface BookingRequest {
         machineId: string;
@@ -69,7 +77,7 @@ export interface MachineListResponse {
 }
 
 export interface MachineImageResponse {
-        id: number;
+        id: string;
         url: string;
         isPrimary: boolean;
 }
