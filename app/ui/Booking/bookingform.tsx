@@ -125,14 +125,14 @@ export function BookingForm({
   }, [hours, startDate, endDate, distance, basePrice, priceCalculationType, form]);
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full ">
       <CardHeader>
         <CardTitle>Machine Booking Form</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
               {priceCalculationType === "HOURLY" && (
                 <FormField
                   control={form.control}

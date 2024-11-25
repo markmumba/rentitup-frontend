@@ -1,24 +1,25 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createBooking, getLoggedUserProfile } from "../lib/service";
+import { createBooking, getBookingsByMachine, getLoggedUserProfile } from "../lib/service";
 import { toast } from "@/hooks/use-toast";
-import { BookingRequest } from "../lib/definitions";
+import { BookingListResponse, BookingRequest } from "../lib/definitions";
 import { BookingForm } from "../ui/Booking/bookingform";
 import { ProtectedRoute } from "../protector";
 import { customer } from "../lib/utils";
+import CalendarView from "../ui/Booking/calendarview";
 
 export default function ProtectedBookingPage() {
 
     return (
         <ProtectedRoute allowedRoles={customer}>
-            <BookingPage/>
+            <BookingPage />
         </ProtectedRoute>
     )
-    
+
 }
 
- function BookingPage() {
+function BookingPage() {
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -28,6 +29,7 @@ export default function ProtectedBookingPage() {
 
 
     const [customerId, setCustomerId] = useState<string>("");
+    const [existingBookings, setExistingBookings] = useState<BookingListResponse[]>();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -69,10 +71,22 @@ export default function ProtectedBookingPage() {
                 });
             }
         }
+        async function handleGetBookingsForMachine() {
+            try {
+                const response = await getBookingsByMachine(machineId);
+                setExistingBookings(response);
+            } catch (error) {
+                setError(error instanceof Error ? error.message : 'Failed to get Bookings');
+                toast({
+                    title: "Error getting bookings",
+                    description: "Failed to get bookings for machine ",
+                    variant: "destructive"
+                });
+            }
+        }
 
         fetchUserProfile();
-
-        // calculateTotal(basePrice,rate,)
+        handleGetBookingsForMachine();
     }, []);
 
     if (!customerId) {
@@ -90,20 +104,29 @@ export default function ProtectedBookingPage() {
             </div>
         );
     }
+    if (!existingBookings) return "No bookings available";
 
     return (
         <div className="container mx-auto py-8">
             <div className="text-center mb-8">
                 <h1 className="text-2xl font-bold">Book your machine</h1>
             </div>
-            <BookingForm
-                onSubmit={handleBookRequest}
-                isLoading={isLoading}
-                machineId={machineId}
-                customerId={customerId}
-                priceCalculationType={rate}
-                basePrice ={basePrice}
-            /> 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <CalendarView existingBookings={existingBookings} />
+                </div>
+                <div>
+                    <BookingForm
+                        onSubmit={handleBookRequest}
+                        isLoading={isLoading}
+                        machineId={machineId}
+                        customerId={customerId}
+                        priceCalculationType={rate}
+                        basePrice={basePrice}
+                    />
+                </div>
+            </div>
+            
         </div>
     );
 }

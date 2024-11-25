@@ -9,9 +9,11 @@ import { Menu, X } from 'lucide-react';
 import { LogoutButton } from './logoutbutton';
 import { useAuthStore } from '../lib/store';
 import { ModeToggle } from './modalToggle';
+import { usePathname } from 'next/navigation';
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
 
     const token = useAuthStore(state => state.token);
     const role = useAuthStore(state => state.role);
@@ -20,69 +22,106 @@ export function Navbar() {
         setIsOpen(!isOpen);
     };
 
+    const isActive = (path: string) => pathname === path;
+
     const NavLinks = () => (
         <>
             {!isAuthenticated() &&
                 <>
                     <Link href="/login">
-                        <Button variant="default">Login</Button>
+                        <Button
+                            variant={isActive('/login') ? 'default' : 'ghost'}
+                            className={isActive('/login') ? 'bg-gray-200' : ''}
+                        >
+                            Login
+                        </Button>
                     </Link>
 
                     <Link href="/register">
-                        <Button variant="ghost">Register</Button>
+                        <Button
+                            variant={isActive('/register') ? 'default' : 'ghost'}
+                            className={isActive('/register') ? 'bg-gray-200' : ''}
+                        >
+                            Register
+                        </Button>
                     </Link>
 
                     <Link href="/categories">
-                        <Button variant="ghost">Categories</Button>
+                        <Button
+                            variant={isActive('/categories') ? 'default' : 'ghost'}
+                            className={isActive('/categories') ? 'bg-gray-200' : ''}
+                        >
+                            Categories
+                        </Button>
                     </Link>
                 </>
             }
 
             {isAuthenticated() && (
                 <>
-                    <p>user is authenticated</p>
-
                     {isCustomer() && (
-                        <>
-                            <p>user is customer</p>
-
-                            <Link href="/categories">
-                                <Button variant="ghost">Book</Button>
-                            </Link>
-                        </>
+                        <Link href="/categories">
+                            <Button
+                                variant={isActive('/categories') ? 'default' : 'ghost'}
+                                className={isActive('/categories') ? 'bg-gray-200' : ''}
+                            >
+                                Book
+                            </Button>
+                        </Link>
                     )}
 
                     {isOwner() && (
-                        <>
-                            <p>user is owner</p>
-                            <Link href="/orders">
-                                <Button variant="ghost">Orders</Button>
-                            </Link>
-                        </>
+                        <Link href="/orders">
+                            <Button
+                                variant={isActive('/orders') ? 'default' : 'ghost'}
+                                className={isActive('/orders') ? 'bg-gray-200' : ''}
+                            >
+                                Orders
+                            </Button>
+                        </Link>
                     )}
 
                     {isAdmin() && (
                         <>
-                            <p>user is admin</p>
                             <Link href="/categories">
-                                <Button variant="ghost">Categories</Button>
+                                <Button
+                                    variant={isActive('/categories') ? 'default' : 'ghost'}
+                                    className={isActive('/categories') ? 'bg-gray-200' : ''}
+                                >
+                                    Categories
+                                </Button>
                             </Link>
                             <Link href="/owners">
-                                <Button variant="ghost">Owners</Button>
+                                <Button
+                                    variant={isActive('/owners') ? 'default' : 'ghost'}
+                                    className={isActive('/owners') ? 'bg-gray-200' : ''}
+                                >
+                                    Owners
+                                </Button>
                             </Link>
                             <Link href="/machines">
-                                <Button variant="ghost">Machines</Button>
+                                <Button
+                                    variant={isActive('/machines') ? 'default' : 'ghost'}
+                                    className={isActive('/machines') ? 'bg-gray-200' : ''}
+                                >
+                                    Machines
+                                </Button>
                             </Link>
                         </>
                     )}
 
                     <Link href="/dashboard/profile">
-                        <Button variant="ghost">Profile</Button>
+                        <Button
+                            variant={isActive('/dashboard/profile') ? 'default' : 'ghost'}
+                            className={isActive('/dashboard/profile') ? 'bg-gray-200' : ''}
+                        >
+                            Profile
+                        </Button>
                     </Link>
+
                     <Link href="/">
                         <LogoutButton />
                     </Link>
-
                 </>
             )}
             <ModeToggle />
@@ -132,3 +171,16 @@ export function Navbar() {
 }
 
 export default Navbar;
+
+
+
+
+
+
+
+
+
+
+
+
+
