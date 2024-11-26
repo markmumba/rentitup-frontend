@@ -114,6 +114,13 @@ export async function updateCategory(categoryId: string, categoryRequest: Catego
     return response.data;
 }
 
+export async function deleteCategory(categoryId:string) {
+    const response = await axios.delete(`${BASE_URL}/categories/${categoryId}`,{
+        headers: getHeader()
+    });
+    return response.data
+}
+
 
 /** Machine-related endpoints */
 

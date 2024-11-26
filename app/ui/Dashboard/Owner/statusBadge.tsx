@@ -35,14 +35,12 @@ const StatusBadge = ({ booking, statusList }:{booking:BookingResponse,statusList
     const [isUpdating, setIsUpdating] = useState(false);
     const [error, setError] = useState('');
 
-    // Filter available statuses based on current status
     const availableStatuses = useMemo(() => {
         if (!booking || !statusList) return [];
 
         const currentStatusIndex = STATUS_ORDER[booking.status];
         return statusList.filter(status => {
             const statusIndex = STATUS_ORDER[status];
-            // Allow CANCELLED status at any point, but only show statuses that come after the current one
             return status === "CANCELLED" || statusIndex > currentStatusIndex;
         });
     }, [booking, statusList]);
@@ -61,8 +59,7 @@ const StatusBadge = ({ booking, statusList }:{booking:BookingResponse,statusList
           // Option 2: Redirect to the same page (this will trigger a fresh data fetch)
           // router.push(`/dashboard/bookings/${booking.id}`);
           
-          // Option 3: If using SWR or React Query, you can trigger a revalidation
-          // mutate(`/api/bookings/${booking.id}`);
+        
           
         } catch (error) {
           setError(error instanceof Error ? error.message : 'Failed to update booking status');

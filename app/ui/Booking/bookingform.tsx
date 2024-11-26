@@ -23,16 +23,17 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 
-
-// Create the base schema with common fields
+// Updated base schema to include startDate and endDate
 const baseBookingSchema = z.object({
   pickUpLocation: z.string().min(1, "Pickup location is required"),
   totalAmount: z.string().min(1, "Total amount is required"),
   machineId: z.string(),
-  customerId: z.string()
+  customerId: z.string(),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
 });
 
-// Create type-specific schemas
+// Create type-specific schemas with additional fields
 const hourlyBookingSchema = baseBookingSchema.extend({
   calculationType: z.literal("HOURLY"),
   hours: z.number().min(1, "Number of hours is required"),
@@ -40,8 +41,6 @@ const hourlyBookingSchema = baseBookingSchema.extend({
 
 const dailyBookingSchema = baseBookingSchema.extend({
   calculationType: z.literal("DAILY"),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().min(1, "End date is required"),
 });
 
 const distanceBookingSchema = baseBookingSchema.extend({
@@ -57,6 +56,7 @@ const bookingSchema = z.discriminatedUnion("calculationType", [
 ]);
 
 type BookingRequest = z.infer<typeof bookingSchema>;
+
 export function BookingForm({
   onSubmit,
   isLoading,
@@ -80,9 +80,10 @@ export function BookingForm({
       totalAmount: "",
       machineId,
       customerId,
+      startDate: "",
+      endDate: "",
       ...(priceCalculationType === "HOURLY" ? { hours: 0 } :
-        priceCalculationType === "DAILY" ? { startDate: "", endDate: "" } :
-          { distance: 0 })
+        priceCalculationType === "DISTANCE_BASED" ? { distance: 0 } : {})
     },
   });
 
@@ -99,7 +100,7 @@ export function BookingForm({
 
     switch (priceCalculationType) {
       case "HOURLY":
-        if (hours) {
+        if (hours && startDate && endDate) {
           total = baseprice * hours;
         }
         break;
@@ -107,14 +108,14 @@ export function BookingForm({
         if (startDate && endDate) {
           const start = new Date(startDate);
           const end = new Date(endDate);
-          const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
+          const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) + 1;
           if (days > 0) {
             total = baseprice * days;
           }
         }
         break;
       case "DISTANCE_BASED":
-        if (distance) {
+        if (distance && startDate && endDate) {
           total = baseprice * distance;
         }
         break;
@@ -125,14 +126,93 @@ export function BookingForm({
   }, [hours, startDate, endDate, distance, basePrice, priceCalculationType, form]);
 
   return (
-    <Card className="w-full ">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Machine Booking Form</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Start Date Field - Always Visible */}
+              <FormField
+                control={form.control}
+                name="startDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                          >
+                            {field.value ? (
+                              format(new Date(field.value), "PPP")
+                            ) : (
+                              <span>Pick a start date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value ? new Date(field.value) : undefined}
+                          onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* End Date Field - Always Visible */}
+              <FormField
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                          >
+                            {field.value ? (
+                              format(new Date(field.value), "PPP")
+                            ) : (
+                              <span>Pick an end date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value ? new Date(field.value) : undefined}
+                          onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
+                          disabled={(date) => 
+                            date < new Date(form.getValues("startDate") || new Date())
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Conditional Fields Based on Calculation Type */}
               {priceCalculationType === "HOURLY" && (
                 <FormField
                   control={form.control}
@@ -152,85 +232,6 @@ export function BookingForm({
                     </FormItem>
                   )}
                 />
-              )}
-
-              {priceCalculationType === "DAILY" && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                              >
-                                {field.value ? (
-                                  format(new Date(field.value), "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value ? new Date(field.value) : undefined}
-                              onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
-                              disabled={(date) => date < new Date()}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>End Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                              >
-                                {field.value ? (
-                                  format(new Date(field.value), "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value ? new Date(field.value) : undefined}
-                              onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
-                              disabled={(date) => 
-                                date < new Date(form.getValues("startDate") || new Date())
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
               )}
 
               {priceCalculationType === "DISTANCE_BASED" && (
@@ -254,6 +255,7 @@ export function BookingForm({
                 />
               )}
 
+              {/* Pickup Location - Always Visible */}
               <FormField
                 control={form.control}
                 name="pickUpLocation"
@@ -268,6 +270,7 @@ export function BookingForm({
                 )}
               />
 
+              {/* Total Amount - Always Visible */}
               <FormField
                 control={form.control}
                 name="totalAmount"

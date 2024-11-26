@@ -176,7 +176,7 @@ function Profile() {
                                     <div className="flex items-center space-x-2">
                                         <BanknoteIcon className="h-4 w-4 text-muted-foreground" />
                                         <span className="font-medium">
-                                            KES {machine.basePrice.toLocaleString()} /day
+                                            KES {machine.basePrice.toLocaleString()} / base price
                                         </span>
                                     </div>
                                     <div className="flex items-center space-x-2">
