@@ -4,11 +4,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { LoginRequest } from "@/lib/definitions";
 import { useAuthStore } from "@/lib/store";
-import { LoginForm } from "@/components/custom-ui/common/login";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { authAPI } from "@/lib/service";
+import { LoginForm } from "@/components/custom-ui/login";
 
 export function LoginClient() {
   const router = useRouter();

@@ -1,59 +1,22 @@
 'use client';
-import { getLoggedUserProfile } from "@/lib/service";
+
+import { useQuery } from '@tanstack/react-query';
 import { toast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
 import { UserDetails } from "@/lib/definitions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, User } from "lucide-react";
 import { UserList } from "./UserList";
 import AllBookings from "./bookings";
+import { userAPI } from '@/lib/service';
 
-export default function AdminDetails() {
-  const [userDetails, setUserDetails] = useState<UserDetails>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>();
+interface AdminProps {
+  data: UserDetails;
+}
 
-  useEffect(() => {
-    async function fetchUserId() {
-      try {
-        setIsLoading(true);
-        const response = await getLoggedUserProfile();
-        setUserDetails(response);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to load user profile');
-        toast({
-          title: "Error",
-          description: "Failed to load user profile",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchUserId();
-  }, []);
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-[250px]" />
-        <Skeleton className="h-[200px] w-full" />
-      </div>
-    );
-  }
+export default function AdminDetails({data}:AdminProps) {
 
-  if (error || !userDetails) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>
-          {error || 'Failed to load user details'}
-        </AlertDescription>
-      </Alert>
-    );
-  }
 
   return (
     <div className="space-y-6 p-6">
@@ -63,7 +26,7 @@ export default function AdminDetails() {
         </div>
         <div>
           <h1 className="text-2xl font-bold">
-            Welcome back, {userDetails.fullName}
+            Welcome back, {data.fullName}
           </h1>
           <p className="text-muted-foreground">
             Manage your users and everything

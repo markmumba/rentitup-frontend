@@ -183,265 +183,519 @@ export const userAPI = {
   };
   
 
-
-/** Category-related endpoints */
-
-export async function createCategory(categoryRequest: CategoryRequest) {
-    const response = await axios.post(`${BASE_URL}/categories`, categoryRequest, {
-        headers: getHeader()
-    });
-    return response.data;
-}
-export async function getPriceCalculationTypes(): Promise<string[]> {
-    const response = await axios.get<string[]>(`${BASE_URL}/categories/calculation-types`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
-
-export async function getAllCategories(): Promise<CategoryListResponse[]> {
-    const response = await axios.get<CategoryListResponse[]>(`${BASE_URL}/categories`);
-    return response.data;
-}
-
-export async function getCategoryById(id: string): Promise<CategoryResponse> {
-    const response = await axios.get<CategoryResponse>(`${BASE_URL}/categories/${id}`);
-    return response.data;
-}
-export async function updateCategory(categoryId: string, categoryRequest: CategoryRequest) {
-    const response = await axios.put(`${BASE_URL}/categories/${categoryId}`, categoryRequest, {
-        headers: getHeader()
-    });
-    return response.data;
-}
-
-export async function deleteCategory(categoryId: string) {
-    const response = await axios.delete(`${BASE_URL}/categories/${categoryId}`, {
-        headers: getHeader()
-    });
-    return response.data
-}
-
-
-/** Machine-related endpoints */
-
-export async function getAllMachines() {
-    const response = await axios.get(`${BASE_URL}/machines`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
-
-export async function getMachinesByOwner(ownerId: string) {
-    const response = await axios.get(`${BASE_URL}/machines/owners/${ownerId}`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
-
-export async function getMachineById(machineId: string): Promise<MachineResponse> {
-    const response = await axios.get<MachineResponse>(`${BASE_URL}/machines/${machineId}`);
-    return response.data;
-}
-
-export async function createMachine(machineRequest: MachineRequest): Promise<MachineResponse> {
-    const response = await axios.post<MachineResponse>(`${BASE_URL}/machines`, machineRequest, {
-        headers: getHeader()
-    });
-    return response.data;
-}
-
-export async function getMachineBySearch(searchTerm: string): Promise<MachineListResponse[]> {
-    const response = await axios.get<MachineListResponse[]>(` ${BASE_URL}/machines/search?nameOfMachine=${searchTerm}`)
-    return response.data
-}
-
-export async function changeAvailability() {
-    const response = await axios.post(`${BASE_URL}/machines/change-availability`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
-
-export async function updateMachine(machineId: string, machineRequest: MachineUpdateRequest) {
-    const response = await axios.put(`${BASE_URL}/machines/${machineId}`, machineRequest,
-        { headers: getHeader() })
-    return response.data;
-}
-
-export async function deleteMachine(machineId: string) {
-    const response = await axios.delete(`${BASE_URL}/machines/${machineId}`, {
-        headers: getHeader()
-    });
-    console.log(response.data)
-    return response.data;
-}
-
-export async function getMachineConditions(): Promise<string[]> {
-    const response = await axios.get<string[]>(`${BASE_URL}/machines/machineConditions`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
-
-/** Image-related endpoints */
-
-export async function uploadMachineImages(machineId: string, formData: FormData) {
-    const response = await axios.post(`${BASE_URL}/machines/${machineId}/images`, formData, {
-        headers: {
-            ...getHeader(),
-            'Content-Type': 'multipart/form-data'
-        }
-    });
-    return response.data;
-}
-
-export async function getMachineImages(machineId: string) {
-    const response = await axios.get(`${BASE_URL}/machines/${machineId}/images`);
-    return response.data;
-}
-
-export async function getMachineImage(machineId: string, imageId: string) {
-    const response = await axios.get(`${BASE_URL}/machines/${machineId}/images/${imageId}`);
-    return response.data;
-}
-
-export async function deleteMachineImage(machineId: string, imageId: string) {
-    const response = await axios.delete(`${BASE_URL}/machines/${machineId}/images/${imageId}`);
-    return response.data;
-}
-
-export async function setIsPrimaryImage(machineId: string, imageId: string) {
-    const response = await axios.put(`${BASE_URL}/machines/${machineId}/images/${imageId}/primary`,
-        { headers: getHeader() }
-    );
-    return response.data;
-
-}
-
-
-/** booking endpoints */
-
-export async function getAllBookings() {
-
-    const response = await axios.get(`${BASE_URL}/bookings`,
-        { headers: getHeader() }
-    );
-    return response.data;
-}
-
-
-export async function createBooking(bookingRequest: BookingRequest) {
-    try {
-        const response = await axios.post(`${BASE_URL}/bookings`, bookingRequest, {
-            headers: getHeader()
-        });
+  export const categoryAPI = {
+    // Get all categories (public endpoint)
+    getAllCategories: async (): Promise<CategoryListResponse[]> => {
+        const response = await axios.get<CategoryListResponse[]>(
+            `${BASE_URL}/categories`
+        );
         return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || "Booking failed. Please try again.");
+    },
+
+    // Get category by ID (public endpoint)
+    getCategoryById: async (id: string): Promise<CategoryResponse> => {
+        const response = await axios.get<CategoryResponse>(
+            `${BASE_URL}/categories/${id}`
+        );
+        return response.data;
+    },
+
+    // Create new category (protected endpoint)
+    createCategory: async (categoryRequest: CategoryRequest): Promise<CategoryResponse> => {
+        try {
+            const response = await axios.post<CategoryResponse>(
+                `${BASE_URL}/categories`,
+                categoryRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to create category.");
+            }
+            throw new Error("An unexpected error occurred while creating category.");
         }
-        throw new Error("Network error. Please check your connection.");
+    },
+
+    // Update category (protected endpoint)
+    updateCategory: async (id: string, categoryRequest: CategoryRequest): Promise<CategoryResponse> => {
+        try {
+            const response = await axios.put<CategoryResponse>(
+                `${BASE_URL}/categories/${id}`,
+                categoryRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to update category.");
+            }
+            throw new Error("An unexpected error occurred while updating category.");
+        }
+    },
+
+    // Delete category (protected endpoint)
+    deleteCategory: async (id: string): Promise<string> => {
+        try {
+            const response = await axios.delete(
+                `${BASE_URL}/categories/${id}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to delete category.");
+            }
+            throw new Error("An unexpected error occurred while deleting category.");
+        }
+    },
+
+    // Get price calculation types (protected endpoint)
+    getPriceCalculationTypes: async (): Promise<string[]> => {
+        const response = await axios.get<string[]>(
+            `${BASE_URL}/categories/calculation-types`,
+            { headers: getHeader() }
+        );
+        return response.data;
     }
-}
+};
 
-export async function getBookingsByUser(userId: string): Promise<BookingListResponse[]> {
-    const response = await axios.get<BookingListResponse[]>(`${BASE_URL}/bookings/user/${userId}`, {
-        headers: getHeader()
-    });
-    return response.data;
+export const bookingAPI = {
+    // Get all bookings (protected endpoint - admin only)
+    getAllBookings: async (): Promise<BookingListResponse[]> => {
+        try {
+            const response = await axios.get<BookingListResponse[]>(
+                `${BASE_URL}/bookings`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch bookings.");
+            }
+            throw new Error("An unexpected error occurred while fetching bookings.");
+        }
+    },
 
-}
-export async function getBookingsForOwner(ownerId: string) {
-    const response = await axios.get(`${BASE_URL}/bookings/owner/${ownerId}`,
-        { headers: getHeader() })
+    // Create new booking (protected endpoint)
+    createBooking: async (bookingRequest: BookingRequest): Promise<BookingListResponse> => {
+        try {
+            const response = await axios.post<BookingListResponse>(
+                `${BASE_URL}/bookings`,
+                bookingRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Booking failed. Please try again.");
+            }
+            throw new Error("An unexpected error occurred while creating booking.");
+        }
+    },
 
-    return response.data;
-}
+    // Get booking by ID (protected endpoint)
+    getBookingById: async (id: string): Promise<BookingListResponse> => {
+        try {
+            const response = await axios.get<BookingListResponse>(
+                `${BASE_URL}/bookings/${id}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch booking.");
+            }
+            throw new Error("An unexpected error occurred while fetching booking.");
+        }
+    },
 
-export async function getBooking(id: string) {
+    // Get bookings by user (protected endpoint)
+    getBookingsByUser: async (userId: string): Promise<BookingListResponse[]> => {
+        try {
+            const response = await axios.get<BookingListResponse[]>(
+                `${BASE_URL}/bookings/user/${userId}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch user bookings.");
+            }
+            throw new Error("An unexpected error occurred while fetching user bookings.");
+        }
+    },
 
-    const response = await axios.get(`${BASE_URL}/bookings/${id}`,
-        { headers: getHeader() })
+    // Get bookings for owner (protected endpoint)
+    getBookingsForOwner: async (ownerId: string): Promise<BookingListResponse[]> => {
+        try {
+            const response = await axios.get<BookingListResponse[]>(
+                `${BASE_URL}/bookings/owner/${ownerId}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch owner bookings.");
+            }
+            throw new Error("An unexpected error occurred while fetching owner bookings.");
+        }
+    },
 
-    return response.data;
-}
+    // Get bookings by status (protected endpoint)
+    getBookingsByStatus: async (userId: string, status: string): Promise<BookingListResponse[]> => {
+        try {
+            const response = await axios.get<BookingListResponse[]>(
+                `${BASE_URL}/bookings/user/${userId}/status?status=${status}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch bookings by status.");
+            }
+            throw new Error("An unexpected error occurred while fetching bookings.");
+        }
+    },
 
-export async function getBookingByStatus(userId: string, status: string) {
-    const response = await axios.get(`${BASE_URL}/bookings/user/${userId}/status?status=${status}`,
-        { headers: getHeader() })
-    return response.data;
-}
+    // Get bookings by machine (protected endpoint)
+    getBookingsByMachine: async (machineId: string): Promise<BookingListResponse[]> => {
+        try {
+            const response = await axios.get<BookingListResponse[]>(
+                `${BASE_URL}/bookings/machine/${machineId}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch machine bookings.");
+            }
+            throw new Error("An unexpected error occurred while fetching machine bookings.");
+        }
+    },
 
-export async function updateBooking(id: string, bookingRequest: BookingRequest) {
-    const response = await axios.put(`${BASE_URL}/bookings/${id}`, bookingRequest,
-        { headers: getHeader() })
-    return response.data;
-}
+    // Update booking (protected endpoint)
+    updateBooking: async (id: string, bookingRequest: BookingRequest): Promise<BookingListResponse> => {
+        try {
+            const response = await axios.put<BookingListResponse>(
+                `${BASE_URL}/bookings/${id}`,
+                bookingRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to update booking.");
+            }
+            throw new Error("An unexpected error occurred while updating booking.");
+        }
+    },
 
-export async function deleteBooking(id: string) {
-    const response = await axios.delete(`${BASE_URL}/bookings/${id}`,
-        { headers: getHeader() })
-    return response.data;
-}
+    // Delete booking (protected endpoint)
+    deleteBooking: async (id: string): Promise<string> => {
+        try {
+            const response = await axios.delete(
+                `${BASE_URL}/bookings/${id}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to delete booking.");
+            }
+            throw new Error("An unexpected error occurred while deleting booking.");
+        }
+    },
 
-export async function updateStatus(id: string, status: string) {
-    const response = await axios.put(`${BASE_URL}/bookings/${id}/status-update?status=${status}`, {},
-        { headers: getHeader() })
-    return response.data;
-}
+    // Update booking status (protected endpoint)
+    updateStatus: async (id: string, status: string): Promise<string> => {
+        try {
+            const response = await axios.put(
+                `${BASE_URL}/bookings/${id}/status-update?status=${status}`,
+                {},
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to update booking status.");
+            }
+            throw new Error("An unexpected error occurred while updating status.");
+        }
+    },
 
-export async function getBookingCode(code: string) {
-    const response = await axios.get(`${BASE_URL}/bookings/get-by-code?code=${code}`,
-        { headers: getHeader() })
-    return response.data;
+    // Get booking by code (protected endpoint)
+    getBookingByCode: async (code: string): Promise<BookingListResponse> => {
+        try {
+            const response = await axios.get<BookingListResponse>(
+                `${BASE_URL}/bookings/get-by-code?code=${code}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch booking by code.");
+            }
+            throw new Error("An unexpected error occurred while fetching booking.");
+        }
+    },
 
-}
+    // Get booking status list (protected endpoint)
+    getBookingStatusList: async (): Promise<string[]> => {
+        try {
+            const response = await axios.get<string[]>(
+                `${BASE_URL}/bookings/booking-status-list`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch booking status list.");
+            }
+            throw new Error("An unexpected error occurred while fetching status list.");
+        }
+    }
+};
 
-export async function getBookingStatusList(): Promise<string[]> {
-    const response = await axios.get<string[]>(`${BASE_URL}/bookings/booking-status-list`,
-        { headers: getHeader() });
-    return response.data;
+export const reviewAPI = {
+    // Get reviews for machine (public endpoint)
+    getReviewsForMachine: async (machineId: string): Promise<ReviewRequest[]> => {
+        try {
+            const response = await axios.get<ReviewRequest[]>(
+                `${BASE_URL}/reviews/machine/${machineId}`
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch machine reviews.");
+            }
+            throw new Error("An unexpected error occurred while fetching reviews.");
+        }
+    },
 
-}
+    // Get review by ID (public endpoint)
+    getReviewById: async (id: string): Promise<ReviewRequest> => {
+        try {
+            const response = await axios.get<ReviewRequest>(
+                `${BASE_URL}/reviews/${id}`
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to fetch review.");
+            }
+            throw new Error("An unexpected error occurred while fetching review.");
+        }
+    },
 
-export async function getBookingsByMachine(machineId: string): Promise<BookingListResponse[]> {
+    // Create review (protected endpoint)
+    createReview: async (bookingId: string, reviewRequest: ReviewRequest): Promise<ReviewRequest> => {
+        try {
+            const response = await axios.post<ReviewRequest>(
+                `${BASE_URL}/bookings/${bookingId}/reviews`,
+                reviewRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to create review.");
+            }
+            throw new Error("An unexpected error occurred while creating review.");
+        }
+    },
 
-    const response = await axios.get<BookingListResponse[]>(`${BASE_URL}/bookings/machine/${machineId}`,
-        { headers: getHeader() });
+    // Update review (protected endpoint)
+    updateReview: async (id: string, reviewRequest: ReviewRequest): Promise<ReviewRequest> => {
+        try {
+            const response = await axios.put<ReviewRequest>(
+                `${BASE_URL}/reviews/${id}`,
+                reviewRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to update review.");
+            }
+            throw new Error("An unexpected error occurred while updating review.");
+        }
+    },
 
-    return response.data;
-}
+    // Delete review (protected endpoint)
+    deleteReview: async (id: string): Promise<string> => {
+        try {
+            const response = await axios.delete(
+                `${BASE_URL}/reviews/${id}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to delete review.");
+            }
+            throw new Error("An unexpected error occurred while deleting review.");
+        }
+    }
+};
 
-/** Reviews endpoints */
-export async function getReviewsForMachine(machineId: string) {
-    const response = await axios.get(`${BASE_URL}/reviews/machine/${machineId}`)
-    return response.data
-}
+export const machineAPI = {
+    // Get all machines (protected endpoint)
+    getAllMachines: async (): Promise<MachineListResponse[]> => {
+        const response = await axios.get<MachineListResponse[]>(
+            `${BASE_URL}/machines`,
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
 
-export async function createReview(bookingId: string, reviewRequest: ReviewRequest) {
-    const response = await axios.post(`${BASE_URL}/bookings/${bookingId}/reviews`, reviewRequest,
-        { headers: getHeader() })
-    return response.data;
-}
+    // Get machine by ID (public endpoint)
+    getMachineById: async (id: string): Promise<MachineResponse> => {
+        const response = await axios.get<MachineResponse>(
+            `${BASE_URL}/machines/${id}`
+        );
+        return response.data;
+    },
 
-export async function getReviewById(id: string) {
-    const response = await axios.get(`${BASE_URL}/reviews/${id}`)
-    return response.data
-}
+    // Get machines by owner (protected endpoint)
+    getMachinesByOwner: async (ownerId: string): Promise<MachineListResponse[]> => {
+        const response = await axios.get<MachineListResponse[]>(
+            `${BASE_URL}/machines/owners/${ownerId}`,
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
 
-export async function updateReview(id: string, reviewRequest: ReviewRequest) {
-    const response = await axios.put(`${BASE_URL}/reviews/${id}`, reviewRequest,
-        { headers: getHeader() })
+    // Create new machine (protected endpoint)
+    createMachine: async (machineRequest: MachineRequest): Promise<MachineResponse> => {
+        try {
+            const response = await axios.post<MachineResponse>(
+                `${BASE_URL}/machines`,
+                machineRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to create machine.");
+            }
+            throw new Error("An unexpected error occurred while creating machine.");
+        }
+    },
 
-    return response.data
-}
+    // Update machine (protected endpoint)
+    updateMachine: async (id: string, machineRequest: MachineUpdateRequest): Promise<MachineResponse> => {
+        try {
+            const response = await axios.put<MachineResponse>(
+                `${BASE_URL}/machines/${id}`,
+                machineRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to update machine.");
+            }
+            throw new Error("An unexpected error occurred while updating machine.");
+        }
+    },
 
-export async function deleteReview(id: string) {
-    const response = await axios.delete(`${BASE_URL}/reviews/${id}`,
-        { headers: getHeader() })
-    return response.data
-}
+    // Delete machine (protected endpoint)
+    deleteMachine: async (id: string): Promise<string> => {
+        try {
+            const response = await axios.delete(
+                `${BASE_URL}/machines/${id}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to delete machine.");
+            }
+            throw new Error("An unexpected error occurred while deleting machine.");
+        }
+    },
+
+    // Search machines (public endpoint)
+    searchMachines: async (searchTerm: string): Promise<MachineListResponse[]> => {
+        const response = await axios.get<MachineListResponse[]>(
+            `${BASE_URL}/machines/search?nameOfMachine=${searchTerm}`
+        );
+        return response.data;
+    },
+
+    // Get machine conditions (protected endpoint)
+    getMachineConditions: async (): Promise<string[]> => {
+        const response = await axios.get<string[]>(
+            `${BASE_URL}/machines/machineConditions`,
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
+
+    // Toggle machine availability (protected endpoint)
+    toggleAvailability: async (id: string): Promise<string> => {
+        const response = await axios.post(
+            `${BASE_URL}/machines/change-availability`,
+            { id },
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
+
+    // Machine images related endpoints
+    images: {
+        // Upload machine images (protected endpoint)
+        upload: async (machineId: string, formData: FormData): Promise<string> => {
+            try {
+                const response = await axios.post(
+                    `${BASE_URL}/machines/${machineId}/images`,
+                    formData,
+                    {
+                        headers: {
+                            ...getHeader(),
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+                return response.data;
+            } catch (error) {
+                if (axios.isAxiosError(error) && error.response) {
+                    throw new Error(error.response.data?.message || "Failed to upload images.");
+                }
+                throw new Error("An unexpected error occurred while uploading images.");
+            }
+        },
+
+        // Get machine images (public endpoint)
+        getAll: async (machineId: string): Promise<string[]> => {
+            const response = await axios.get<string[]>(
+                `${BASE_URL}/machines/${machineId}/images`
+            );
+            return response.data;
+        },
+
+        // Delete machine image (protected endpoint)
+        delete: async (machineId: string, imageId: string): Promise<string> => {
+            const response = await axios.delete(
+                `${BASE_URL}/machines/${machineId}/images/${imageId}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        },
+
+        // Set primary image (protected endpoint)
+        setPrimary: async (machineId: string, imageId: string): Promise<string> => {
+            const response = await axios.put(
+                `${BASE_URL}/machines/${machineId}/images/${imageId}/primary`,
+                {},
+                { headers: getHeader() }
+            );
+            return response.data;
+        }
+    }
+};
+
 
 /** Role-related functions */
 

@@ -1,7 +1,4 @@
 'use client'
-import { UserDetails } from "@/lib/definitions";
-import { deleteMachine, getLoggedUserProfile, isOwner } from "@/lib/service";
-import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,34 +9,44 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useRouter } from "next/navigation";
 import { ProtectedRoute } from "@/app/protector";
 import { allRoles } from "@/lib/utils";
-
-
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { isOwner, machineAPI, userAPI } from "@/lib/service";
 
 export default function ProtectedProfile() {
     return (
         <ProtectedRoute allowedRoles={allRoles}>
             <Profile />
         </ProtectedRoute>
-    )
+    );
 }
 
 function Profile() {
-
     const router = useRouter();
-    const [userDetails, setUserDetails] = useState<UserDetails>();
-    const [error, setError] = useState<string | null>(null);
-    const [isDeleting, setIsDeleting] = useState<boolean>();
+    const queryClient = useQueryClient();
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [machineToDelete, setMachineToDelete] = useState<string | null>(null);
 
-    async function getUserDetails() {
-        try {
-            const response = await getLoggedUserProfile();
-            setUserDetails(response);
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to load profile');
+    // Query for user profile data
+    const { 
+        data: userDetails, 
+        error, 
+        isLoading 
+    } = useQuery({
+        queryKey: ['userProfile'],
+        queryFn: userAPI.getLoggedUserProfile
+    });
+
+    // Mutation for deleting a machine
+    const deleteMachineMutation = useMutation({
+        mutationFn: (machineId: string) => machineAPI.deleteMachine(machineId),
+        onSuccess: () => {
+            // Invalidate and refetch user profile after successful deletion
+            queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+            setShowDeleteDialog(false);
+            setMachineToDelete(null);
         }
-    }
+    });
 
     const handleDeleteClick = (machineId: string) => {
         setMachineToDelete(machineId);
@@ -47,43 +54,32 @@ function Profile() {
     };
 
     const handleUpdateMachine = (machineId: string) => {
-        router.push(`/machines/${machineId}/edit`)
-    }
+        router.push(`/machines/${machineId}/edit`);
+    };
+
     const handleAddMachine = () => {
-        router.push(`/machines/add`)
-    }
+        router.push(`/machines/add`);
+    };
 
     const handleDeleteConfirm = async () => {
         if (machineToDelete) {
-            try {
-                setIsDeleting(true);
-                await deleteMachine(machineToDelete);
-            } catch (error) {
-                setError(error instanceof Error ? error.message : 'Failed to delete machine');
-            } finally {
-                setIsDeleting(false);
-                setShowDeleteDialog(false);
-                setMachineToDelete(null);
-            }
+            deleteMachineMutation.mutate(machineToDelete);
         }
     };
-    useEffect(() => {
-        getUserDetails();
-    }, []);
 
     if (error) {
         return (
             <Card className="max-w-4xl mx-auto mt-8">
                 <CardContent className="p-6">
                     <div className="flex items-center justify-center text-red-500">
-                        Error: {error}
+                        Error: {error instanceof Error ? error.message : 'Something went wrong'}
                     </div>
                 </CardContent>
             </Card>
         );
     }
 
-    if (!userDetails) {
+    if (isLoading) {
         return (
             <Card className="max-w-4xl mx-auto mt-8">
                 <CardContent className="p-6 space-y-4">
@@ -97,6 +93,10 @@ function Profile() {
                 </CardContent>
             </Card>
         );
+    }
+
+    if (!userDetails) {
+        return null;
     }
 
     return (
@@ -135,9 +135,9 @@ function Profile() {
                 </CardContent>
                 <CardFooter className="justify-end">
                     {isOwner() && (
-                    <Button onClick={handleAddMachine} className="text-sm">
-                        Add machine
-                    </Button>
+                        <Button onClick={handleAddMachine} className="text-sm">
+                            Add machine
+                        </Button>
                     )}
                 </CardFooter>
             </Card>
@@ -193,14 +193,21 @@ function Profile() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex space-x-2">
-                                    <Button variant='destructive'
+                                    <Button 
+                                        variant="destructive"
                                         className="text-xs"
-                                        onClick={() => { handleDeleteClick(machine.id) }}>
-                                        Remove machine
+                                        onClick={() => handleDeleteClick(machine.id)}
+                                        disabled={deleteMachineMutation.isPending}
+                                    >
+                                        {deleteMachineMutation.isPending && machineToDelete === machine.id 
+                                            ? 'Deleting...' 
+                                            : 'Remove machine'}
                                     </Button>
-                                    <Button variant='secondary'
+                                    <Button 
+                                        variant="secondary"
                                         className="text-xs"
-                                        onClick={() => { handleUpdateMachine(machine.id) }}>
+                                        onClick={() => handleUpdateMachine(machine.id)}
+                                    >
                                         Update machine
                                     </Button>
                                 </CardFooter>
@@ -209,22 +216,25 @@ function Profile() {
                     </div>
                 </div>
             )}
+
             <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the booking.
+                            This action cannot be undone. This will permanently delete the machine.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel disabled={deleteMachineMutation.isPending}>
+                            Cancel
+                        </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeleteConfirm}
                             className="bg-red-500 hover:bg-red-600"
-                            disabled={isDeleting}
+                            disabled={deleteMachineMutation.isPending}
                         >
-                            {isDeleting ? 'Deleting...' : 'Delete'}
+                            {deleteMachineMutation.isPending ? 'Deleting...' : 'Delete'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -232,10 +242,3 @@ function Profile() {
         </div>
     );
 }
-
-
-
-
-
-
-
