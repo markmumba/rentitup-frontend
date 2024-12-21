@@ -1,5 +1,4 @@
-import { UserDetails } from "@/lib/definitions"
-import { getAllUsers, getUserById } from "@/lib/service";
+import { UserDetails } from "@/lib/definitions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,17 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import { AlertCircle, Plus, X } from "lucide-react";
-import { useEffect, useState } from "react"
-
-
-interface Issue {
-    id: string;
-    code: string;
-    description: string;
-    status: string;
-    createdAt: string;
-}
+import { AlertCircle, X } from "lucide-react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { userAPI } from "@/lib/service";
 
 const UserModal = ({ user, isOpen, onClose }: {
     user: UserDetails;
@@ -74,56 +66,51 @@ const UserModal = ({ user, isOpen, onClose }: {
 );
 
 export const UserList = () => {
-    const [userList, setUserList] = useState<UserDetails[]>();
     const [searchQuery, setSearchQuery] = useState('');
-    const [error, setError] = useState<string | null>();
     const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
-    async function getAllUsersList() {
-        try {
-            const response = await getAllUsers();
-            setUserList(response);
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to load user profile');
-        }
-    }
+    // Query for all users
+    const { 
+        data: userList,
+        isLoading,
+        isError,
+        error
+    } = useQuery({
+        queryKey: ['users'],
+        queryFn: userAPI.getAllUsers,
+    });
 
-    const showRole = () => {
-        return userList?.filter(user => user.role !== "ADMIN");
+    // Query for single user details
+    const {
+        data: userDetails,
+        refetch: refetchUserDetails
+    } = useQuery({
+        queryKey: ['user', selectedUser?.id],
+        queryFn: () => selectedUser ? userAPI.getUserById(String(selectedUser.id)) : null,
+        enabled: !!selectedUser, 
+    });
+
+    // Filter out admin users and apply search
+    const filteredUsers = userList
+        ?.filter(user => user.role !== "ADMIN")
+        ?.filter(user =>
+            user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+    const handleUserClick = async (userId: string) => {
+        const user = userList?.find(u => u.id === userId);
+        if (user) {
+            setSelectedUser(user);
+        }
     };
 
-    async function getUser(id: string) {
-        try {
-            const response = await getUserById(id);
-            // Mock additional user data
-            setSelectedUser(response);
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to load user profile');
-        }
-
-    }
-
-    const handleAddCategory = () => {
-        toast({
-            title: "Coming Soon",
-            description: "Category addition feature is under development",
-        });
-    };
-
-    const filteredUsers = showRole()?.filter(user =>
-        user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    useEffect(() => {
-        getAllUsersList();
-    }, []);
+ 
 
     return (
         <div className="space-y-6">
             {/* Top Actions */}
             <div className="flex justify-between items-center">
-              
                 <div className="flex items-center gap-4">
                     <Input
                         type="search"
@@ -141,7 +128,13 @@ export const UserList = () => {
                     <CardTitle>Users</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {filteredUsers ? (
+                    {isLoading ? (
+                        <div className="space-y-2">
+                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-8 w-full" />
+                        </div>
+                    ) : filteredUsers ? (
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -158,7 +151,7 @@ export const UserList = () => {
                                     <TableRow
                                         key={user.id}
                                         className="cursor-pointer hover:bg-muted/50"
-                                        onClick={() => getUser(String(user.id))}
+                                        onClick={() => handleUserClick(String(user.id))}
                                     >
                                         <TableCell className="font-medium">{user.fullName}</TableCell>
                                         <TableCell>{user.email}</TableCell>
@@ -166,35 +159,30 @@ export const UserList = () => {
                                         <TableCell>
                                             <Badge variant="outline">{user.role}</Badge>
                                         </TableCell>
-
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                    ) : (
-                        <div className="space-y-2">
-                            <Skeleton className="h-8 w-full" />
-                            <Skeleton className="h-8 w-full" />
-                            <Skeleton className="h-8 w-full" />
-                        </div>
-                    )}
+                    ) : null}
                 </CardContent>
             </Card>
 
             {/* User Details Modal */}
             {selectedUser && (
                 <UserModal
-                    user={selectedUser}
+                    user={userDetails || selectedUser}
                     isOpen={!!selectedUser}
                     onClose={() => setSelectedUser(null)}
                 />
             )}
 
-            {error && (
+            {isError && (
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
+                    <AlertDescription>
+                        {error instanceof Error ? error.message : 'Failed to load users'}
+                    </AlertDescription>
                 </Alert>
             )}
         </div>

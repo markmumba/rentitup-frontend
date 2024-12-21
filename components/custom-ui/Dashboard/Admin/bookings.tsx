@@ -1,6 +1,5 @@
-import { getAllBookings } from "@/lib/service";
-import React, { useState, useEffect } from 'react';
-import { Search, AlertCircle, Calendar, DollarSign, Clock, X, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, AlertCircle, X, Plus } from 'lucide-react';
 import {
     Card,
     CardContent,
@@ -30,8 +29,9 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { useQuery } from '@tanstack/react-query';
+import { bookingAPI } from '@/lib/service';
 
 interface BookingListResponse {
     id: number;
@@ -41,6 +41,7 @@ interface BookingListResponse {
     status: string;
     totalAmount: string;
 }
+
 
 const BookingModal = ({ booking, isOpen, onClose }: {
     booking: BookingListResponse;
@@ -71,14 +72,7 @@ const BookingModal = ({ booking, isOpen, onClose }: {
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">Status</label>
                                 <div className="mt-1">
-                                    <Badge variant={
-                                        booking.status.toLowerCase() === 'confirmed' ? 'default' :
-                                            booking.status.toLowerCase() === 'pending' ? 'secondary' :
-                                                booking.status.toLowerCase() === 'cancelled' ? 'destructive' :
-                                                    'outline'
-                                    }>
-                                        {booking.status}
-                                    </Badge>
+                                    <StatusBadge status={booking.status} />
                                 </div>
                             </div>
                             <div>
@@ -117,25 +111,42 @@ const BookingModal = ({ booking, isOpen, onClose }: {
     </Dialog>
 );
 
+const StatusBadge = ({ status }: { status: string }) => {
+    const getStatusColor = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'pending':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'confirmed':
+                return 'bg-green-100 text-green-800';
+            case 'cancelled':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    return (
+        <Badge variant="outline" className={`${getStatusColor(status)}`}>
+            {status}
+        </Badge>
+    );
+};
+
 export default function AllBookings() {
     const router = useRouter();
-    const [allBookings, setAllBookings] = useState<BookingListResponse[]>();
     const [searchQuery, setSearchQuery] = useState('');
-    const [error, setError] = useState<string | null>();
     const [selectedBooking, setSelectedBooking] = useState<BookingListResponse | null>(null);
 
-    async function getAllbookings() {
-        try {
-            const response = await getAllBookings();
-            setAllBookings(response);
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to load bookings');
-        }
-    }
-
-    useEffect(() => {
-        getAllbookings();
-    }, []);
+    // Replace useState and useEffect with useQuery
+    const { 
+        data: allBookings, 
+        isLoading, 
+        isError, 
+        error 
+    } = useQuery<BookingListResponse[], Error>({
+        queryKey: ['bookings'],
+        queryFn: bookingAPI.getAllBookings,
+    });
 
     const filteredBookings = allBookings?.filter(booking =>
         booking.bookingCode.toLowerCase().includes(searchQuery.toLowerCase())
@@ -145,51 +156,16 @@ export default function AllBookings() {
         router.push("/categories/add");
     };
 
-
-    const getStatusBadgeVariant = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'confirmed':
-                return 'default';
-            case 'pending':
-                return 'secondary';
-            case 'cancelled':
-                return 'destructive';
-            default:
-                return 'outline';
-        }
-    };
-    const StatusBadge = ({ status }: { status: string }) => {
-        const getStatusColor = (status: string) => {
-            switch (status.toLowerCase()) {
-                case 'pending':
-                    return 'bg-yellow-100 text-yellow-800';
-                case 'confirmed':
-                    return 'bg-green-100 text-green-800';
-                case 'cancelled':
-                    return 'bg-red-100 text-red-800';
-                default:
-                    return 'bg-gray-100 text-gray-800';
-            }
-        };
-    
-        return (
-            <Badge variant="outline" className={`${getStatusColor(status)}`}>
-                {status}
-            </Badge>
-        );
-    };
-
     return (
         <div className="space-y-6">
-            {/* Search Bar */}
-
             <Button variant="secondary" onClick={handleAddCategory} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add Category
             </Button>
+            
             <div className="flex justify-end">
                 <div className="relative w-64">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground " />
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="search"
                         placeholder="Search by booking code..."
@@ -200,13 +176,18 @@ export default function AllBookings() {
                 </div>
             </div>
 
-            {/* Bookings Table */}
             <Card>
                 <CardHeader>
                     <CardTitle>All Bookings</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {filteredBookings ? (
+                    {isLoading ? (
+                        <div className="space-y-2">
+                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-8 w-full" />
+                        </div>
+                    ) : filteredBookings ? (
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -228,24 +209,17 @@ export default function AllBookings() {
                                         <TableCell>{new Date(booking.startDate).toLocaleDateString()}</TableCell>
                                         <TableCell>{new Date(booking.endDate).toLocaleDateString()}</TableCell>
                                         <TableCell>
-                                        <StatusBadge status={booking.status} />
+                                            <StatusBadge status={booking.status} />
                                         </TableCell>
                                         <TableCell className="font-medium">${booking.totalAmount}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                    ) : (
-                        <div className="space-y-2">
-                            <Skeleton className="h-8 w-full" />
-                            <Skeleton className="h-8 w-full" />
-                            <Skeleton className="h-8 w-full" />
-                        </div>
-                    )}
+                    ) : null}
                 </CardContent>
             </Card>
 
-            {/* Booking Details Modal */}
             {selectedBooking && (
                 <BookingModal
                     booking={selectedBooking}
@@ -254,11 +228,11 @@ export default function AllBookings() {
                 />
             )}
 
-            {error && (
+            {isError && (
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
+                    <AlertDescription>{error.message}</AlertDescription>
                 </Alert>
             )}
         </div>

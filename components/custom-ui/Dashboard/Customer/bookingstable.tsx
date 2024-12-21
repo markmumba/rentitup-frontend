@@ -1,16 +1,14 @@
 import { BookingListResponse } from "@/lib/definitions";
-import { getBookingsByUser, getLoggedUserProfile } from "@/lib/service";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { AlertCircle, Calendar, Package, User } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react"
-
+import { useQuery } from "@tanstack/react-query";
+import { bookingAPI } from "@/lib/service";
 
 const StatsCard = ({ title, value, icon: Icon, description }: {
     title: string;
@@ -102,32 +100,17 @@ const BookingRow = ({ booking }: { booking: BookingListResponse }) => (
 );
 
 export function BookingList({ userId }: { userId: string }) {
-    const [bookingList, setBookingList] = useState<BookingListResponse[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>();
-
-    async function getBookingList() {
-        try {
-            setIsLoading(true);
-            const response = await getBookingsByUser(userId);
-            // Sort bookings by ID in descending order (latest first)
-            const sortedBookings = [...response].sort((a, b) => b.id - a.id);
-            setBookingList(sortedBookings);
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Unable to get booking list');
-            toast({
-                title: "Error",
-                description: "Failed to load bookings",
-                variant: "destructive",
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        getBookingList();
-    }, [userId]);
+    // Query for user's bookings
+    const { 
+        data: bookingList = [], // Provide empty array as default value
+        isLoading, 
+        isError, 
+        error 
+    } = useQuery({
+        queryKey: ['bookings', userId],
+        queryFn: () => bookingAPI.getBookingsByUser(userId),
+        select: (data) => [...data].sort((a, b) => b.id - a.id), 
+    });
 
     if (isLoading) {
         return (
@@ -137,12 +120,14 @@ export function BookingList({ userId }: { userId: string }) {
         );
     }
 
-    if (error) {
+    if (isError) {
         return (
             <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>
+                    {error instanceof Error ? error.message : 'Unable to get booking list'}
+                </AlertDescription>
             </Alert>
         );
     }

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -16,12 +16,13 @@ import {
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useRouter } from 'next/navigation';
-import { isOwner, updateStatus } from '@/lib/service';
+import { isOwner } from '@/lib/service';
 import { BookingResponse } from '@/lib/definitions';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { bookingAPI } from '@/lib/service'; // Assuming this is where your API functions are exported
+import { toast } from '@/hooks/use-toast';
 
-
-const STATUS_ORDER:Record<any,number> = {
+const STATUS_ORDER: Record<string, number> = {
     "PENDING": 0,
     "CONFIRMED": 1,
     "ONGOING": 2,
@@ -29,11 +30,57 @@ const STATUS_ORDER:Record<any,number> = {
     "CANCELLED": 4
 };
 
-const StatusBadge = ({ booking, statusList }:{booking:BookingResponse,statusList:string[]}) => {
-    const router = useRouter();
-    const [open, setOpen] = useState(false);
-    const [isUpdating, setIsUpdating] = useState(false);
-    const [error, setError] = useState('');
+const StatusBadge = ({ booking, statusList }: { booking: BookingResponse, statusList: string[] }) => {
+    const [open, setOpen] = React.useState(false);
+    const queryClient = useQueryClient();
+
+    // Create mutation for status update
+    const { mutate: updateBookingStatus, isPending: isUpdating } = useMutation({
+        mutationFn: ({ bookingId, newStatus }: { bookingId: string, newStatus: string }) => 
+            bookingAPI.updateStatus(bookingId, newStatus),
+        onMutate: async ({ bookingId, newStatus }) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: ['booking', bookingId] });
+
+            // Snapshot the previous value
+            const previousBooking = queryClient.getQueryData(['booking', bookingId]);
+
+            // Optimistically update the booking status
+            queryClient.setQueryData(['booking', bookingId], (old: any) => ({
+                ...old,
+                status: newStatus
+            }));
+
+            // Return the snapshot to use in case of rollback
+            return { previousBooking };
+        },
+        onError: (error, variables, context) => {
+            // Rollback to the previous value if there's an error
+            if (context?.previousBooking) {
+                queryClient.setQueryData(
+                    ['booking', variables.bookingId],
+                    context.previousBooking
+                );
+            }
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : 'Failed to update status',
+                variant: "destructive",
+            });
+        },
+        onSuccess: () => {
+            setOpen(false);
+            toast({
+                title: "Success",
+                description: "Booking status updated successfully",
+            });
+        },
+        onSettled: (_, __, variables) => {
+            // Invalidate and refetch booking data
+            queryClient.invalidateQueries({ queryKey: ['booking', variables.bookingId] });
+            queryClient.invalidateQueries({ queryKey: ['bookings'] });
+        },
+    });
 
     const availableStatuses = useMemo(() => {
         if (!booking || !statusList) return [];
@@ -45,30 +92,10 @@ const StatusBadge = ({ booking, statusList }:{booking:BookingResponse,statusList
         });
     }, [booking, statusList]);
 
-    const handleStatusUpdate = async (newStatus: any) => {
+    const handleStatusUpdate = async (newStatus: string) => {
         if (!booking || newStatus === booking.status) return;
-    
-        try {
-          setIsUpdating(true);
-          await updateStatus(booking.id, newStatus);
-          setOpen(false);
-          
-          // Option 1: Force reload the current page
-          window.location.reload();
-          
-          // Option 2: Redirect to the same page (this will trigger a fresh data fetch)
-          // router.push(`/dashboard/bookings/${booking.id}`);
-          
-        
-          
-        } catch (error) {
-          setError(error instanceof Error ? error.message : 'Failed to update booking status');
-        } finally {
-          setIsUpdating(false);
-        }
-      };
-
-    if (!booking) return null;
+        updateBookingStatus({ bookingId: booking.id, newStatus });
+    };
 
     const getStatusColor = (status: string) => {
         const colors = {
@@ -79,6 +106,8 @@ const StatusBadge = ({ booking, statusList }:{booking:BookingResponse,statusList
         };
         return colors[status as keyof typeof colors] || 'bg-gray-500';
     };
+
+    if (!booking) return null;
 
     if (isOwner()) {
         return (
@@ -103,13 +132,11 @@ const StatusBadge = ({ booking, statusList }:{booking:BookingResponse,statusList
                         {availableStatuses.length > 0 ? (
                             <CommandList>
                                 <CommandGroup>
-                                    {availableStatuses.map((status:any) => (
+                                    {availableStatuses.map((status) => (
                                         <React.Fragment key={status}>
                                             <CommandItem
                                                 value={status}
-                                                onSelect={(currentValue) => {
-                                                    handleStatusUpdate(currentValue);
-                                                }}
+                                                onSelect={handleStatusUpdate}
                                                 className="cursor-pointer"
                                             >
                                                 <Check
@@ -142,5 +169,3 @@ const StatusBadge = ({ booking, statusList }:{booking:BookingResponse,statusList
 };
 
 export default StatusBadge;
-
-
