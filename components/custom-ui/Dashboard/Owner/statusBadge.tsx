@@ -30,6 +30,8 @@ const STATUS_ORDER: Record<string, number> = {
     "CANCELLED": 4
 };
 
+
+
 const StatusBadge = ({ booking, statusList }: { booking: BookingResponse, statusList: string[] }) => {
     const [open, setOpen] = React.useState(false);
     const queryClient = useQueryClient();
