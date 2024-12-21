@@ -10,6 +10,24 @@ export interface LoginRequest {
         email: string;
         password: string;
 }
+export interface LoginResponse {
+        token: string;
+        role: string;
+}
+export interface ResetPasswordRequest {
+        token: string;
+        newPassword: string;
+}
+
+export interface ForgotPasswordRequest {
+        email: string;
+}
+
+export interface CollectorVerificationRequest {
+        id: string;
+        status: boolean;
+}
+
 
 export interface CategoryRequest {
         name: string;
@@ -32,7 +50,7 @@ export interface MachineUpdateRequest {
         basePrice: string;
         condition: string;
         specification: string;
-        categoryId:string;
+        categoryId: string;
 }
 
 export interface BookingRequest {
@@ -91,6 +109,8 @@ export interface OwnerResponse {
         verifiedAt: string | null;
 }
 
+
+
 export interface MachineResponse {
         id: string;
         name: string;
@@ -104,16 +124,29 @@ export interface MachineResponse {
         machineImages: MachineImageResponse[];
 }
 
-
-
 export interface UserDetails {
-        id: number;
+        id: string;
         email: string;
         fullName: string;
         phone: string;
+        profileImage: string;
         role: string;
-        ownedMachines: MachineResponse[] ;
+        createdAt: string;
+        registrationId: string;
+        verificationImage: string;
+        verified: boolean;
+        verifiedAt: string;
+        ownedMachines: MachineResponse[];
 }
+
+export interface UserDetailsList {
+        id: string;
+        email: string;
+        fullName: string;
+        role: string;
+}
+
+
 
 export interface BookingListResponse {
         id: number;

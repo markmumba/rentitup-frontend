@@ -1,10 +1,9 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingListResponse, BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, LoginRequest, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, RegisterRequest, ReviewRequest, UserDetails } from "./definitions";
-import { useRouter } from "next/navigation";
-import { machine } from "os";
+import { BookingListResponse, BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, CollectorVerificationRequest, ForgotPasswordRequest, LoginRequest, LoginResponse, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, RegisterRequest, ResetPasswordRequest, ReviewRequest, UserDetails, UserDetailsList } from "./definitions";
 
-const BASE_URL = "http://localhost:8080/api/v1";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export function getHeader() {
     const token = useAuthStore.getState().token;
@@ -14,74 +13,176 @@ export function getHeader() {
     };
 }
 
-/** Authentication endpoints */
-
-export async function registerUser(registerData: RegisterRequest) {
-    try {
-        const response = await axios.post(`${BASE_URL}/auth/register`, registerData);
-        return response.data;
-    } catch (error) {
-        console.error("Error during registration function", error);
-    }
-}
-
-export async function loginUser(loginData: LoginRequest) {
-    try {
-        const response = await axios.post(`${BASE_URL}/auth/login`, loginData);
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-            // If the error response from the server has data, pass it along
-            throw new Error(error.response.data?.message || "Login failed. Please try again.");
+export const authAPI = {
+    // Register a new user
+    register: async (registerData: RegisterRequest): Promise<UserDetails> => {
+        try {
+            const response = await axios.post<UserDetails>(
+                `${BASE_URL}/auth/register`,
+                registerData
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Registration failed. Please try again.");
+            }
+            throw new Error("An unexpected error occurred during registration.");
         }
-        // Generic error if something unexpected happens
-        throw new Error("An unexpected error occurred. Please try again later.");
+    },
+
+    // Login user with credentials
+    login: async (loginData: LoginRequest): Promise<LoginResponse> => {
+        try {
+            const response = await axios.post<LoginResponse>(
+                `${BASE_URL}/auth/login`,
+                loginData
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Login failed. Please try again.");
+            }
+            throw new Error("An unexpected error occurred during login.");
+        }
+    },
+
+    // Initiate password reset process
+    forgotPassword: async (email: string): Promise<string> => {
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/auth/forgot-password`,
+                { email } as ForgotPasswordRequest
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to process password reset request.");
+            }
+            throw new Error("An unexpected error occurred while processing your request.");
+        }
+    },
+
+    // Complete password reset with token
+    resetPassword: async (token: string, newPassword: string): Promise<string> => {
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/auth/reset-password`,
+                { token, newPassword } as ResetPasswordRequest
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Password reset failed.");
+            }
+            throw new Error("An unexpected error occurred while resetting your password.");
+        }
+    },
+
+    // Upload verification documents for collectors
+    uploadVerification: async (registrationId: string, formData: FormData): Promise<string> => {
+        try {
+            // Get the nationalId from FormData instead of URL params
+            const response = await axios.post(
+                `${BASE_URL}/auth/upload-verification`,
+                formData,
+                {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to upload verification documents.");
+            }
+            throw new Error("An unexpected error occurred while uploading documents.");
+        }
     }
-}
+};
 
-/** User-related endpoints */
 
-export async function getAllUsers() {
-    const response = await axios.get(`${BASE_URL}/users`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
 
-export async function getAllOwners() {
-    const response = await axios.get(`${BASE_URL}/users/owners`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
 
-export async function getUserById(id: string) {
-    const response = await axios.get(`${BASE_URL}/users/${id}`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
 
-export async function getLoggedUserProfile(): Promise<UserDetails> {
-    const response = await axios.get(`${BASE_URL}/users/user-profile`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
 
-export async function updateUser(id: string, registerData: RegisterRequest) {
-    const response = await axios.put(`${BASE_URL}/users/${id}`, registerData, {
-        headers: getHeader()
-    });
-    return response.data;
-}
 
-export async function deleteUser(id: string) {
-    const response = await axios.delete(`${BASE_URL}/users/${id}`, {
-        headers: getHeader()
-    });
-    return response.data;
-}
+export const userAPI = {
+    // Get all users (admin endpoint)
+    getAllUsers: async (): Promise<UserDetailsList[]> => {
+      const response = await axios.get(
+        `${BASE_URL}/users`,
+        { headers: getHeader() }
+      );
+      return response.data;
+    },
+  
+    // Get specific user by ID
+    getUserById: async (id: string): Promise<UserDetails> => {
+      const response = await axios.get(
+        `${BASE_URL}/users/${id}`,
+        { headers: getHeader() }
+      );
+      return response.data;
+    },
+  
+    // Get logged-in user's profile
+    getLoggedUserProfile: async (): Promise<UserDetails> => {
+      const response = await axios.get(
+        `${BASE_URL}/users/user-profile`,
+        { headers: getHeader() }
+      );
+      return response.data;
+    },
+  
+    // Update user profile (supports file upload)
+    updateUser: async (id: string, formData: FormData): Promise<UserDetails> => {
+      const response = await axios.put(
+        `${BASE_URL}/users/${id}`,
+        formData,
+        {
+          headers: {
+            ...getHeader(),
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+      return response.data;
+    },
+  
+    // Delete user
+    deleteUser: async (id: string): Promise<string> => {
+      const response = await axios.delete(
+        `${BASE_URL}/users/${id}`,
+        { headers: getHeader() }
+      );
+      return response.data;
+    },
+  
+    // collector verification related endpoints
+  
+    collectors: {
+  
+      // Get unverified collectors
+      getUnverified: async (): Promise<UserDetails[]> => {
+        const response = await axios.get(
+          `${BASE_URL}/users/unverified-users`,
+          { headers: getHeader() }
+        );
+        return response.data;
+      },
+  
+      // Verify or reject a collector
+      verifyCollector: async (collectorId: string, verify: boolean): Promise<string> => {
+        const response = await axios.post(
+          `${BASE_URL}/users/verify-collector`,
+          { id: collectorId, status: verify } as CollectorVerificationRequest,
+          { headers: getHeader() }
+        );
+        return response.data;
+      }
+    }
+  };
+  
+
 
 /** Category-related endpoints */
 
@@ -114,8 +215,8 @@ export async function updateCategory(categoryId: string, categoryRequest: Catego
     return response.data;
 }
 
-export async function deleteCategory(categoryId:string) {
-    const response = await axios.delete(`${BASE_URL}/categories/${categoryId}`,{
+export async function deleteCategory(categoryId: string) {
+    const response = await axios.delete(`${BASE_URL}/categories/${categoryId}`, {
         headers: getHeader()
     });
     return response.data

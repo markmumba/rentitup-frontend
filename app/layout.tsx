@@ -4,6 +4,7 @@ import "./globals.css";
 import ClientNavbar from "@/components/custom-ui/clientnavbar";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
+import QueryProvider from "./query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,14 +23,18 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
-        <ClientNavbar />
-        {children}
-        <Toaster/>
+          <QueryProvider>
+            <ClientNavbar />
+            <main>
+              {children}
+              <Toaster />
+            </main>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
