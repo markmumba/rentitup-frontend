@@ -1,9 +1,9 @@
 
 'use client';
 import { useEffect, useState } from "react"
-import { CategoryListResponse } from "../lib/definitions";
-import { getAllCategories, isAdmin } from "../lib/service";
-import { CategoryAccordion } from "../ui/categories/categoryListAccordion";
+import { CategoryListResponse } from "../../lib/definitions";
+import { getAllCategories, isAdmin } from "../../lib/service";
+import { CategoryAccordion } from "@/components/custom-ui/categories/categoryListAccordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

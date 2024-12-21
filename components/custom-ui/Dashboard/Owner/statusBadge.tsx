@@ -17,8 +17,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
-import { isOwner, updateStatus } from '@/app/lib/service';
-import { BookingResponse } from '@/app/lib/definitions';
+import { isOwner, updateStatus } from '@/lib/service';
+import { BookingResponse } from '@/lib/definitions';
 
 
 const STATUS_ORDER:Record<any,number> = {

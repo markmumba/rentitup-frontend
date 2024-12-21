@@ -17,7 +17,7 @@ import {
   SidebarHeader,
   SidebarTrigger
 } from '@/components/ui/sidebar';
-import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../lib/service';
+import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../../lib/service';
 
 const SideNavbar = () => {
   return (

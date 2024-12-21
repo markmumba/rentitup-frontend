@@ -1,4 +1,4 @@
-import { getAllBookings } from "@/app/lib/service";
+import { getAllBookings } from "@/lib/service";
 import React, { useState, useEffect } from 'react';
 import { Search, AlertCircle, Calendar, DollarSign, Clock, X, Plus } from 'lucide-react';
 import {

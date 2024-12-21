@@ -1,5 +1,5 @@
-import { CategoryRequest, CategoryResponse } from "@/app/lib/definitions";
-import { getPriceCalculationTypes, isAdmin, isAuthenticated } from "@/app/lib/service";
+import { CategoryRequest, CategoryResponse } from "@/lib/definitions";
+import { getPriceCalculationTypes, isAdmin, isAuthenticated } from "@/lib/service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form"

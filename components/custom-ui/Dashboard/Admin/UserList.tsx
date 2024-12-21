@@ -1,5 +1,5 @@
-import { UserDetails } from "@/app/lib/definitions"
-import { getAllUsers, getUserById } from "@/app/lib/service";
+import { UserDetails } from "@/lib/definitions"
+import { getAllUsers, getUserById } from "@/lib/service";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

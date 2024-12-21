@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../lib/service';
+import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../../lib/service';
 import { Menu, X } from 'lucide-react';
 import { LogoutButton } from './logoutbutton';
-import { useAuthStore } from '../lib/store';
+import { useAuthStore } from '../../lib/store';
 import { ModeToggle } from './modalToggle';
 import { usePathname } from 'next/navigation';
 
@@ -129,7 +129,7 @@ export function Navbar() {
                         </Button>
                     </Link>
 
-                    <Link href="/">
+                    <Link href="/public">
                         <LogoutButton />
                     </Link>
                 </>
@@ -144,7 +144,7 @@ export function Navbar() {
                 <div className="flex items-center justify-between">
                     {/* Logo */}
                     <div className="flex items-center">
-                        <Link href={isAuthenticated() ? "/dashboard" : "/"} className="font-bold text-3xl">
+                        <Link href={isAuthenticated() ? "/dashboard" : "/public"} className="font-bold text-3xl">
                             Rentitup
                         </Link>
                     </div>

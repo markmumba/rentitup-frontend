@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from "react";
-import { getBookingsForOwner, getLoggedUserProfile } from "../lib/service";
+import { getBookingsForOwner, getLoggedUserProfile } from "../../lib/service";
 import { toast } from "@/hooks/use-toast";
-import { BookingListResponse } from "../lib/definitions";
+import { BookingListResponse } from "../../lib/definitions";
 import {
     Table,
     TableBody,

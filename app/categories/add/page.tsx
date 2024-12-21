@@ -1,7 +1,7 @@
 'use client';
-import { CategoryRequest } from "@/app/lib/definitions";
-import { createCategory, isAdmin, isAuthenticated } from "@/app/lib/service";
-import CategoryForm from "@/app/ui/categories/categoryform";
+import { CategoryRequest } from "@/lib/definitions";
+import { createCategory, isAdmin, isAuthenticated } from "@/lib/service";
+import CategoryForm from "@/components/custom-ui/categories/categoryform";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

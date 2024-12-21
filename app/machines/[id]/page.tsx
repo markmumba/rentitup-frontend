@@ -1,6 +1,6 @@
 'use client'
-import { BookingRequest, MachineImageResponse, MachineResponse } from "@/app/lib/definitions";
-import { getCategoryById, getMachineById, isAuthenticated, isCustomer, isOwner } from "@/app/lib/service";
+import { BookingRequest, MachineImageResponse, MachineResponse } from "@/lib/definitions";
+import { getCategoryById, getMachineById, isAuthenticated, isCustomer, isOwner } from "@/lib/service";
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 import {

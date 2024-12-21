@@ -1,6 +1,6 @@
 'use client';
-import { uploadMachineImages } from "@/app/lib/service";
-import { owner } from "@/app/lib/utils"
+import { uploadMachineImages } from "@/lib/service";
+import { owner } from "@/lib/utils"
 import { ProtectedRoute } from "@/app/protector"
 import { toast } from "@/hooks/use-toast";
 import { useParams, useRouter, useSearchParams } from "next/navigation"
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImageIcon, UploadIcon } from "lucide-react";
-import { useMachineStore } from "@/app/lib/store";
+import { useMachineStore } from "@/lib/store";
 
 export default function ProtectedAddMachineImages() {
     return (

@@ -1,7 +1,7 @@
 'use client';
-import { CategoryRequest, CategoryResponse } from "@/app/lib/definitions";
-import { getCategoryById, updateCategory } from "@/app/lib/service";
-import CategoryForm from "@/app/ui/categories/categoryform";
+import { CategoryRequest, CategoryResponse } from "@/lib/definitions";
+import { getCategoryById, updateCategory } from "@/lib/service";
+import CategoryForm from "@/components/custom-ui/categories/categoryform";
 import { toast } from "@/hooks/use-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

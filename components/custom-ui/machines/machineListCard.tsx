@@ -1,4 +1,4 @@
-import { MachineListResponse } from "@/app/lib/definitions";
+import { MachineListResponse } from "@/lib/definitions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";

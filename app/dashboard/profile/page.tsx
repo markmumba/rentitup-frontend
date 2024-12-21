@@ -1,6 +1,6 @@
 'use client'
-import { UserDetails } from "@/app/lib/definitions";
-import { deleteMachine, getLoggedUserProfile, isOwner } from "@/app/lib/service";
+import { UserDetails } from "@/lib/definitions";
+import { deleteMachine, getLoggedUserProfile, isOwner } from "@/lib/service";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { ProtectedRoute } from "@/app/protector";
-import { allRoles } from "@/app/lib/utils";
+import { allRoles } from "@/lib/utils";
 
 
 
@@ -232,3 +232,10 @@ function Profile() {
         </div>
     );
 }
+
+
+
+
+
+
+

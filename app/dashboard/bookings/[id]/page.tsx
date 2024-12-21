@@ -21,13 +21,13 @@ import {
     isAdmin,
     isCustomer,
     isOwner, 
-} from '@/app/lib/service';
-import { BookingResponse } from '@/app/lib/definitions';
+} from '@/lib/service';
+import { BookingResponse } from '@/lib/definitions';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
-import StatusBadge from '@/app/ui/Dashboard/Owner/statusBadge';
+import StatusBadge from '@/components/custom-ui/Dashboard/Owner/statusBadge';
 import { ProtectedRoute } from '@/app/protector';
-import { allRoles } from '@/app/lib/utils';
+import { allRoles } from '@/lib/utils';
 
 
 export default function ProtectedSingleBookingPage() {

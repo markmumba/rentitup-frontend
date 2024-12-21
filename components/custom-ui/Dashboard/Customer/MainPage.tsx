@@ -1,8 +1,8 @@
 'use client';
-import { getLoggedUserProfile } from "@/app/lib/service";
+import { getLoggedUserProfile } from "@/lib/service";
 import { toast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
-import { UserDetails } from "@/app/lib/definitions";
+import { UserDetails } from "@/lib/definitions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, User } from "lucide-react";

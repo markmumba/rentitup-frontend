@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { Calendar } from '@/components/ui/calendar'
 import { addDays, format, isWithinInterval, parseISO } from 'date-fns'
-import { BookingListResponse } from '@/app/lib/definitions'
+import { BookingListResponse } from '@/lib/definitions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function CalendarView({

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { getMachineBySearch } from '../lib/service';
+import { getMachineBySearch } from '../../lib/service';
 
 interface MachineListResponse {
   id: string;

@@ -22,7 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { RegisterRequest } from "../lib/definitions"
+import { RegisterRequest } from "../../lib/definitions"
 import Link from "next/link"
 
 const registrationSchema = z.object({
@@ -186,7 +186,7 @@ export function RegistrationForm(
                     <Link href="/login" >Go back to login</Link>
                 </div>
                 <div className="p-2">
-                    <Link href="/" >Go back home </Link>
+                    <Link href="/public" >Go back home </Link>
                 </div>
             </div>
 

@@ -1,15 +1,14 @@
 'use client';
-import { getLoggedUserProfile } from "@/app/lib/service";
+import { getLoggedUserProfile } from "@/lib/service";
 import { toast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
-import { UserDetails } from "@/app/lib/definitions";
+import { UserDetails } from "@/lib/definitions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, User } from "lucide-react";
-import { UserList } from "./UserList";
-import AllBookings from "./bookings";
+import { Orders } from "./orderList";
 
-export default function AdminDetails() {
+export default function OwnerDetails() {
   const [userDetails, setUserDetails] = useState<UserDetails>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>();
@@ -66,12 +65,11 @@ export default function AdminDetails() {
             Welcome back, {userDetails.fullName}
           </h1>
           <p className="text-muted-foreground">
-            Manage your users and everything
+            Manage your machine bookings and view your history
           </p>
         </div>
       </div>
-      <AllBookings />
-      <UserList />
+      <Orders userDetails={userDetails} ownerId={String(userDetails.id)} />
     </div>
   );
 }

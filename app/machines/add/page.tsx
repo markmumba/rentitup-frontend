@@ -1,9 +1,9 @@
 'use client';
-import { MachineRequest } from "@/app/lib/definitions";
-import { createMachine } from "@/app/lib/service";
-import { owner } from "@/app/lib/utils";
+import { MachineRequest } from "@/lib/definitions";
+import { createMachine } from "@/lib/service";
+import { owner } from "@/lib/utils";
 import { ProtectedRoute } from "@/app/protector";
-import MachineForm from "@/app/ui/machines/machineForm";
+import MachineForm from "@/components/custom-ui/machines/machineForm";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useMachineStore } from "@/app/lib/store";
+import { useMachineStore } from "@/lib/store";
 
 export default function ProtectedAddMachine() {
     return (

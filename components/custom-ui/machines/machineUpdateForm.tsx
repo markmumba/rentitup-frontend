@@ -1,4 +1,4 @@
-import { CategoryListResponse, MachineImageResponse, MachineResponse, MachineUpdateRequest } from "@/app/lib/definitions";
+import { CategoryListResponse, MachineImageResponse, MachineResponse, MachineUpdateRequest } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
-import { deleteMachineImage } from "@/app/lib/service";
+import { deleteMachineImage } from "@/lib/service";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 

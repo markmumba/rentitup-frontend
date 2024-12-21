@@ -1,13 +1,14 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createBooking, getBookingsByMachine, getLoggedUserProfile } from "../lib/service";
+import { createBooking, getBookingsByMachine, getLoggedUserProfile } from "../../lib/service";
 import { toast } from "@/hooks/use-toast";
-import { BookingListResponse, BookingRequest } from "../lib/definitions";
-import { BookingForm } from "../ui/Booking/bookingform";
+import { BookingListResponse, BookingRequest } from "../../lib/definitions";
+import { BookingForm } from "@/components/custom-ui/Booking/bookingform";
 import { ProtectedRoute } from "../protector";
-import { customer } from "../lib/utils";
-import CalendarView from "../ui/Booking/calendarview";
+
+import CalendarView from "@/components/custom-ui/Booking/calendarview";
+import {customer} from "@/lib/utils";
 
 export default function ProtectedBookingPage() {
 

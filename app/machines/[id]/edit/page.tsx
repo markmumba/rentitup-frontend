@@ -1,7 +1,7 @@
 'use client';
-import { CategoryListResponse, MachineResponse, MachineUpdateRequest } from "@/app/lib/definitions";
-import { getAllCategories, getMachineById, getMachineConditions, updateMachine } from "@/app/lib/service";
-import MachineUpdateForm from "@/app/ui/machines/machineUpdateForm";
+import { CategoryListResponse, MachineResponse, MachineUpdateRequest } from "@/lib/definitions";
+import { getAllCategories, getMachineById, getMachineConditions, updateMachine } from "@/lib/service";
+import MachineUpdateForm from "@/components/custom-ui/machines/machineUpdateForm";
 import { toast } from "@/hooks/use-toast";
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react";

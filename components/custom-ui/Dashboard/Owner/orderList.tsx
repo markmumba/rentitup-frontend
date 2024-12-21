@@ -6,8 +6,8 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Package, CircleDollarSign, Calendar, ExternalLink, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-import { BookingListResponse, UserDetails } from '@/app/lib/definitions';
-import { getBookingsForOwner } from '@/app/lib/service';
+import { BookingListResponse, UserDetails } from '@/lib/definitions';
+import { getBookingsForOwner } from '@/lib/service';
 import { toast } from '@/hooks/use-toast';
 
 

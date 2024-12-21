@@ -1,11 +1,11 @@
 'use client';
 import { useRouter, useSearchParams } from "next/navigation";
-import { LoginForm } from "../ui/login";
-import { loginUser } from "../lib/service";
+import { LoginForm } from "@/components/custom-ui/login";
+import { loginUser } from "../../lib/service";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { LoginRequest } from "../lib/definitions";
-import { useAuthStore } from "../lib/store";
+import { LoginRequest } from "../../lib/definitions";
+import { useAuthStore } from "../../lib/store";
 
 
 

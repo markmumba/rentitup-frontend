@@ -1,10 +1,10 @@
 'use client'
 import { useState } from "react";
-import { registerUser } from "../lib/service";
-import { RegistrationForm } from "../ui/registration";
+import { registerUser } from "../../lib/service";
+import { RegistrationForm } from "@/components/custom-ui/registration";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import { RegisterRequest } from "../lib/definitions";
+import { RegisterRequest } from "../../lib/definitions";
 
 
 export default function Registration() {

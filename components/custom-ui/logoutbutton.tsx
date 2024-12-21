@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "../lib/store";
+import { useAuthStore } from "../../lib/store";
 import { Button } from "@/components/ui/button";
 
 export function LogoutButton() {

@@ -1,7 +1,7 @@
 'use client'
-import { CategoryResponse } from "@/app/lib/definitions";
-import { getCategoryById } from "@/app/lib/service";
-import { MachineListCard } from "@/app/ui/machines/machineListCard";
+import { CategoryResponse } from "@/lib/definitions";
+import { getCategoryById } from "@/lib/service";
+import { MachineListCard } from "@/components/custom-ui/machines/machineListCard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";

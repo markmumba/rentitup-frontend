@@ -1,6 +1,6 @@
-import { CategoryListResponse } from "@/app/lib/definitions"
-import { deleteCategory, isAdmin } from "@/app/lib/service";
-import { shortenDescription } from "@/app/lib/utils";
+import { CategoryListResponse } from "@/lib/definitions"
+import { deleteCategory, isAdmin } from "@/lib/service";
+import { shortenDescription } from "@/lib/utils";
 import {
     Accordion,
     AccordionContent,
