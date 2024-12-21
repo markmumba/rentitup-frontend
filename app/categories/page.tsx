@@ -1,8 +1,6 @@
 
 'use client';
-import { useEffect, useState } from "react"
-import { CategoryListResponse } from "../../lib/definitions";
-import { getAllCategories, isAdmin } from "../../lib/service";
+import { categoryAPI, isAdmin } from "@/lib/service";
 import { CategoryAccordion } from "@/components/custom-ui/categories/categoryListAccordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,49 +8,40 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Categories() {
     const router = useRouter();
 
-    const [categoriesList, setCategoriesList] = useState<CategoryListResponse[]>();
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    // Query for categories
+    const { 
+        data: categoriesList,
+        isLoading,
+        isError,
+        error,
+        refetch 
+    } = useQuery({
+        queryKey: ['categories'],
+        queryFn: categoryAPI.getAllCategories,
+        retry: 2, // Retry failed requests up to 2 times
+    });
 
-    async function getCategories() {
-        try {
-            setIsLoading(true);
-            setError(null);
-            const data = await getAllCategories();
-            setCategoriesList(data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to load categories');
-        } finally {
-            setIsLoading(false);
-        }
-    }
     const handleAddCategory = () => {
         router.push("/categories/add");
     };
 
-
-
-    useEffect(() => {
-        getCategories()
-    }, []);
-    const handleRetry = () => {
-        getCategories();
-    };
-    if (error) {
+    // Error component
+    if (isError) {
         return (
             <div className="container mx-auto p-6">
                 <Alert variant="destructive">
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>
-                        {error}
+                        {error instanceof Error ? error.message : 'Failed to load categories'}
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={handleRetry}
+                            onClick={() => refetch()}
                             className="ml-2"
                         >
                             Try Again
@@ -66,12 +55,16 @@ export default function Categories() {
     return (
         <div className="container mx-auto p-6">
             <Card>
-            {isAdmin() && (
-            <Button variant="secondary" onClick={handleAddCategory} className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add Category
-            </Button>
-            )}
+                {isAdmin() && (
+                    <Button 
+                        variant="secondary" 
+                        onClick={handleAddCategory} 
+                        className="flex items-center gap-2"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add Category
+                    </Button>
+                )}
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center">
                         Choose by Category
@@ -79,6 +72,7 @@ export default function Categories() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {isLoading ? (
+                        // Loading skeleton
                         Array.from({ length: 3 }).map((_, index) => (
                             <div key={index} className="space-y-3">
                                 <Skeleton className="h-12 w-full rounded-lg" />
@@ -88,14 +82,16 @@ export default function Categories() {
                                 </div>
                             </div>
                         ))
-                    ) : categoriesList!.length > 0 ? (
-                        categoriesList!.map((category) => (
+                    ) : categoriesList?.length ? (
+                        // Categories list
+                        categoriesList.map((category) => (
                             <CategoryAccordion
                                 key={category.id}
                                 category={category}
                             />
                         ))
                     ) : (
+                        // Empty state
                         <Alert>
                             <AlertTitle>No Categories Found</AlertTitle>
                             <AlertDescription>
@@ -103,7 +99,7 @@ export default function Categories() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={handleRetry}
+                                    onClick={() => refetch()}
                                     className="ml-2"
                                 >
                                     Refresh
@@ -114,5 +110,5 @@ export default function Categories() {
                 </CardContent>
             </Card>
         </div>
-    )
+    );
 }

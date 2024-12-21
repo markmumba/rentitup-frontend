@@ -1,57 +1,58 @@
 'use client';
 import { CategoryRequest } from "@/lib/definitions";
-import { createCategory, isAdmin, isAuthenticated } from "@/lib/service";
+import { categoryAPI} from "@/lib/service";
 import CategoryForm from "@/components/custom-ui/categories/categoryform";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function CreateCategory() {
-    const router = useRouter()
-    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    const queryClient = useQueryClient();
 
-    async function handleCreateCategory(data: CategoryRequest) {
-        try {
-            setIsLoading(true)
-            const response = await createCategory(data);
-
+    // Create mutation for category creation
+    const { mutate: createNewCategory, isPending } = useMutation({
+        mutationFn: (data: CategoryRequest) => categoryAPI.createCategory(data),
+        onSuccess: () => {
+            // Show success toast
             toast({
                 title: "Category created successfully",
                 description: "A category has been created"
             });
 
-            router.push('/categories');
+            // Invalidate and refetch categories query
+            queryClient.invalidateQueries({ queryKey: ['categories'] });
 
-        } catch (error) {
+            // Redirect to categories page
+            router.push('/categories');
+        },
+        onError: (error) => {
+            // Show error toast
             toast({
-                title: "Registration failed",
+                title: "Creation failed",
                 description: error instanceof Error ? error.message : "Please try again later",
                 variant: "destructive",
             });
-        } finally {
-            setIsLoading(false)
         }
+    });
 
-    }
+    const handleCreateCategory = async (data: CategoryRequest) => {
+        createNewCategory(data);
+    };
+
     return (
-        <>
-            <>
-                <div className="container mx-auto py-8">
-                    <div className="text-center mb-8">
-                        <h1 className="text-2xl font-bold">Add a new  category </h1>
-                        <p className="text-muted-foreground">
-                            Give a good description for users to better understand
-                        </p>
-                    </div>
+        <div className="container mx-auto py-8">
+            <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold">Add a new category</h1>
+                <p className="text-muted-foreground">
+                    Give a good description for users to better understand
+                </p>
+            </div>
 
-                    <CategoryForm
-                        onSubmit={handleCreateCategory}
-                        isLoading={isLoading}
-                    />
-                </div>
-            </>
-
-        </>
-    )
+            <CategoryForm
+                onSubmit={handleCreateCategory}
+                isLoading={isPending}
+            />
+        </div>
+    );
 }

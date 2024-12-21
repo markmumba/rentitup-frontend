@@ -1,5 +1,5 @@
 import { CategoryRequest, CategoryResponse } from "@/lib/definitions";
-import { getPriceCalculationTypes, isAdmin, isAuthenticated } from "@/lib/service";
+import {  categoryAPI, isAdmin, isAuthenticated } from "@/lib/service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form"
@@ -68,7 +68,7 @@ export default function CategoryForm({
 
     async function getPriceCalculation() {
         try {
-            const response = await getPriceCalculationTypes();
+            const response = await categoryAPI.getPriceCalculationTypes();
             setPriceCalculationType(response);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to load price calculation types');
