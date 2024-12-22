@@ -1,10 +1,10 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { getMachineBySearch } from '../../lib/service';
+import { machineAPI } from '@/lib/service'; // Assuming this is where your API functions are exported
+import { useQuery } from '@tanstack/react-query';
 
 interface MachineListResponse {
   id: string;
@@ -21,42 +21,37 @@ export default function Machines() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get('query');
-  const [machines, setMachines] = useState<MachineListResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!searchTerm) return;
-
-    const fetchMachines = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getMachineBySearch(searchTerm);
-        setMachines(response);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to load machines');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMachines();
-  }, [searchTerm]);
+  // Query for searching machines
+  const { 
+    data: machines = [], 
+    isLoading, 
+    error 
+  } = useQuery({
+    queryKey: ['machines', 'search', searchTerm],
+    queryFn: () => machineAPI.searchMachines(searchTerm || ''),
+    enabled: !!searchTerm, // Only run query if search term exists
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+  });
 
   const handleMachineClick = (id: string) => {
     router.push(`/machines/${id}`);
   };
 
+  // Error state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center p-8 bg-red-50 rounded-lg">
-          <p className="text-red-600">Error: {error}</p>
+          <p className="text-red-600">
+            Error: {error instanceof Error ? error.message : 'Failed to load machines'}
+          </p>
         </div>
       </div>
     );
   }
 
+  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

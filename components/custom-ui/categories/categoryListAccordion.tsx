@@ -1,5 +1,5 @@
 import { CategoryListResponse } from "@/lib/definitions"
-import { deleteCategory, isAdmin } from "@/lib/service";
+import {  categoryAPI, isAdmin } from "@/lib/service";
 import { shortenDescription } from "@/lib/utils";
 import {
     Accordion,
@@ -23,7 +23,7 @@ export function CategoryAccordion({ category }: { category: CategoryListResponse
 
     const handleDeleteCategory = async () => {
         try {
-            const response = await deleteCategory(String(category.id));
+            const response = await categoryAPI.deleteCategory(String(category.id));
             toast({
                 title: "Successfully Deleted Category",
                 description: response,

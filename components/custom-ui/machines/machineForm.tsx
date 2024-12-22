@@ -11,68 +11,66 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { CategoryListResponse, MachineRequest } from "@/lib/definitions";
-import { getAllCategories, getLoggedUserProfile, getMachineConditions } from "@/lib/service";
-import { toast } from "@/hooks/use-toast";
+import { MachineRequest } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
+import { categoryAPI, machineAPI, userAPI } from "@/lib/service";
 
 const machineSchema = z.object({
     name: z.string()
         .min(3, { message: "Machine name must be at least 3 characters long" })
         .max(100, { message: "Machine name must be less than 100 characters" }),
-
     description: z.string()
         .min(10, { message: "Description must be at least 10 characters long" })
         .max(500, { message: "Description must be less than 500 characters" }),
-
     basePrice: z.string()
         .regex(/^\d+(\.\d{1,2})?$/, { message: "Invalid price format" })
         .refine(val => parseFloat(val) >= 0, { message: "Base price must be a positive number" }),
-
     condition: z.string(),
-
     specification: z.string()
         .min(10, { message: "Specifications must be at least 10 characters long" })
         .max(1000, { message: "Specifications must be less than 1000 characters" }),
-
     categoryId: z.string()
         .min(1, { message: "Please select a category" }),
-
     ownerId: z.string()
 });
 
 export default function MachineForm(
     { onSubmit, isLoading }:
-        { onSubmit: (data: MachineRequest) => void, isLoading?: boolean }
+    { onSubmit: (data: MachineRequest) => void, isLoading?: boolean }
 ) {
-    const [categoriesList, setCategoriesList] = useState<CategoryListResponse[]>([]);
-    const [ownerId, setOwnerId] = useState<string | null>(null);
-    const [machineConditions, setMachineConditions] = useState<string[]>([]);
-    const [isLoadingCategory, setIsLoadingCategory] = useState(true);
-    const [isLoadingOwner, setIsLoadingOwner] = useState(true);
-    const [isLoadingConditions, setIsLoadingConditions] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    // Query for categories
+    const { 
+        data: categoriesList = [], 
+        isLoading: isLoadingCategories,
+        error: categoriesError 
+    } = useQuery({
+        queryKey: ['categories'],
+        queryFn: categoryAPI.getAllCategories,
+    });
 
-    async function getCategories() {
-        try {
-            setIsLoadingCategory(true);
-            setError(null);
-            const data = await getAllCategories();
-            setCategoriesList(data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to load categories');
-            toast({
-                title: "Error",
-                description: "Failed to load categories",
-                variant: "destructive",
-            });
-        } finally {
-            setIsLoadingCategory(false);
-        }
-    }
+    // Query for machine conditions
+    const { 
+        data: machineConditions = [],
+        isLoading: isLoadingConditions,
+        error: conditionsError 
+    } = useQuery({
+        queryKey: ['machineConditions'],
+        queryFn: machineAPI.getMachineConditions,
+    });
+
+    // Query for user profile
+    const { 
+        data: userProfile,
+        isLoading: isLoadingProfile,
+        error: profileError 
+    } = useQuery({
+        queryKey: ['userProfile'],
+        queryFn: userAPI.getLoggedUserProfile,
+    });
 
     const form = useForm<z.infer<typeof machineSchema>>({
         resolver: zodResolver(machineSchema),
@@ -87,50 +85,12 @@ export default function MachineForm(
         }
     });
 
-    useEffect(() => {
-        getCategories();
-        async function fetchUserId() {
-            try {
-                setIsLoadingOwner(true);
-                const response = await getLoggedUserProfile();
-                const userIdString = String(response.id);
-                setOwnerId(userIdString);
-                form.setValue('ownerId', userIdString);
-            } catch (error) {
-                setError(error instanceof Error ? error.message : 'Failed to load user profile');
-                toast({
-                    title: "Error",
-                    description: "Failed to load user profile",
-                    variant: "destructive",
-                });
-            } finally {
-                setIsLoadingOwner(false);
-            }
-        }
+    // Set owner ID when userProfile is loaded
+    if (userProfile?.id && !form.getValues('ownerId')) {
+        form.setValue('ownerId', String(userProfile.id));
+    }
 
-        async function getConditions() {
-            try {
-                setIsLoadingConditions(true);
-                const response = await getMachineConditions();
-                setMachineConditions(response);
-            } catch (error) {
-                setError(error instanceof Error ? error.message : 'Failed to get conditions');
-                toast({
-                    title: "Error",
-                    description: "Failed to get conditions",
-                    variant: "destructive",
-                });
-            } finally {
-                setIsLoadingConditions(false);
-            }
-        }
-
-        fetchUserId();
-        getConditions();
-    }, [form]);
-
-    function handleSubmitForm(values: z.infer<typeof machineSchema>) {
-        // Convert numeric values to strings if needed
+    const handleSubmitForm = (values: z.infer<typeof machineSchema>) => {
         const submissionData: MachineRequest = {
             ...values,
             basePrice: values.basePrice,
@@ -138,10 +98,31 @@ export default function MachineForm(
             ownerId: values.ownerId
         };
         onSubmit(submissionData);
+    };
+
+    // Loading state
+    const isPageLoading = isLoadingCategories || isLoadingConditions || isLoadingProfile;
+    if (isPageLoading) {
+        return (
+            <div className="space-y-6">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div>
+        );
     }
 
-    if (isLoadingCategory || isLoadingOwner || isLoadingConditions) {
-        return <div>Loading...</div>;
+    // Error state
+    const error = categoriesError || conditionsError || profileError;
+    if (error) {
+        return (
+            <div className="text-red-500">
+                Error: {error instanceof Error ? error.message : 'An error occurred'}
+            </div>
+        );
     }
 
     return (

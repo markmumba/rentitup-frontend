@@ -1,7 +1,7 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Calendar, DollarSign, MapPin, Package, User, Edit, Trash2, ChevronsUpDown, Check } from 'lucide-react';
+import { Calendar, DollarSign, MapPin, Package, User, Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
     AlertDialog,
@@ -14,86 +14,76 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useParams, useRouter } from 'next/navigation';
-import {
-    deleteBooking,
-    getBooking,
-    getBookingStatusList,
-    isAdmin,
-    isCustomer,
-    isOwner, 
-} from '@/lib/service';
+import { isAdmin, isCustomer, isOwner } from '@/lib/service';
 import { BookingResponse } from '@/lib/definitions';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import StatusBadge from '@/components/custom-ui/Dashboard/Owner/statusBadge';
 import { ProtectedRoute } from '@/app/protector';
 import { allRoles } from '@/lib/utils';
-
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { bookingAPI } from '@/lib/service'; 
 
 export default function ProtectedSingleBookingPage() {
     return (
         <ProtectedRoute allowedRoles={allRoles}>
             <SingleBookingPage />
         </ProtectedRoute>
-    )
+    );
 }
 
 function SingleBookingPage() {
     const params = useParams();
     const router = useRouter();
+    const queryClient = useQueryClient();
     const bookingId = params.id as string;
-
-    const [booking, setBooking] = useState<BookingResponse>();
-    const [error, setError] = useState<string | null>(null);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [statusList, setStatusList] = useState<string[]>([]);
 
+    // Query for booking details
+    const { 
+        data: booking,
+        isLoading: isLoadingBooking,
+        error: bookingError 
+    } = useQuery({
+        queryKey: ['booking', bookingId],
+        queryFn: () => bookingAPI.getBookingById(bookingId),
+    });
 
+    // Query for booking status list (only when user is owner)
+    const { 
+        data: statusList = [],
+        isLoading: isLoadingStatus 
+    } = useQuery({
+        queryKey: ['bookingStatusList'],
+        queryFn: bookingAPI.getBookingStatusList,
+        enabled: isOwner(), // Only fetch if user is owner
+    });
 
-    async function getBookingDetails() {
-        try {
-            const response = await getBooking(bookingId);
-            setBooking(response);
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to load booking');
+    // Mutation for deleting booking
+    const { 
+        mutate: deleteBookingMutation,
+        isPending: isDeleting 
+    } = useMutation({
+        mutationFn: () => bookingAPI.deleteBooking(bookingId),
+        onSuccess: () => {
+            // Invalidate relevant queries
+            queryClient.invalidateQueries({ queryKey: ['bookings'] });
+            router.push('/dashboard');
+        },
+        onError: (error) => {
+            console.error('Failed to delete booking:', error);
+        },
+        onSettled: () => {
+            setShowDeleteDialog(false);
         }
-    }
-    async function getStatusList() {
-        try {
-            const response = await getBookingStatusList();
-            setStatusList(response || []);
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to load booking status list');
-            setStatusList([]);
-        }
-    }
-
-
-
-    useEffect(() => {
-        getBookingDetails();
-        if (isOwner()) {
-            getStatusList();
-        }
-    }, []);
-
+    });
 
     const handleUpdate = () => {
         router.push(`/bookings/${bookingId}/edit`);
     };
 
-    const handleDelete = async () => {
-        try {
-            setIsDeleting(true);
-            await deleteBooking(bookingId);
-            router.push('/dashboard');
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to delete booking');
-        } finally {
-            setIsDeleting(false);
-            setShowDeleteDialog(false);
-        }
+    const handleDelete = () => {
+        deleteBookingMutation();
     };
 
     const canModifyBooking = () => {
@@ -104,30 +94,31 @@ function SingleBookingPage() {
     const makePayment = () => {
         if (!booking) return false;
         return booking.status === 'CONFIRMED' && isCustomer();
-    }
+    };
 
-
-    if (error) {
+    // Error state
+    if (bookingError) {
         return (
             <div className="flex items-center justify-center h-96">
                 <Card className="w-full max-w-2xl">
                     <CardContent className="pt-6">
-                        <div className="text-center text-red-500">{error}</div>
+                        <div className="text-center text-red-500">
+                            {bookingError instanceof Error ? bookingError.message : 'Failed to load booking'}
+                        </div>
                     </CardContent>
                 </Card>
             </div>
         );
     }
 
-    if (!booking) {
+    // Loading state
+    if (isLoadingBooking) {
         return (
             <div className="flex items-center justify-center h-96">
                 <div className="text-lg text-gray-500">Loading...</div>
             </div>
         );
     }
-
-
 
     // Component for rendering user details
     const UserDetailsSection = ({ title, user }: { title: string; user: { name: string; email: string } }) => (
@@ -144,6 +135,8 @@ function SingleBookingPage() {
     );
 
     const renderUserDetails = () => {
+        if (!booking) return null;
+        
         if (isAdmin()) {
             return (
                 <>
@@ -159,6 +152,8 @@ function SingleBookingPage() {
         return null;
     };
 
+    if (!booking) return null;
+
     return (
         <div className="container mx-auto py-8 px-4">
             <Card className="w-full max-w-4xl mx-auto">
@@ -166,7 +161,7 @@ function SingleBookingPage() {
                     <div className="flex justify-between items-center">
                         <div>
                             <CardTitle className="text-2xl">Booking Details</CardTitle>
-                            <p className="text-sm text-gray-500">Booking Code: {booking?.bookingCode}</p>
+                            <p className="text-sm text-gray-500">Booking Code: {booking.bookingCode}</p>
                         </div>
                         <StatusBadge booking={booking} statusList={statusList} />
                     </div>
@@ -215,7 +210,7 @@ function SingleBookingPage() {
                         </div>
                     </div>
 
-                    {/* User Details - Updated Logic */}
+                    {/* User Details */}
                     {renderUserDetails()}
 
                     {/* Payment Details */}
@@ -230,8 +225,6 @@ function SingleBookingPage() {
                             </p>
                         </div>
                     </div>
-
-
                 </CardContent>
 
                 {canModifyBooking() && (
@@ -266,7 +259,6 @@ function SingleBookingPage() {
                             Make payment
                         </Button>
                     </CardFooter>
-
                 )}
             </Card>
 

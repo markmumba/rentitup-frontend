@@ -1,108 +1,89 @@
 'use client';
 import { CategoryListResponse, MachineResponse, MachineUpdateRequest } from "@/lib/definitions";
-import { getAllCategories, getMachineById, getMachineConditions, updateMachine } from "@/lib/service";
+import { machineAPI, categoryAPI } from "@/lib/service"; // Assuming this is where your API functions are exported
 import MachineUpdateForm from "@/components/custom-ui/machines/machineUpdateForm";
 import { toast } from "@/hooks/use-toast";
-import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function UpdateMachine() {
-
     const params = useParams();
     const machineId = params.id as string;
     const router = useRouter();
+    const queryClient = useQueryClient();
 
-    const [Machine, setMachine] = useState<MachineResponse>();
-    const [machineConditions, setMachineConditions] = useState<string[]>([]);
-    const [categoriesList, setCategoriesList] = useState<CategoryListResponse[]>([]);
-    const [isLoadingMachine, setIsLoadingMachine] = useState<boolean>(false);
-    const [isLoadingUpdate, setIsLoadingUpdate] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>();
+    // Query for machine details
+    const { 
+        data: machine,
+        isLoading: isLoadingMachine 
+    } = useQuery({
+        queryKey: ['machine', machineId],
+        queryFn: () => machineAPI.getMachineById(machineId)
+    });
 
-    async function handleUpdateMachine(data: MachineUpdateRequest) {
-        try {
-            console.log(data);
-            setIsLoadingUpdate(true);
-            const response = await updateMachine(machineId, data);
+    // Query for machine conditions
+    const { 
+        data: machineConditions = [],
+        isLoading: isLoadingConditions 
+    } = useQuery({
+        queryKey: ['machineConditions'],
+        queryFn: machineAPI.getMachineConditions
+    });
+
+    // Query for categories
+    const { 
+        data: categoriesList = [],
+        isLoading: isLoadingCategories 
+    } = useQuery({
+        queryKey: ['categories'],
+        queryFn: categoryAPI.getAllCategories
+    });
+
+    // Mutation for updating machine
+    const { mutate: updateMachineMutation, isPending: isLoadingUpdate } = useMutation({
+        mutationFn: (data: MachineUpdateRequest) => 
+            machineAPI.updateMachine(machineId, data),
+        onSuccess: () => {
             toast({
-                title:"Updated successfully",
-                description: response,
-                variant:"default"
-            })
+                title: "Updated successfully",
+                description: "Machine has been updated",
+                variant: "default"
+            });
+
+            // Invalidate relevant queries
+            queryClient.invalidateQueries({ queryKey: ['machine', machineId] });
+            queryClient.invalidateQueries({ queryKey: ['machines'] });
+
             router.push("/dashboard/profile");
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to Update machine');
-        } finally {
-            setIsLoadingUpdate(false);
+        },
+        onError: (error) => {
+            toast({
+                title: "Update failed",
+                description: error instanceof Error ? error.message : "Failed to update machine",
+                variant: "destructive",
+            });
         }
+    });
+
+    const handleUpdateMachine = (data: MachineUpdateRequest) => {
+        updateMachineMutation(data);
     };
 
-    useEffect(() => {
-        async function getMachine() {
-            try {
-                setIsLoadingMachine(true);
-                setError(null);
-                const data = await getMachineById(machineId);
-                setMachine(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to load machine');
-            } finally {
-                setIsLoadingMachine(false);
-            }
-        };
-        async function getConditions() {
-            try {
-                setIsLoadingMachine(true);
-                const response = await getMachineConditions();
-                setMachineConditions(response);
-            } catch (error) {
-                setError(error instanceof Error ? error.message : 'Failed to get conditions');
-                toast({
-                    title: "Error",
-                    description: "Failed to get conditions",
-                    variant: "destructive",
-                });
-            } finally {
-                setIsLoadingMachine(false);
-            }
-        }
-        async function getCategories() {
-            try {
-                setIsLoadingMachine(true);
-                setError(null);
-                const data = await getAllCategories();
-                setCategoriesList(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to load categories');
-                toast({
-                    title: "Error",
-                    description: "Failed to load categories",
-                    variant: "destructive",
-                });
-            } finally {
-                setIsLoadingMachine(false);
-            }
-        }
+    // Combine loading states
+    const isLoading = isLoadingMachine || isLoadingConditions || isLoadingCategories;
 
-        getMachine();
-        getConditions();
-        getCategories();
-    }, []);
-
-    if (!Machine) {
+    if (isLoading || !machine) {
         return <div>Loading machine details...</div>;
     }
 
     return (
-        <>
-            <MachineUpdateForm
-                onSubmit={handleUpdateMachine}
-                machine={Machine}
-                categoriesList={categoriesList}
-                machineConditions={machineConditions}
-                isLoadingUpdate={isLoadingUpdate}
-                isLoadingMachine={isLoadingMachine}
-            />
-        </>
-    )
+        <MachineUpdateForm
+            onSubmit={handleUpdateMachine}
+            machine={machine}
+            categoriesList={categoriesList}
+            machineConditions={machineConditions}
+            isLoadingUpdate={isLoadingUpdate}
+            isLoadingMachine={isLoading}
+        />
+    );
 }

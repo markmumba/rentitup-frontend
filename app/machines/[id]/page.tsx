@@ -1,8 +1,8 @@
 'use client'
 import { BookingRequest, MachineImageResponse, MachineResponse } from "@/lib/definitions";
-import { getCategoryById, getMachineById, isAuthenticated, isCustomer, isOwner } from "@/lib/service";
-import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react";
+import { machineAPI, categoryAPI, isAuthenticated, isCustomer, isOwner  } from "@/lib/service"; // Assuming this is where your API functions are exported
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import {
     Card,
     CardHeader,
@@ -16,51 +16,35 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 
 export default function MachinePage() {
     const params = useParams();
     const machineId = params.id as string;
     const router = useRouter();
 
-    const [machine, setMachine] = useState<MachineResponse>();
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<MachineImageResponse | null>(null);
-    const [categoryPriceType, setCategoryPriceType] = useState("");
 
-    async function getMachine() {
-        try {
-            setIsLoading(true);
-            setError(null);
-            const data = await getMachineById(machineId);
-            setMachine(data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to load machine');
-        } finally {
-            setIsLoading(false);
-        }
-    }
-    async function getcategoryPriceType() {
-        try {
-            const data = await getCategoryById(machine?.categoryId!);
-            setCategoryPriceType(data.priceCalculationType)
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to load machine');
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    // Query for machine details
+    const { 
+        data: machine, 
+        isLoading: isLoadingMachine,
+        error: machineError 
+    } = useQuery({
+        queryKey: ['machine', machineId],
+        queryFn: () => machineAPI.getMachineById(machineId),
+    });
 
-    useEffect(() => {
-        getMachine();
-    }, []);
-
-    useEffect(() => {
-        if (machine?.categoryId) {
-            getcategoryPriceType();
-        }
-    }, [machine]);
+    // Query for category details (only runs when machine data is available)
+    const { 
+        data: category,
+        isLoading: isLoadingCategory 
+    } = useQuery({
+        queryKey: ['category', machine?.categoryId],
+        queryFn: () => categoryAPI.getCategoryById(machine?.categoryId!),
+        enabled: !!machine?.categoryId,
+    });
 
     const openModal = (image: MachineImageResponse) => {
         setSelectedImage(image);
@@ -77,13 +61,12 @@ export default function MachinePage() {
             const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
             router.push(`/login?redirect=${currentPath}`);
         } else {
-            router.push(`/booking?machineId=${machineId}&basePrice=${machine?.basePrice}&rate=${categoryPriceType}`);
+            router.push(`/booking?machineId=${machineId}&basePrice=${machine?.basePrice}&rate=${category?.priceCalculationType}`);
         }
-    }
+    };
 
-
-
-    if (isLoading) {
+    // Loading state
+    if (isLoadingMachine || isLoadingCategory) {
         return (
             <div className="space-y-6 p-6">
                 <Skeleton className="h-8 w-[250px]" />
@@ -98,11 +81,14 @@ export default function MachinePage() {
         );
     }
 
-    if (error) {
+    // Error state
+    if (machineError) {
         return (
             <Alert variant="destructive" className="m-6">
                 <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>
+                    {machineError instanceof Error ? machineError.message : 'Failed to load machine'}
+                </AlertDescription>
             </Alert>
         );
     }
@@ -158,16 +144,13 @@ export default function MachinePage() {
                                         )}
 
                                         {isOwner() && (
-                                            <>
-                                                <Button onClick={handleBooking}>Update machine </Button>
-                                            </>
+                                            <Button onClick={handleBooking}>Update machine</Button>
                                         )}
                                     </div>
                                 </div>
                             </div>
                         </CardContent>
-                        {isOwner() ? (<>
-                        </>) : (<>
+                        {!isOwner() && (
                             <CardFooter>
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-1">
@@ -182,7 +165,7 @@ export default function MachinePage() {
                                     )}
                                 </div>
                             </CardFooter>
-                        </>)}
+                        )}
                     </Card>
 
                     <h2 className="text-2xl font-bold">Additional Images</h2>
@@ -205,19 +188,32 @@ export default function MachinePage() {
                                 </div>
                             ))}
                     </div>
-                    <ImageModal open={isModalOpen} onClose={closeModal} image={selectedImage} />
                 </>
             )}
+            
+            <ImageModal 
+                open={isModalOpen} 
+                onClose={closeModal} 
+                image={selectedImage} 
+            />
         </div>
     );
 }
 
-
-const ImageModal = ({ open, onClose, image }: { open: boolean; onClose: () => void; image: MachineImageResponse | null }) => {
+const ImageModal = ({ 
+    open, 
+    onClose, 
+    image 
+}: { 
+    open: boolean; 
+    onClose: () => void; 
+    image: MachineImageResponse | null;
+}) => {
     return (
         <div
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 transition-opacity ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                }`}
+            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 transition-opacity ${
+                open ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
         >
             <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
                 <div className="flex justify-end">

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingListResponse, BookingRequest, CategoryListResponse, CategoryRequest, CategoryResponse, CollectorVerificationRequest, ForgotPasswordRequest, LoginRequest, LoginResponse, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, RegisterRequest, ResetPasswordRequest, ReviewRequest, UserDetails, UserDetailsList } from "./definitions";
+import { BookingListResponse, BookingRequest, BookingResponse, CategoryListResponse, CategoryRequest, CategoryResponse, CollectorVerificationRequest, ForgotPasswordRequest, LoginRequest, LoginResponse, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, RegisterRequest, ResetPasswordRequest, ReviewRequest, UserDetails, UserDetailsList } from "./definitions";
 
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -278,9 +278,9 @@ export const bookingAPI = {
     },
 
     // Create new booking (protected endpoint)
-    createBooking: async (bookingRequest: BookingRequest): Promise<BookingListResponse> => {
+    createBooking: async (bookingRequest: BookingRequest): Promise<BookingResponse> => {
         try {
-            const response = await axios.post<BookingListResponse>(
+            const response = await axios.post<BookingResponse>(
                 `${BASE_URL}/bookings`,
                 bookingRequest,
                 { headers: getHeader() }
@@ -295,9 +295,9 @@ export const bookingAPI = {
     },
 
     // Get booking by ID (protected endpoint)
-    getBookingById: async (id: string): Promise<BookingListResponse> => {
+    getBookingById: async (id: string): Promise<BookingResponse> => {
         try {
-            const response = await axios.get<BookingListResponse>(
+            const response = await axios.get<BookingResponse>(
                 `${BASE_URL}/bookings/${id}`,
                 { headers: getHeader() }
             );
@@ -375,9 +375,9 @@ export const bookingAPI = {
     },
 
     // Update booking (protected endpoint)
-    updateBooking: async (id: string, bookingRequest: BookingRequest): Promise<BookingListResponse> => {
+    updateBooking: async (id: string, bookingRequest: BookingRequest): Promise<BookingResponse> => {
         try {
-            const response = await axios.put<BookingListResponse>(
+            const response = await axios.put<BookingResponse>(
                 `${BASE_URL}/bookings/${id}`,
                 bookingRequest,
                 { headers: getHeader() }

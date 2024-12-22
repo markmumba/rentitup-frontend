@@ -1,36 +1,33 @@
 'use client';
 import { MachineRequest } from "@/lib/definitions";
-import { createMachine } from "@/lib/service";
 import { owner } from "@/lib/utils";
 import { ProtectedRoute } from "@/app/protector";
 import MachineForm from "@/components/custom-ui/machines/machineForm";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useMachineStore } from "@/lib/store";
+import { useMutation } from "@tanstack/react-query";
+import { machineAPI } from "@/lib/service";
 
 export default function ProtectedAddMachine() {
     return (
         <ProtectedRoute allowedRoles={owner}>
             <AddMachine />
         </ProtectedRoute>
-    )
+    );
 }
 
 function AddMachine() {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-
     const { setIsAddingImages } = useMachineStore();
 
-    async function handleAddMachine(data: MachineRequest) {
-        try {
-            setIsLoading(true);
-            const response = await createMachine(data);
+    // Mutation for creating machine
+    const { mutate: addMachine, isPending } = useMutation({
+        mutationFn: (data: MachineRequest) => machineAPI.createMachine(data),
+        onSuccess: (response) => {
             toast({
                 title: "Machine created successfully",
                 description: "Add images for your machine",
@@ -38,18 +35,20 @@ function AddMachine() {
 
             const id = String(response.id);
             router.push(`/machines/${id}/uploadImages`);
-        } catch (error) {
+        },
+        onError: (error) => {
             setIsAddingImages(false); // Reset on error
             toast({
                 title: "Machine creation failed",
-                description:
-                    error instanceof Error ? error.message : "Please try again later",
+                description: error instanceof Error ? error.message : "Please try again later",
                 variant: "destructive",
             });
-        } finally {
-            setIsLoading(false);
         }
-    }
+    });
+
+    const handleAddMachine = (data: MachineRequest) => {
+        addMachine(data);
+    };
 
     return (
         <div className="container mx-auto px-4 py-6 space-y-6">
@@ -108,7 +107,7 @@ function AddMachine() {
                 </AlertDescription>
             </Alert>
 
-            <MachineForm onSubmit={handleAddMachine} isLoading={isLoading} />
+            <MachineForm onSubmit={handleAddMachine} isLoading={isPending} />
         </div>
     );
 }
