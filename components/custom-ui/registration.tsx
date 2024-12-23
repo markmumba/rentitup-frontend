@@ -186,7 +186,7 @@ export function RegistrationForm(
                     <Link href="/login" >Go back to login</Link>
                 </div>
                 <div className="p-2">
-                    <Link href="/public" >Go back home </Link>
+                    <Link href="/" >Go back home </Link>
                 </div>
             </div>
 

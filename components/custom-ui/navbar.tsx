@@ -1,6 +1,5 @@
-
-'use client'
-import React, { useState } from 'react';
+'use client';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -10,187 +9,149 @@ import { LogoutButton } from './logoutbutton';
 import { useAuthStore } from '../../lib/store';
 import { ModeToggle } from './modalToggle';
 import { usePathname } from 'next/navigation';
+import { MotionDiv } from '@/components/motion';
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const pathname = usePathname();
 
     const token = useAuthStore(state => state.token);
     const role = useAuthStore(state => state.role);
 
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    };
+    // Handle scroll effect
+    useEffect(() => {
+        const handleScroll = () => {
+            const isScrolled = window.scrollY > 20;
+            setScrolled(isScrolled);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const isActive = (path: string) => pathname === path;
 
+    // Navigation item component
+    const NavItem = ({ href, children }: { href: string; children: React.ReactNode }) => (
+        <Link href={href}>
+            <Button
+                variant="ghost"
+                className={cn(
+                    "relative px-4 py-2 text-sm font-medium transition-colors",
+                    isActive(href) ? 
+                        "text-orange-500 dark:text-orange-400" : 
+                        "text-slate-700 dark:text-slate-300 hover:text-orange-500 dark:hover:text-orange-400",
+                    "after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-orange-500 after:transition-transform hover:after:scale-x-100"
+                )}
+            >
+                {children}
+            </Button>
+        </Link>
+    );
+
     const NavLinks = () => (
         <>
-            {!isAuthenticated() &&
+            {!isAuthenticated() && (
                 <>
-                    <Link href="/login">
-                        <Button
-                            variant={isActive('/login') ? 'default' : 'ghost'}
-                            className={isActive('/login') ? 'bg-gray-200' : ''}
-                        >
-                            Login
-                        </Button>
-                    </Link>
-
-                    <Link href="/register">
-                        <Button
-                            variant={isActive('/register') ? 'default' : 'ghost'}
-                            className={isActive('/register') ? 'bg-gray-200' : ''}
-                        >
-                            Register
-                        </Button>
-                    </Link>
-
-                    <Link href="/categories">
-                        <Button
-                            variant={isActive('/categories') ? 'default' : 'ghost'}
-                            className={isActive('/categories') ? 'bg-gray-200' : ''}
-                        >
-                            Categories
-                        </Button>
-                    </Link>
+                    <NavItem href="/categories">Categories</NavItem>
+                    <NavItem href="/login">Login</NavItem>
+                    <Button
+                        asChild
+                        className="bg-orange-500 hover:bg-orange-600 text-white ml-2"
+                    >
+                        <Link href="/register">Get Started</Link>
+                    </Button>
                 </>
-            }
+            )}
 
             {isAuthenticated() && (
                 <>
                     {isCustomer() && (
-                        <Link href="/categories">
-                            <Button
-                                variant={isActive('/categories') ? 'default' : 'ghost'}
-                                className={isActive('/categories') ? 'bg-gray-200' : ''}
-                            >
-                                Book
-                            </Button>
-                        </Link>
+                        <NavItem href="/categories">Book</NavItem>
                     )}
 
                     {isOwner() && (
                         <>
-                            <Link href="/orders">
-                                <Button
-                                    variant={isActive('/orders') ? 'default' : 'ghost'}
-                                    className={isActive('/orders') ? 'bg-gray-200' : ''}
-                                >
-                                    Orders
-                                </Button>
-                            </Link>
-                            <Link href="/categories">
-                                <Button
-                                    variant={isActive('/categories') ? 'default' : 'ghost'}
-                                    className={isActive('/categories') ? 'bg-gray-200' : ''}
-                                >
-                                    Book
-                                </Button>
-                            </Link>
+                            <NavItem href="/orders">Orders</NavItem>
+                            <NavItem href="/categories">Book</NavItem>
                         </>
                     )}
 
                     {isAdmin() && (
                         <>
-                            <Link href="/categories">
-                                <Button
-                                    variant={isActive('/categories') ? 'default' : 'ghost'}
-                                    className={isActive('/categories') ? 'bg-gray-200' : ''}
-                                >
-                                    Categories
-                                </Button>
-                            </Link>
-                            <Link href="/owners">
-                                <Button
-                                    variant={isActive('/owners') ? 'default' : 'ghost'}
-                                    className={isActive('/owners') ? 'bg-gray-200' : ''}
-                                >
-                                    Owners
-                                </Button>
-                            </Link>
-                            <Link href="/machines">
-                                <Button
-                                    variant={isActive('/machines') ? 'default' : 'ghost'}
-                                    className={isActive('/machines') ? 'bg-gray-200' : ''}
-                                >
-                                    Machines
-                                </Button>
-                            </Link>
+                            <NavItem href="/categories">Categories</NavItem>
+                            <NavItem href="/owners">Owners</NavItem>
+                            <NavItem href="/machines">Machines</NavItem>
                         </>
                     )}
 
-                    <Link href="/dashboard/profile">
-                        <Button
-                            variant={isActive('/dashboard/profile') ? 'default' : 'ghost'}
-                            className={isActive('/dashboard/profile') ? 'bg-gray-200' : ''}
-                        >
-                            Profile
-                        </Button>
-                    </Link>
-
+                    <NavItem href="/dashboard/profile">Profile</NavItem>
                     <Link href="/public">
                         <LogoutButton />
                     </Link>
                 </>
             )}
-            <ModeToggle />
+            <div className="ml-2">
+                <ModeToggle />
+            </div>
         </>
     );
 
     return (
-        <nav className="bg-background border-b">
+        <MotionDiv
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className={cn(
+                "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+                scrolled ? 
+                    "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md" : 
+                    "bg-transparent"
+            )}
+        >
             <div className="max-w-7xl mx-auto px-4 py-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <div className="flex items-center">
-                        <Link href={isAuthenticated() ? "/dashboard" : "/public"} className="font-bold text-3xl">
-                            Rentitup
-                        </Link>
-                    </div>
+                    <Link 
+                        href={isAuthenticated() ? "/dashboard" : "/public"}
+                        className={cn(
+                            "font-bold text-2xl tracking-tight transition-colors",
+                            scrolled ? 
+                                "text-slate-900 dark:text-white" : 
+                                "text-slate-900 dark:text-white"
+                        )}
+                    >
+                        RentItUp
+                    </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-4">
+                    <div className="hidden md:flex items-center space-x-2">
                         <NavLinks />
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="md:hidden">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={toggleMenu}
-                            className="p-2"
-                        >
-                            {isOpen ? <X size={24} /> : <Menu size={24} />}
-                        </Button>
-                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="md:hidden"
+                    >
+                        {isOpen ? <X size={24} /> : <Menu size={24} />}
+                    </Button>
                 </div>
 
                 {/* Mobile Navigation */}
                 {isOpen && (
-                    <div className="md:hidden pt-4 pb-3 space-y-2">
-                        <div className="flex flex-col space-y-2">
+                    <div className="md:hidden py-4 border-t border-slate-200 dark:border-slate-700">
+                        <div className="flex flex-col space-y-3">
                             <NavLinks />
                         </div>
                     </div>
                 )}
             </div>
-        </nav>
+        </MotionDiv>
     );
 }
 
 export default Navbar;
-
-
-
-
-
-
-
-
-
-
-
-
-

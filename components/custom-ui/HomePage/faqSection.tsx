@@ -11,7 +11,8 @@ import {
   HelpCircle,
   Clock,
   FileText,
-  Mail
+  Mail,
+  Search
 } from 'lucide-react';
 
 import { useState } from 'react';
@@ -96,6 +97,7 @@ const faqs: Record<FAQCategories, FAQ[]> = {
 export default function FAQSection() {
   const [activeCategory, setActiveCategory] = useState<FAQCategories>('general');
   const [openQuestions, setOpenQuestions] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const toggleQuestion = (id: string) => {
     setOpenQuestions(prev =>
@@ -106,62 +108,102 @@ export default function FAQSection() {
   };
 
   const categories = [
-    { id: 'general', label: 'General', icon: <HelpCircle className="h-4 w-4" /> },
-    { id: 'rental', label: 'Rental Process', icon: <Clock className="h-4 w-4" /> },
-    { id: 'payment', label: 'Payments', icon: <CreditCard className="h-4 w-4" /> },
-    { id: 'delivery', label: 'Delivery', icon: <Truck className="h-4 w-4" /> },
-    { id: 'safety', label: 'Safety & Insurance', icon: <Shield className="h-4 w-4" /> },
+    { id: 'general', label: 'General', icon: <HelpCircle /> },
+    { id: 'rental', label: 'Rental Process', icon: <Clock /> },
+    { id: 'payment', label: 'Payments', icon: <CreditCard /> },
+    { id: 'delivery', label: 'Delivery', icon: <Truck /> },
+    { id: 'safety', label: 'Safety & Insurance', icon: <Shield /> },
   ];
 
+  const filteredFaqs = faqs[activeCategory].filter(faq =>
+    faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="bg-white dark:bg-slate-950 py-24">
+    <section className="bg-slate-50 dark:bg-slate-900 py-24">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4 dark:text-white">Frequently Asked Questions</h2>
-          <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-            Find answers to common questions about renting and listing equipment on RentItUp.
+        {/* Header */}
+        <div className="max-w-2xl mx-auto text-center mb-12">
+          <span className="inline-block text-orange-500 font-medium text-sm mb-4">
+            Support Center
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            How can we help you?
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400">
+            Find answers to common questions about our platform
           </p>
         </div>
 
+        {/* Search Bar */}
+        <div className="max-w-xl mx-auto mb-12">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search for answers..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 
+                dark:border-slate-700 bg-white dark:bg-slate-800 
+                text-slate-900 dark:text-slate-100 
+                focus:outline-none focus:ring-2 focus:ring-orange-500 
+                transition-all duration-200"
+            />
+          </div>
+        </div>
+
         {/* Categories */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           {categories.map((category) => (
-            <Button
+            <button
               key={category.id}
-              variant={activeCategory === category.id ? 'default' : 'outline'}
               onClick={() => setActiveCategory(category.id as FAQCategories)}
-              className="flex items-center gap-2 dark:text-white dark:hover:bg-slate-800 dark:border-slate-700"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all
+                ${activeCategory === category.id 
+                  ? 'bg-orange-500 text-white' 
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-slate-700'
+                }`}
             >
-              {React.cloneElement(category.icon, {
-                className: "h-4 w-4 dark:text-white"
+              {React.cloneElement(category.icon, { 
+                className: "h-4 w-4" 
               })}
-              {category.label}
-            </Button>
+              <span className="font-medium">{category.label}</span>
+            </button>
           ))}
         </div>
 
         {/* FAQ Cards */}
-        <div className="max-w-3xl mx-auto">
-          {faqs[activeCategory].map((faq) => (
+        <div className="max-w-3xl mx-auto space-y-4">
+          {filteredFaqs.map((faq) => (
             <Card 
               key={faq.id}
-              className="mb-4 overflow-hidden dark:bg-slate-800 dark:border-slate-700"
+              className="overflow-hidden bg-white dark:bg-slate-800 border-slate-200 
+                dark:border-slate-700 hover:shadow-md transition-shadow"
             >
               <button
-                className="w-full p-6 text-left flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-700"
+                className="w-full px-6 py-4 text-left flex justify-between items-center"
                 onClick={() => toggleQuestion(faq.id)}
               >
-                <span className="font-semibold dark:text-white">{faq.question}</span>
-                {openQuestions.includes(faq.id) ? (
-                  <ChevronUp className="h-5 w-5 text-slate-400 dark:text-slate-300" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-slate-400 dark:text-slate-300" />
-                )}
+                <span className="font-medium text-slate-900 dark:text-slate-100">
+                  {faq.question}
+                </span>
+                <div className={`rounded-full p-1 transition-colors
+                  ${openQuestions.includes(faq.id) 
+                    ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-500' 
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-400'
+                  }`}
+                >
+                  {openQuestions.includes(faq.id) 
+                    ? <ChevronUp className="h-4 w-4" />
+                    : <ChevronDown className="h-4 w-4" />
+                  }
+                </div>
               </button>
               
               {openQuestions.includes(faq.id) && (
-                <div className="px-6 pb-6 text-slate-600 dark:text-slate-300">
+                <div className="px-6 pb-4 text-slate-600 dark:text-slate-400 prose dark:prose-invert max-w-none">
                   {faq.answer}
                 </div>
               )}
@@ -169,26 +211,35 @@ export default function FAQSection() {
           ))}
         </div>
 
-        {/* Still Have Questions */}
-        <div className="mt-16 text-center">
-          <Card className="max-w-2xl mx-auto p-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900">
-            <h3 className="text-xl font-semibold mb-4 dark:text-white">Still Have Questions?</h3>
-            <p className="text-slate-600 dark:text-slate-300 mb-6">
-              Our support team is here to help you with any questions you might have.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-800 dark:hover:bg-blue-700">
-                <Mail className="h-4 w-4 mr-2" />
-                Contact Support
-              </Button>
-              <Button variant="outline" className="dark:border-slate-700 dark:text-white dark:hover:bg-slate-800">
-                <FileText className="h-4 w-4 mr-2" />
-                View Documentation
-              </Button>
+        {/* Contact Card */}
+        <div className="mt-16 max-w-2xl mx-auto">
+          <Card className="p-8 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-slate-100">
+                Still have questions?
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">
+                Can't find the answer you're looking for? Our support team is here to help.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Button 
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  Contact Support
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="border-slate-200 dark:border-slate-700"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  View Documentation
+                </Button>
+              </div>
             </div>
           </Card>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
