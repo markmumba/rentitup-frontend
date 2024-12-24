@@ -33,21 +33,23 @@ export default function ContactSection() {
       title: "Chat with us",
       description: "Live chat support available",
       action: "Start chat",
-      timing: "Available 24/7"
+      timing: "Available 24/7",
     },
     {
       icon: <Mail className="h-5 w-5" />,
       title: "Email us",
       description: "support@rentitup.com",
       action: "Send email",
-      timing: "Response within 24h"
+      timing: "Response within 24h",
+      onClick: () => window.location.href = 'mailto:support@rentitup.com'
     },
     {
       icon: <Phone className="h-5 w-5" />,
       title: "Call us",
       description: "(555) 123-4567",
       action: "Call now",
-      timing: "Mon-Fri, 9am-6pm"
+      timing: "Mon-Fri, 9am-6pm",
+      onClick: () => window.location.href = 'tel:5551234567'
     }
   ];
 
@@ -101,6 +103,7 @@ export default function ContactSection() {
                     variant="ghost" 
                     className="w-full justify-center hover:bg-orange-50 hover:text-orange-500 
                       dark:hover:bg-orange-900/30 dark:hover:text-orange-400"
+                    onClick={card.onClick}
                   >
                     {card.action}
                   </Button>
@@ -110,8 +113,10 @@ export default function ContactSection() {
           ))}
         </div>
 
-        {/* Contact Form Card */}
-        <Card className="max-w-3xl mx-auto bg-white dark:bg-slate-800 border-slate-200 
+        {/* Rest of the component remains the same */}
+        {/* ... */}
+         {/* Contact Form Card */}
+         <Card className="max-w-3xl mx-auto bg-white dark:bg-slate-800 border-slate-200 
           dark:border-slate-700 overflow-hidden">
           <div className="grid md:grid-cols-5">
             {/* Form Side */}

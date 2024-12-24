@@ -29,6 +29,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+
           <QueryProvider>
             <main>
               <MainLayout>
