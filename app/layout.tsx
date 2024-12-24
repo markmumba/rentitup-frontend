@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "./ui/navbar";
+import ClientNavbar from "@/components/custom-ui/clientnavbar";
+import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
+import QueryProvider from "./query-provider";
+import MainLayout from "@/components/custom-ui/mainLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,11 +19,27 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <body className={inter.className}>
-      <Navbar />
-        {children}</body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+
+          <QueryProvider>
+            <main>
+              <MainLayout>
+                {children}
+                <Toaster />
+              </MainLayout>
+            </main>
+          </QueryProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
