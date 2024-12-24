@@ -6,9 +6,9 @@ import { UserDetails } from "@/lib/definitions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, User } from "lucide-react";
-import { UserList } from "./UserList";
-import AllBookings from "./bookings";
 import { userAPI } from '@/lib/service';
+import AllBookings from './bookings';
+import { UserList } from './UserList';
 
 interface AdminProps {
   data: UserDetails;
