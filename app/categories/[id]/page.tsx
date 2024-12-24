@@ -1,6 +1,5 @@
 'use client'
 import { categoryAPI } from "@/lib/service"; // Assuming this is where your API functions are exported
-import { MachineListCard } from "@/components/custom-ui/machines/machineListCard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +7,7 @@ import { AlertCircle, ArrowLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { MachineListCard } from "@/components/custom-ui/machines/machineListCard";
 
 export default function CategoryPage() {
     const params = useParams();
