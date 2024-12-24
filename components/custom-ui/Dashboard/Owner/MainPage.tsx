@@ -1,8 +1,8 @@
 'use client';
 
 import { UserDetails } from "@/lib/definitions";
-import { Orders } from "./orderList";
 import { User } from "lucide-react";
+import Orders from "./orderList";
 
 interface OwnerProps {
   data: UserDetails;
