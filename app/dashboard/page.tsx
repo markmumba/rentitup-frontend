@@ -1,14 +1,14 @@
 'use client';
-import { useAuthStore } from "../../lib/store";
+import { useAuthStore } from "@/lib/store";
 import { ProtectedRoute } from "../protector";
 import { useQuery } from "@tanstack/react-query";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { userAPI } from "@/lib/service";
 import { Spinner } from "@/components/ui/spinner";
 import { allRoles } from "@/lib/utils";
-import CustomerDetails from "@/components/custom-ui/dashboard/customer/MainPage";
-import AdminDetails from "@/components/custom-ui/dashboard/admin/MainPage";
-import OwnerDetails from "@/components/custom-ui/dashboard/owner/MainPage";
+import CustomerDetails from "@/components/custom-ui/dashboard/customer/mainpage";
+import AdminDetails from "@/components/custom-ui/dashboard/admin/mainpage";
+import OwnerDetails from "@/components/custom-ui/dashboard/owner/mainpage";
 
 
 export default function Dashboard() {
