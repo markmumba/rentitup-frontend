@@ -15,14 +15,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useParams, useRouter } from 'next/navigation';
 import { isAdmin, isCustomer, isOwner } from '@/lib/service';
-import { BookingResponse } from '@/lib/definitions';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
-import StatusBadge from '@/components/custom-ui/dashboard/owner/statusBadge';
 import { ProtectedRoute } from '@/app/protector';
 import { allRoles } from '@/lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookingAPI } from '@/lib/service';
+import StatusBadge from '@/components/custom-ui/dashboard/owner/statusBadge';
 
 export default function ProtectedSingleBookingPage() {
     return (
