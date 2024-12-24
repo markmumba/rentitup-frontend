@@ -1,7 +1,6 @@
 
 'use client';
 import { categoryAPI, isAdmin } from "@/lib/service";
-import { CategoryAccordion } from "@/components/custom-ui/categories/categoryListAccordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -9,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { CategoryAccordion } from "@/components/custom-ui/categories/categoryListAccordion";
 
 export default function Categories() {
     const router = useRouter();

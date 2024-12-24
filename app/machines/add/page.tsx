@@ -2,7 +2,6 @@
 import { MachineRequest } from "@/lib/definitions";
 import { owner } from "@/lib/utils";
 import { ProtectedRoute } from "@/app/protector";
-import MachineForm from "@/components/custom-ui/machines/machineForm";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -11,6 +10,7 @@ import Link from "next/link";
 import { useMachineStore } from "@/lib/store";
 import { useMutation } from "@tanstack/react-query";
 import { machineAPI } from "@/lib/service";
+import MachineForm from "@/components/custom-ui/machines/machineForm";
 
 export default function ProtectedAddMachine() {
     return (
