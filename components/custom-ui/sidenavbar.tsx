@@ -1,107 +1,136 @@
-import React from 'react';
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
-  Home,
-  User,
-  Briefcase,
-  Settings,
-  Database,
-  Wrench,
-  FileText,
-  Menu
-} from 'lucide-react';
-import { 
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarTrigger
-} from '@/components/ui/sidebar';
-import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../../lib/service';
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem
+} from "@/components/ui/sidebar";
+import {
+    Home,
+    User,
+    CalendarCheck,
+    ListTodo,
+    LogOut,
+    HomeIcon
+} from "lucide-react";
+import { isAdmin, isAuthenticated, isOwner, isCustomer } from '@/lib/service';
+import { LogoutButton } from './logoutbutton';
+import { ModeToggle } from './modalToggle';
 
-const SideNavbar = () => {
-  return (
-    <Sidebar>
-      <SidebarHeader>
-        <h3 className="text-lg font-medium">Menu</h3>
-      </SidebarHeader>
-      <SidebarContent>
-        <div className="flex flex-col space-y-2 p-4">
-          {isAuthenticated() && (
-            <>
-              <SidebarGroup>
-                <a href="/profile" className="flex items-center space-x-2">
-                  <User /> <span>Profile</span>
-                </a>
-              </SidebarGroup>
-              {isCustomer() && (
-                <>
-                  <SidebarGroup>
-                    <a href="/categories" className="flex items-center space-x-2">
-                      <Briefcase /> <span>Categories</span>
-                    </a>
-                  </SidebarGroup>
-                  <SidebarGroup>
-                    <a href="/home" className="flex items-center space-x-2">
-                      <Home /> <span>Home</span>
-                    </a>
-                  </SidebarGroup>
-                  <SidebarGroup>
-                    <a href="/booking-history" className="flex items-center space-x-2">
-                      <FileText /> <span>Booking History</span>
-                    </a>
-                  </SidebarGroup>
-                </>
-              )}
-              {isOwner() && (
-                <>
-                  <SidebarGroup>
-                    <a href="/bookings" className="flex items-center space-x-2">
-                      <Briefcase /> <span>Bookings</span>
-                    </a>
-                  </SidebarGroup>
-                  <SidebarGroup>
-                    <a href="/home" className="flex items-center space-x-2">
-                      <Home /> <span>Home</span>
-                    </a>
-                  </SidebarGroup>
-                  <SidebarGroup>
-                    <a href="/machines" className="flex items-center space-x-2">
-                      <Wrench /> <span>Machines</span>
-                    </a>
-                  </SidebarGroup>
-                </>
-              )}
-              {isAdmin() && (
-                <>
-                  <SidebarGroup>
-                    <a href="/all-machines" className="flex items-center space-x-2">
-                      <Database /> <span>All Machines</span>
-                    </a>
-                  </SidebarGroup>
-                  <SidebarGroup>
-                    <a href="/owners" className="flex items-center space-x-2">
-                      <Settings /> <span>Owners</span>
-                    </a>
-                  </SidebarGroup>
-                  <SidebarGroup>
-                    <a href="/issues" className="flex items-center space-x-2">
-                      <FileText /> <span>Issues</span>
-                    </a>
-                  </SidebarGroup>
-                </>
-              )}
-            </>
-          )}
-        </div>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarTrigger className="p-2 hover:bg-gray-800 rounded-md">
-          <Menu />
-        </SidebarTrigger>
-      </SidebarFooter>
-    </Sidebar>
-  );
-};
+export default function ProtectedSideNavbar() {
+    const pathname = usePathname();
 
-export default SideNavbar;
+    const isActive = (path: string) => pathname === path;
+
+    const sidebarItems = [
+
+        ...(isAuthenticated() ? [
+            {
+                title:"dashboard",
+                url:"/dashboard",
+                icon:HomeIcon,
+                isVisible:true
+            },
+        ] : []),
+
+        // customer Routes
+        ...(isAuthenticated() && isCustomer() ? [
+            {
+                title: "Schedule",
+                url: "/dashboard/waste-category",
+                icon: CalendarCheck,
+                isVisible: true
+            }
+        ] : []),
+
+        // collector Routes
+        ...(isAuthenticated() && isOwner() ? [
+            {
+                title: "Requests",
+                url: "/dashboard/requests",
+                icon: ListTodo,
+                isVisible: true
+            }
+        ] : []),
+
+        // refactor Routes
+        ...(isAuthenticated() && isAdmin() ? [
+            {
+                title: "Waste Categories",
+                url: "/dashboard/waste-category",
+                icon: CalendarCheck,
+                isVisible: true
+            },
+            {
+                title: "Users",
+                url: "/dashboard/users",
+                icon: User,
+                isVisible: true
+            }
+        ] : []),
+        ...(isAuthenticated() ? [
+            {
+                title: "Profile",
+                url: "/dashboard/profile",
+                icon: User,
+                isVisible: true
+            }
+        ] : []),
+    ];
+
+    return (
+        <Sidebar>
+            <SidebarHeader>
+                <Link
+                    href="/dashboard"
+                    className={`flex items-center space-x-3 px-4 ${isActive("/dashboard") ? "text-primary" : ""}`}
+                >
+                    <span className="font-bold text-3xl">Bollo App</span>
+                </Link>
+            </SidebarHeader>
+            <SidebarContent>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {sidebarItems.map((item) => (
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton asChild>
+                                        <Link
+                                            href={item.url}
+                                            className={`flex items-center space-x-2 ${isActive(item.url) ? "bg-primary text-primary-foreground" : ""}`}
+                                        >
+                                            <item.icon />
+                                            <span>{item.title}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+
+
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+                <SidebarMenuItem>
+                    <ModeToggle />
+                    <SidebarMenuButton>
+                        <div className="flex items-center space-x-2">
+                            <LogOut />
+                            <LogoutButton />
+                        </div>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarFooter>
+        </Sidebar >
+    );
+}

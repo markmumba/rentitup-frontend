@@ -1,23 +1,23 @@
 'use client';
-import CustomerDetails from "@/components/custom-ui/Dashboard/Customer/MainPage";
-import AdminDetails from "@/components/custom-ui/Dashboard/Admin/MainPage";
+import CustomerDetails from "@/components/custom-ui/dashboard/Customer/MainPage";
+import AdminDetails from "@/components/custom-ui/dashboard/Admin/MainPage";
 import { useAuthStore } from "../../lib/store";
 import { ProtectedRoute } from "../protector";
 import { useQuery } from "@tanstack/react-query";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { userAPI } from "@/lib/service";
 import { Spinner } from "@/components/ui/spinner";
-import OwnerDetails from "@/components/custom-ui/Dashboard/Owner/MainPage";
+import OwnerDetails from "@/components/custom-ui/dashboard/Owner/MainPage";
 import { allRoles } from "@/lib/utils";
 
 
 export default function Dashboard() {
     const { role } = useAuthStore();
 
-    const { 
-        data: userDetails, 
-        isLoading: isProfileLoading, 
-        error: profileError 
+    const {
+        data: userDetails,
+        isLoading: isProfileLoading,
+        error: profileError
     } = useQuery({
         queryKey: ['user', 'profile'],
         queryFn: userAPI.getLoggedUserProfile,
@@ -36,8 +36,8 @@ export default function Dashboard() {
         return (
             <Alert variant="destructive" className="m-4">
                 <AlertDescription>
-                    {profileError instanceof Error 
-                        ? profileError.message 
+                    {profileError instanceof Error
+                        ? profileError.message
                         : 'Failed to load user profile'}
                 </AlertDescription>
             </Alert>

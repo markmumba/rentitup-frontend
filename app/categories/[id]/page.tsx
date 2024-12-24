@@ -4,13 +4,15 @@ import { MachineListCard } from "@/components/custom-ui/machines/machineListCard
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle } from "lucide-react";
-import { useParams } from "next/navigation";
+import { AlertCircle, ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 
 export default function CategoryPage() {
     const params = useParams();
     const categoryId = params.id as string;
+    const router = useRouter();
 
     // Query for category details
     const {
@@ -54,7 +56,18 @@ export default function CategoryPage() {
 
     // Success state
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 pt-20">
+            {/* Back Button */}
+            <div className="flex justify-end w-full">
+                <Button
+                    variant="outline"
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                </Button>
+            </div>
             {category && (
                 <>
                     <div className="space-y-2 mx-10">

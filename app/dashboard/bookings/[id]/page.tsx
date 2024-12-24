@@ -18,11 +18,11 @@ import { isAdmin, isCustomer, isOwner } from '@/lib/service';
 import { BookingResponse } from '@/lib/definitions';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
-import StatusBadge from '@/components/custom-ui/Dashboard/Owner/statusBadge';
+import StatusBadge from '@/components/custom-ui/dashboard/Owner/statusBadge';
 import { ProtectedRoute } from '@/app/protector';
 import { allRoles } from '@/lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { bookingAPI } from '@/lib/service'; 
+import { bookingAPI } from '@/lib/service';
 
 export default function ProtectedSingleBookingPage() {
     return (
@@ -40,19 +40,19 @@ function SingleBookingPage() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     // Query for booking details
-    const { 
+    const {
         data: booking,
         isLoading: isLoadingBooking,
-        error: bookingError 
+        error: bookingError
     } = useQuery({
         queryKey: ['booking', bookingId],
         queryFn: () => bookingAPI.getBookingById(bookingId),
     });
 
     // Query for booking status list (only when user is owner)
-    const { 
+    const {
         data: statusList = [],
-        isLoading: isLoadingStatus 
+        isLoading: isLoadingStatus
     } = useQuery({
         queryKey: ['bookingStatusList'],
         queryFn: bookingAPI.getBookingStatusList,
@@ -60,9 +60,9 @@ function SingleBookingPage() {
     });
 
     // Mutation for deleting booking
-    const { 
+    const {
         mutate: deleteBookingMutation,
-        isPending: isDeleting 
+        isPending: isDeleting
     } = useMutation({
         mutationFn: () => bookingAPI.deleteBooking(bookingId),
         onSuccess: () => {
@@ -136,7 +136,7 @@ function SingleBookingPage() {
 
     const renderUserDetails = () => {
         if (!booking) return null;
-        
+
         if (isAdmin()) {
             return (
                 <>

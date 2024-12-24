@@ -3,11 +3,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { isAdmin, isAuthenticated, isCustomer, isOwner } from '../../lib/service';
 import { Menu, X } from 'lucide-react';
-import { LogoutButton } from './logoutbutton';
 import { useAuthStore } from '../../lib/store';
-import { ModeToggle } from './modalToggle';
 import { usePathname } from 'next/navigation';
 import { MotionDiv } from '@/components/motion';
 
@@ -52,10 +49,11 @@ export function Navbar() {
 
     const NavLinks = () => (
         <>
-            {!isAuthenticated() && (
                 <>
                     <NavItem href="/categories">Categories</NavItem>
                     <NavItem href="/login">Login</NavItem>
+                    <NavItem href="/about">About</NavItem>
+                    <NavItem href="/commitment"> Our commitment</NavItem>
                     <Button
                         asChild
                         className="bg-orange-500 hover:bg-orange-600 text-white ml-2"
@@ -63,39 +61,8 @@ export function Navbar() {
                         <Link href="/register">Get Started</Link>
                     </Button>
                 </>
-            )}
 
-            {isAuthenticated() && (
-                <>
-                    {isCustomer() && (
-                        <NavItem href="/categories">Book</NavItem>
-                    )}
-
-                    {isOwner() && (
-                        <>
-                            <NavItem href="/orders">Orders</NavItem>
-                            <NavItem href="/categories">Book</NavItem>
-                        </>
-                    )}
-
-                    {isAdmin() && (
-                        <>
-                            <NavItem href="/categories">Categories</NavItem>
-                            <NavItem href="/owners">Owners</NavItem>
-                            <NavItem href="/machines">Machines</NavItem>
-                        </>
-                    )}
-
-                    <NavItem href="/dashboard/profile">Profile</NavItem>
-                    <Link href="/public">
-                        <LogoutButton />
-                    </Link>
-                </>
-            )}
-            <div className="ml-2">
-                <ModeToggle />
-            </div>
-        </>
+        </> 
     );
 
     return (
@@ -112,9 +79,8 @@ export function Navbar() {
         >
             <div className="max-w-7xl mx-auto px-4 py-3">
                 <div className="flex items-center justify-between h-16">
-                    {/* Logo */}
                     <Link 
-                        href={isAuthenticated() ? "/dashboard" : "/public"}
+                        href="/"
                         className={cn(
                             "font-bold text-2xl tracking-tight transition-colors",
                             scrolled ? 
@@ -125,12 +91,10 @@ export function Navbar() {
                         RentItUp
                     </Link>
 
-                    {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-2">
                         <NavLinks />
                     </div>
 
-                    {/* Mobile Menu Button */}
                     <Button
                         variant="ghost"
                         size="icon"
@@ -141,7 +105,6 @@ export function Navbar() {
                     </Button>
                 </div>
 
-                {/* Mobile Navigation */}
                 {isOpen && (
                     <div className="md:hidden py-4 border-t border-slate-200 dark:border-slate-700">
                         <div className="flex flex-col space-y-3">

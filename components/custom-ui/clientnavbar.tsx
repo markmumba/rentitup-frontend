@@ -4,11 +4,9 @@ import Navbar from "./navbar";
 
 export default function ClientNavbar() {
   const pathname = usePathname();
-  const hideNavbarRoutes = ["/login", "/register"];
+  const showNavbarRoutes = ["/","/about"];
 
-  if (hideNavbarRoutes.includes(pathname)) return null;
-  return <Navbar/>
- 
-
+  if (showNavbarRoutes.includes(pathname)) return <Navbar/>;
+  return null;
 
 }
