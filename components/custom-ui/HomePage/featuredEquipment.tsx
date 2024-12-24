@@ -32,7 +32,7 @@ export default function FeaturedEquipment() {
     {
       title: "Kubota Skid Steer",
       category: "Landscaping",
-      image: "skid.jpg",
+      image: "/skid.jpg",
       rating: 4.7,
       reviews: 89,
       price: 19900,
@@ -46,7 +46,7 @@ export default function FeaturedEquipment() {
     {
       title: "Commercial Wood Chipper",
       category: "Garden",
-      image: "chipper.jpg",
+      image: "/chipper.jpg",
       rating: 4.8,
       reviews: 64,
       price: 15000,
@@ -60,7 +60,7 @@ export default function FeaturedEquipment() {
     {
       title: "Boom Lift 60ft",
       category: "Construction",
-      image: "boomlift.jpg",
+      image: "/boomlift.jpg",
       rating: 4.9,
       reviews: 92,
       price: 27500,
