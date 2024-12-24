@@ -1,63 +1,150 @@
+'use client';
 import React from 'react';
+import { Timer, Shield, Star, Target, Users, Workflow, LucideIcon } from 'lucide-react';
 
-export default function MissionSection() {
+// Define types for our feature card props
+interface FeatureCardProps {
+    Icon: LucideIcon;  // LucideIcon type ensures we only use valid Lucide icons
+    title: string;
+    description: string;
+}
+
+// Define our feature data structure
+interface Feature {
+    Icon: LucideIcon;
+    title: string;
+    description: string;
+}
+
+// Create a type-safe array of features
+const features: Feature[] = [
+    {
+        Icon: Timer,
+        title: "Real-time Availability",
+        description: "Instant equipment access"
+    },
+    {
+        Icon: Shield,
+        title: "Secure Payments",
+        description: "Protected transactions"
+    },
+    {
+        Icon: Star,
+        title: "Reliable Ratings",
+        description: "Community-driven trust"
+    },
+    {
+        Icon: Users,
+        title: "Community Focus",
+        description: "Built for collaboration"
+    },
+    {
+        Icon: Workflow,
+        title: "Streamlined Process",
+        description: "Effortless rentals"
+    },
+    {
+        Icon: Target,
+        title: "Targeted Solutions",
+        description: "Right tool, right time"
+    }
+];
+
+// Type-safe Feature Card component
+const FeatureCard: React.FC<FeatureCardProps> = ({ Icon, title, description }) => {
     return (
-        <section className="py-16 bg-gray-50 dark:bg-gray-800">
+        <div className="group flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-lg 
+                        transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <div className="mb-4 transform transition-transform duration-300 group-hover:scale-110">
+                <Icon className="w-8 h-8 text-orange-500" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {title}
+            </h3>
+            <p className="text-sm text-center text-gray-600 dark:text-gray-300">
+                {description}
+            </p>
+        </div>
+    );
+};
+
+export default function MissionSection(): JSX.Element {
+    return (
+        <section className="py-16 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="max-w-3xl mx-auto">
-                    {/* Mission Header */}
-                    <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-                        Our Mission
-                    </h2>
-                    
-                    {/* Mission Statement */}
-                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-8 mb-8">
-                        <p className="text-xl text-gray-900 dark:text-white text-center italic">
-                            "To revolutionize the machinery rental industry by creating a seamless and trustworthy platform that empowers people to achieve their goals, one machine at a time."
-                        </p>
+                    {/* Mission Header with subtle animation */}
+                    <div className="text-center space-y-4 mb-12">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white 
+                                     opacity-0 animate-fade-in">
+                            Our Mission
+                        </h2>
+                        
+                        {/* Animated decorative line */}
+                        <div className="flex justify-center">
+                            <div className="h-1 w-24 bg-orange-500 rounded-full 
+                                         opacity-0 animate-scale-x"></div>
+                        </div>
                     </div>
                     
-                    {/* Mission Description */}
-                    <div className="text-lg text-gray-600 dark:text-gray-300">
-                        <p>
-                            At RentItUp, our mission is simple but powerful: We strive to remove the barriers between need and access by building a platform that offers real-time availability, secure payments, and a reliable rating system. Whether you're tackling a home improvement project or managing a large construction site, we're here to provide the tools you need—literally.
-                        </p>
+                    {/* Mission Statement with floating effect */}
+                    <div className="relative mb-16 opacity-0 animate-fade-in-delay-1">
+                        <div className="absolute inset-0 bg-orange-500 opacity-5 rounded-xl transform rotate-1"></div>
+                        <div className="relative bg-white dark:bg-gray-900 rounded-xl p-8 shadow-sm">
+                            <Target className="w-8 h-8 text-orange-500 mx-auto mb-4" />
+                            <p className="text-xl text-gray-900 dark:text-white text-center">
+                                "To revolutionize the machinery rental industry by creating a seamless and trustworthy platform that empowers people to achieve their goals, one machine at a time."
+                            </p>
+                        </div>
                     </div>
 
-                    {/* Feature Highlights */}
-                    <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-lg shadow-sm">
-                            <div className="h-12 w-12 text-orange-500 mb-4">
-                                <svg className="h-full w-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Real-time Availability</h3>
-                            <p className="text-center text-gray-600 dark:text-gray-300">Find and book equipment instantly when you need it</p>
-                        </div>
-
-                        <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-lg shadow-sm">
-                            <div className="h-12 w-12 text-orange-500 mb-4">
-                                <svg className="h-full w-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Secure Payments</h3>
-                            <p className="text-center text-gray-600 dark:text-gray-300">Protected transactions for peace of mind</p>
-                        </div>
-
-                        <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-lg shadow-sm">
-                            <div className="h-12 w-12 text-orange-500 mb-4">
-                                <svg className="h-full w-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Reliable Ratings</h3>
-                            <p className="text-center text-gray-600 dark:text-gray-300">Trust built through community reviews</p>
-                        </div>
+                    {/* Feature Grid with hover effects */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 opacity-0 animate-fade-in-delay-2">
+                        {features.map((feature, index) => (
+                            <FeatureCard
+                                key={index}
+                                Icon={feature.Icon}
+                                title={feature.title}
+                                description={feature.description}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>
+
+            <style jsx global>{`
+                @keyframes scale-x {
+                    from { 
+                        transform: scaleX(0);
+                        opacity: 0;
+                    }
+                    to { 
+                        transform: scaleX(1);
+                        opacity: 1;
+                    }
+                }
+
+                @keyframes fade-in {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+
+                .animate-scale-x {
+                    animation: scale-x 1s forwards 0.5s;
+                }
+
+                .animate-fade-in {
+                    animation: fade-in 1s forwards;
+                }
+
+                .animate-fade-in-delay-1 {
+                    animation: fade-in 1s forwards 0.5s;
+                }
+
+                .animate-fade-in-delay-2 {
+                    animation: fade-in 1s forwards 1s;
+                }
+            `}</style>
         </section>
     );
 }

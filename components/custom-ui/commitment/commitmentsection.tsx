@@ -1,35 +1,90 @@
-import React, { ReactNode } from 'react';
-import { Shield, ClipboardCheck, MessageSquare, Scale, Heart, BadgeCheck } from 'lucide-react';
+'use client';
+import React, { ReactNode, useState } from 'react';
+import { Shield, ClipboardCheck, MessageSquare, Scale, BadgeCheck, Check } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import Link from 'next/link';
 
-interface SectionProps {
-    title: string;
-    children: ReactNode;
-    className?: string;
-}
-
-interface VerificationListItem {
+interface TimelineItemProps {
     title: string;
     description: string;
-}
-
-interface FeedbackFeature {
+    detailedContent: ReactNode;
     icon: ReactNode;
-    text: string;
+    isLeft: boolean;
 }
 
-interface CoverageItem {
-    text: string;
+interface CommitmentItem {
+    title: string;
+    description: string;
+    icon: ReactNode;
+    detailedContent: ReactNode;
 }
 
-const Section: React.FC<SectionProps> = ({ title, children, className = "" }) => (
-    <div className={`py-8 ${className}`}>
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{title}</h3>
-        {children}
-    </div>
-);
+const TimelineItem: React.FC<TimelineItemProps> = ({
+    title,
+    description,
+    detailedContent,
+    icon,
+    isLeft
+}) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const containerClass = isLeft ? 'flex-row' : 'flex-row-reverse';
+    const cardClass = isLeft ? 'mr-12' : 'ml-12';
+    const lineClass = isLeft ? 'right-12' : 'left-12';
+
+    return (
+        <>
+            <div className={`flex ${containerClass} items-center opacity-0 animate-fade-in`}>
+                {/* Content Card */}
+                <div className={`w-[calc(50%-3rem)] ${cardClass} group`}>
+                    <div
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm cursor-pointer
+                                 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                    >
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="text-orange-500">{icon}</div>
+                            <h4 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h4>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300">{description}</p>
+                    </div>
+                </div>
+
+                {/* Checkpoint */}
+                <div className="relative h-full">
+                    <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center
+                                transform transition-transform duration-300 group-hover:scale-110">
+                        <Check className="w-6 h-6 text-white" />
+                    </div>
+                    {/* Connecting Line */}
+                    <div className={`absolute top-1/2 w-12 h-px bg-orange-500 ${lineClass}`} />
+                </div>
+            </div>
+
+            {/* Modal */}
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-4 text-2xl">
+                            <div className="text-orange-500">{icon}</div>
+                            {title}
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="mt-4">
+                        {detailedContent}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+};
 
 const CommitmentPage: React.FC = () => {
-    const verificationItems: VerificationListItem[] = [
+    const verificationListItems = [
         {
             title: "Proof of Maintenance",
             description: "Machine owners are required to provide evidence of regular maintenance, such as service logs or inspection certificates."
@@ -39,13 +94,12 @@ const CommitmentPage: React.FC = () => {
             description: "Owners must upload clear photos and accurate descriptions of their machinery, including specifications, features, and condition."
         },
         {
-            title: "Verified Machine Condition Checks (Coming Soon)",
+            title: "Verified Machine Condition Checks",
             description: "Our team will periodically inspect machines to confirm their functionality and safety."
         }
     ];
 
-    // Feedback system features
-    const feedbackFeatures: FeedbackFeature[] = [
+    const feedbackFeatures = [
         {
             icon: <BadgeCheck className="h-5 w-5 text-orange-500 mt-1" />,
             text: "Rate and review machines and owners after every rental"
@@ -60,126 +114,190 @@ const CommitmentPage: React.FC = () => {
         }
     ];
 
-    // Insurance coverage items
-    const coverageItems: CoverageItem[] = [
+    const coverageItems = [
         { text: "Accidental damage" },
         { text: "Theft protection" },
         { text: "Loss during rental period" }
     ];
 
-    return (
-        <div className="bg-white dark:bg-gray-900">
-            {/* Hero Section */}
-            <div className="relative bg-gray-900 text-white">
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-gray-900/60" />
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        Our Commitment to Quality and Accountability
-                    </h1>
-                    <p className="text-xl text-gray-200 max-w-3xl">
-                        At RentItUp, we understand that reliability and trust are the cornerstones of a successful rental experience. That's why we've built a comprehensive system to ensure the quality of machinery on our platform and hold all users accountable for their actions.
+    const commitmentItems: CommitmentItem[] = [
+        {
+            title: "Machine Verification Process",
+            description: "Every machine undergoes a rigorous verification process before being approved.",
+            icon: <ClipboardCheck className="w-6 h-6" />,
+            detailedContent: (
+                <div className="space-y-4">
+                    <p className="text-gray-600 dark:text-gray-300">
+                        Every machine listed on RentItUp undergoes a rigorous verification process before being approved:
                     </p>
+                    <ul className="space-y-4">
+                        {verificationListItems.map((item, index) => (
+                            <li key={index} className="flex items-start gap-3">
+                                <div className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-orange-500 mt-2" />
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    <strong>{item.title}:</strong> {item.description}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                {/* Machine Verification Process */}
-                <Section title="Machine Verification Process">
-                    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8">
-                        <div className="flex items-center gap-4 mb-6">
-                            <ClipboardCheck className="h-8 w-8 text-orange-500" />
-                            <h4 className="text-xl font-semibold">Ensuring the Best Machines for Every Job</h4>
+            )
+        },
+        {
+            title: "Customer Feedback System",
+            description: "Rate and review machines after every rental with our comprehensive feedback system.",
+            icon: <MessageSquare className="w-6 h-6" />,
+            detailedContent: (
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        <h4 className="text-lg font-semibold">Your Voice Matters</h4>
+                        <ul className="space-y-4">
+                            {feedbackFeatures.map((feature, index) => (
+                                <li key={index} className="flex items-start gap-3">
+                                    {feature.icon}
+                                    <span>{feature.text}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className="space-y-4">
+                        <h4 className="text-lg font-semibold">What Happens with Negative Feedback?</h4>
+                        <p className="text-gray-600 dark:text-gray-300">
+                            If an issue arises, our feedback system ensures that we address concerns promptly and fairly through our comprehensive dispute resolution process.
+                        </p>
+                    </div>
+                </div>
+            )
+        },
+        {
+            title: "Dispute Resolution",
+            description: "Our comprehensive dispute resolution process ensures all concerns are addressed promptly and fairly.",
+            icon: <Scale className="w-6 h-6" />,
+            detailedContent: (
+                <div className="space-y-4">
+                    <p className="text-gray-600 dark:text-gray-300">
+                        Our dispute resolution process is designed to be fair, transparent, and efficient:
+                    </p>
+                    <ul className="space-y-3">
+                        <li className="flex items-start gap-3">
+                            <BadgeCheck className="h-5 w-5 text-orange-500 mt-1" />
+                            <span>Immediate response to all reported issues</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                            <BadgeCheck className="h-5 w-5 text-orange-500 mt-1" />
+                            <span>Fair mediation between parties</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                            <BadgeCheck className="h-5 w-5 text-orange-500 mt-1" />
+                            <span>Clear resolution timeline and process</span>
+                        </li>
+                    </ul>
+                </div>
+            )
+        },
+        {
+            title: "Insurance Options",
+            description: "Optional insurance coverage for complete peace of mind during rentals.",
+            icon: <Shield className="w-6 h-6" />,
+            detailedContent: (
+                <div className="space-y-6">
+                    <p className="text-gray-600 dark:text-gray-300">
+                        We've partnered with trusted insurance providers to offer optional coverage for renters and owners.
+                    </p>
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <h5 className="font-semibold">What's Covered</h5>
+                            <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                                {coverageItems.map((item, index) => (
+                                    <li key={index} className="flex items-start gap-3">
+                                        <BadgeCheck className="h-5 w-5 text-orange-500 mt-1" />
+                                        <span>{item.text}</span>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                         <div className="space-y-4">
+                            <h5 className="font-semibold">How It Works</h5>
                             <p className="text-gray-600 dark:text-gray-300">
-                                Every machine listed on RentItUp undergoes a rigorous verification process before being approved:
-                            </p>
-                            <ul className="space-y-4 ml-6">
-                                {verificationItems.map((item, index) => (
-                                    <li key={index} className="flex items-start gap-3">
-                                        <div className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-orange-500 mt-2" />
-                                        <span className="text-gray-600 dark:text-gray-300">
-                                            <strong>{item.title}:</strong> {item.description}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </Section>
-
-                {/* Customer Feedback System */}
-                <Section title="Customer Feedback System">
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8">
-                            <div className="flex items-center gap-4 mb-6">
-                                <MessageSquare className="h-8 w-8 text-orange-500" />
-                                <h4 className="text-xl font-semibold">Your Voice Matters</h4>
-                            </div>
-                            <ul className="space-y-4">
-                                {feedbackFeatures.map((feature, index) => (
-                                    <li key={index} className="flex items-start gap-3">
-                                        {feature.icon}
-                                        <span>{feature.text}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8">
-                            <div className="flex items-center gap-4 mb-6">
-                                <Scale className="h-8 w-8 text-orange-500" />
-                                <h4 className="text-xl font-semibold">What Happens with Negative Feedback?</h4>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                If an issue arises, our feedback system ensures that we address concerns promptly and fairly through our comprehensive dispute resolution process.
+                                Choose your preferred insurance option when booking or listing a machine for complete peace of mind.
                             </p>
                         </div>
                     </div>
-                </Section>
+                </div>
+            )
+        }
+    ];
 
-                {/* Insurance Options */}
-                <Section title="Insurance Options (Optional)">
-                    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8">
-                        <div className="flex items-center gap-4 mb-6">
-                            <Shield className="h-8 w-8 text-orange-500" />
-                            <h4 className="text-xl font-semibold">Added Peace of Mind</h4>
-                        </div>
-                        <p className="text-gray-600 dark:text-gray-300 mb-6">
-                            We've partnered with trusted insurance providers to offer optional coverage for renters and owners.
+    return (
+        <div className="bg-gradient-to-b from-orange-200 to-white dark:from-gray-900 dark:to-gray-800">
+            {/* Hero Section */}
+            <div className="relative bg-gray-900 text-white min-h-[90vh] flex items-center">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-gray-900/60" />
+                <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-3xl mx-auto text-center">
+                        <h1 className="text-5xl md:text-6xl lg:text-5xl font-bold mb-6 opacity-0 animate-fade-in">
+                            Our Commitment to Quality
+                        </h1>
+                        <p className="text-xl md:text-2xl text-gray-200 opacity-0 animate-fade-in-delay-1">
+                            At RentItUp, we've built a comprehensive system to ensure reliability and trust in every rental experience.
                         </p>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="bg-white dark:bg-gray-900 rounded-lg p-6">
-                                <h5 className="font-semibold mb-3">What's Covered</h5>
-                                <ul className="space-y-2 text-gray-600 dark:text-gray-300">
-                                    {coverageItems.map((item, index) => (
-                                        <li key={index}>✓ {item.text}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className="bg-white dark:bg-gray-900 rounded-lg p-6">
-                                <h5 className="font-semibold mb-3">How It Works</h5>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    Choose your preferred insurance option when booking or listing a machine for complete peace of mind.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </Section>
-
-                {/* Call to Action */}
-                <div className="mt-12 text-center">
-                    <h3 className="text-2xl font-bold mb-8">Ready to experience reliable machinery rental?</h3>
-                    <div className="flex justify-center gap-4">
-                        <button className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors">
-                            Sign Up Now
-                        </button>
-                        <button className="border border-gray-300 dark:border-gray-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                            Contact Us
-                        </button>
                     </div>
                 </div>
             </div>
+
+            {/* Timeline Section */}
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                {/* Center Line */}
+                <div className="absolute left-1/2 transform -translate-x-[0.5px] w-px h-full bg-orange-200 dark:bg-orange-800/30" />
+
+                {/* Timeline Items */}
+                <div className="relative space-y-24">
+                    {commitmentItems.map((item, index) => (
+                        <TimelineItem
+                            key={index}
+                            title={item.title}
+                            description={item.description}
+                            detailedContent={item.detailedContent}
+                            icon={item.icon}
+                            isLeft={index % 2 === 0}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* Call to Action */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+                <h3 className="text-2xl font-bold mb-8 opacity-0 animate-fade-in">
+                    Ready to experience reliable machinery rental?
+                </h3>
+                <div className="flex justify-center gap-4 opacity-0 animate-fade-in-delay-1">
+                    <Link href="/register">
+                        <button className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold 
+                                   hover:bg-orange-600 transition-colors">
+                            Sign Up Now
+                        </button>
+                    </Link>
+                    <button className="border border-gray-300 dark:border-gray-600 px-6 py-3 rounded-lg 
+                                   font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        Contact Us
+                    </button>
+                </div>
+            </div>
+
+            <style jsx global>{`
+                @keyframes fade-in {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                .animate-fade-in {
+                    animation: fade-in 1s forwards;
+                }
+
+                .animate-fade-in-delay-1 {
+                    animation: fade-in 1s forwards 0.3s;
+                }
+            `}</style>
         </div>
     );
 };

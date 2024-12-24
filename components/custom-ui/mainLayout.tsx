@@ -14,19 +14,14 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
 
-  // Define route patterns
   const publicOnlyRoutes = ["/", "/about","/commitment"];
   const protectedRoutes = ["/dashboard"];
   const flexibleRoutes = ["/categories", "/machines"];
 
-  // Helper function to check if a path matches our route patterns
   const isPathMatch = (path: string, patterns: string[]) => {
     return patterns.some(pattern => {
-      // Check for exact match
       if (pattern === path) return true;
       
-      // Check if the current path starts with the pattern
-      // This will match '/categories/1', '/categories/2', etc.
       if (path.startsWith(pattern + '/')) return true;
       
       return false;
