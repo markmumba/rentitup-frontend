@@ -1,14 +1,10 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { toast } from "@/hooks/use-toast";
 import { UserDetails } from "@/lib/definitions";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, User } from "lucide-react";
-import { userAPI } from '@/lib/service';
+import {  User } from "lucide-react";
 import AllBookings from './bookings';
-import { UserList } from './UserList';
+// @ts-ignore
+import {UserList} from "@/components/custom-ui/dashboard/admin/userlist";
 
 interface AdminProps {
   data: UserDetails;
@@ -34,7 +30,7 @@ export default function AdminDetails({data}:AdminProps) {
         </div>
       </div>
       <AllBookings />
-      <UserList />
+      <UserList/>
     </div>
   );
 }

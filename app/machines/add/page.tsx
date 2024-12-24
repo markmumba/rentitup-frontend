@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useMachineStore } from "@/lib/store";
 import { useMutation } from "@tanstack/react-query";
 import { machineAPI } from "@/lib/service";
-import MachineForm from "@/components/custom-ui/machines/machineForm";
+import MachineForm from "@/components/custom-ui/machines/machineform";
 
 export default function ProtectedAddMachine() {
     return (

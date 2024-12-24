@@ -4,7 +4,7 @@ import { machineAPI, categoryAPI } from "@/lib/service"; // Assuming this is whe
 import { toast } from "@/hooks/use-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import MachineUpdateForm from "@/components/custom-ui/machines/machineUpdateForm";
+import MachineUpdateForm from "@/components/custom-ui/machines/machineupdateform";
 
 export default function UpdateMachine() {
     const params = useParams();
