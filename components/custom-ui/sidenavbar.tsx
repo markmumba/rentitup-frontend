@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { isAdmin, isAuthenticated, isOwner, isCustomer } from '@/lib/service';
 import { LogoutButton } from './logoutbutton';
-import { ModeToggle } from './modalToggle';
+import {ModeToggle} from "@/components/custom-ui/modaltoggle";
 
 export default function ProtectedSideNavbar() {
     const pathname = usePathname();
@@ -122,7 +122,7 @@ export default function ProtectedSideNavbar() {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenuItem>
-                    <ModeToggle />
+                    <ModeToggle/>
                     <SidebarMenuButton>
                         <div className="flex items-center space-x-2">
                             <LogOut />

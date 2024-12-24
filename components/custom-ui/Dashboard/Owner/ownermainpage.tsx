@@ -2,7 +2,7 @@
 
 import { UserDetails } from "@/lib/definitions";
 import { User } from "lucide-react";
-import Orders from "./orderList";
+import Orders from "@/components/custom-ui/dashboard/owner/orderlist";
 
 interface OwnerProps {
   data: UserDetails;
