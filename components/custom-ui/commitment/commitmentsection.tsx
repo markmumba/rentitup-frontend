@@ -202,11 +202,11 @@ const CommitmentPage: React.FC = () => {
             detailedContent: (
                 <div className="space-y-6">
                     <p className="text-gray-600 dark:text-gray-300">
-                        We've partnered with trusted insurance providers to offer optional coverage for renters and owners.
+                        We&apos;ve partnered with trusted insurance providers to offer optional coverage for renters and owners.
                     </p>
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-4">
-                            <h5 className="font-semibold">What's Covered</h5>
+                            <h5 className="font-semibold">What&apos;s Covered</h5>
                             <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                                 {coverageItems.map((item, index) => (
                                     <li key={index} className="flex items-start gap-3">
@@ -239,7 +239,7 @@ const CommitmentPage: React.FC = () => {
                             Our Commitment to Quality
                         </h1>
                         <p className="text-xl md:text-2xl text-gray-200 opacity-0 animate-fade-in-delay-1">
-                            At RentItUp, we've built a comprehensive system to ensure reliability and trust in every rental experience.
+                            At RentItUp, we&apos;ve built a comprehensive system to ensure reliability and trust in every rental experience.
                         </p>
                     </div>
                 </div>

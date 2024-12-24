@@ -12,6 +12,7 @@ import { allRoles } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { isOwner, machineAPI, userAPI } from "@/lib/service";
+import Image from "next/image";
 
 export default function ProtectedProfile() {
     return (
@@ -156,10 +157,12 @@ function Profile() {
                         {userDetails.ownedMachines?.map((machine) => (
                             <Card key={machine.id} className="overflow-hidden">
                                 <div className="aspect-video relative">
-                                    <img
-                                        src={machine.machineImages.find(img => img.isPrimary)?.url}
+                                    <Image
+                                        src={machine.machineImages.find(img => img.isPrimary)?.url!}
                                         alt={machine.name}
                                         className="object-cover w-full h-full"
+                                        width={800}
+                                        height={800}
                                     />
                                     <Badge
                                         className="absolute top-2 right-2"

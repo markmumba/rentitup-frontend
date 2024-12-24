@@ -93,7 +93,7 @@ export default function MissionSection(): JSX.Element {
                         <div className="relative bg-white dark:bg-gray-900 rounded-xl p-8 shadow-sm">
                             <Target className="w-8 h-8 text-orange-500 mx-auto mb-4" />
                             <p className="text-xl text-gray-900 dark:text-white text-center">
-                                "To revolutionize the machinery rental industry by creating a seamless and trustworthy platform that empowers people to achieve their goals, one machine at a time."
+                            &apos;To revolutionize the machinery rental industry by creating a seamless and trustworthy platform that empowers people to achieve their goals, one machine at a time.&apos;
                             </p>
                         </div>
                     </div>

@@ -14,6 +14,7 @@ import {
   MapPin,
   Heart
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function TestimonialsSection() {
   const testimonials = [
@@ -106,7 +107,7 @@ export default function TestimonialsSection() {
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-6">
                   <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-700">
-                    <img src={testimonial.image} alt={testimonial.name} />
+                    <Image src={testimonial.image} alt={testimonial.name} width={200} height={200} />
                   </Avatar>
                   <div>
                     <div className="font-semibold text-slate-900 dark:text-slate-100">
@@ -133,7 +134,7 @@ export default function TestimonialsSection() {
                 </div>
 
                 <blockquote className="text-slate-600 dark:text-slate-400 mb-4">
-                  "{testimonial.review}"
+                &apos;{testimonial.review}&apos;
                 </blockquote>
 
                 <div className="text-sm bg-slate-50 dark:bg-slate-900 rounded-lg p-3">

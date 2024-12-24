@@ -69,7 +69,7 @@ export default function ContactSection() {
             Get in Touch
           </h2>
           <p className="text-slate-600 dark:text-slate-400">
-            Have questions about our platform? We're here to help.
+            Have questions about our platform? We&apos;re here to help.
           </p>
         </div>
 

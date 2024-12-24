@@ -26,12 +26,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Loader2 } from "lucide-react"
+import { useQuery } from "@tanstack/react-query";
+
 
 const categorySchema = z.object({
     name: z.string().min(1, "Name is required").max(100, "Name is too long"),
     description: z.string().min(1, "Description is required").max(500, "Description is too long"),
     priceCalculationType: z.string().min(1, "Price calculation type is required")
-})
+});
 
 export default function CategoryForm({
     onSubmit,
@@ -42,20 +44,26 @@ export default function CategoryForm({
     isLoading?: boolean,
     category?: CategoryResponse
 }) {
-    const [priceCalculationType, setPriceCalculationType] = useState<string[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const { 
+        data: priceCalculationTypes = [], 
+        isError,
+        error
+    } = useQuery({
+        queryKey: ['priceCalculationTypes'], 
+        queryFn: () => categoryAPI.getPriceCalculationTypes(),
+        retry: 2,
+        staleTime: 5 * 60 * 1000, 
+    });
 
     const form = useForm<z.infer<typeof categorySchema>>({
         resolver: zodResolver(categorySchema),
         defaultValues: {
-            // If category exists, use its values, otherwise use empty strings
             name: category?.name || "",
             description: category?.description || "",
             priceCalculationType: category?.priceCalculationType || ""
         }
     });
 
-    // Update form values when category prop changes
     useEffect(() => {
         if (category) {
             form.reset({
@@ -64,25 +72,11 @@ export default function CategoryForm({
                 priceCalculationType: category.priceCalculationType
             });
         }
-    }, [category, form]);
-
-    async function getPriceCalculation() {
-        try {
-            const response = await categoryAPI.getPriceCalculationTypes();
-            setPriceCalculationType(response);
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to load price calculation types');
-        }
-    }
+    }, [category, form, priceCalculationTypes]);
 
     function handleSubmit(values: z.infer<typeof categorySchema>) {
         onSubmit(values);
     }
-
-    useEffect(() => {
-        getPriceCalculation();
-        console.log(priceCalculationType);
-    }, []);
 
     return (
         <Form {...form}>
@@ -135,11 +129,18 @@ export default function CategoryForm({
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {priceCalculationType.map((type) => (
-                                        <SelectItem key={type} value={type}>
-                                            {type}
+                                    {/* Add loading and error states */}
+                                    {isError ? (
+                                        <SelectItem value="">
+                                            Error loading types: {error instanceof Error ? error.message : 'Unknown error'}
                                         </SelectItem>
-                                    ))}
+                                    ) : (
+                                        priceCalculationTypes.map((type) => (
+                                            <SelectItem key={type} value={type}>
+                                                {type}
+                                            </SelectItem>
+                                        ))
+                                    )}
                                 </SelectContent>
                             </Select>
                             <FormMessage />

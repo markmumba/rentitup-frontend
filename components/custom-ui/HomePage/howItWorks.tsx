@@ -115,7 +115,7 @@ export default function HowItWorksSection() {
                   Get Your Equipment
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400 mb-4">
-                  Choose between convenient delivery or pickup from the owner's location. 
+                  Choose between convenient delivery or pickup from the owner&apos;s location. 
                   Our platform ensures a smooth handover process.
                 </p>
                 <div className="grid grid-cols-2 gap-4">

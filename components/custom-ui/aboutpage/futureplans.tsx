@@ -52,7 +52,7 @@ export default function FuturePlansSection() {
                             Future Plans
                         </h2>
                         <p className="text-lg text-gray-600 dark:text-gray-300">
-                            At RentItUp, we don't just aim to solve today's problems—we're already preparing for tomorrow. Here's a glimpse of what's in store:
+                            At RentItUp, we don&apos;t just aim to solve today&apos;s problems—we&apos;re already preparing for tomorrow. Here&apos;s a glimpse of what&apos;s in store:
                         </p>
                     </div>
 
@@ -81,7 +81,7 @@ export default function FuturePlansSection() {
                     {/* Closing Statement */}
                     <div className="mt-12 text-center">
                         <p className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                            RentItUp isn't just a platform—it's a movement to transform how machinery is rented, one transaction at a time.
+                            RentItUp isn&apos;t just a platform—it&apos;s a movement to transform how machinery is rented, one transaction at a time.
                         </p>
                         <p className="text-gray-600 dark:text-gray-300">
                             We invite you to join us in this exciting journey as we innovate, grow, and make renting smarter and more efficient for everyone.

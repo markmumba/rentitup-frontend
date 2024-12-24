@@ -80,15 +80,7 @@ export const UserList = () => {
         queryFn: userAPI.getAllUsers,
     });
 
-    // Query for single user details
-    const {
-        data: userDetails,
-        refetch: refetchUserDetails
-    } = useQuery({
-        queryKey: ['user', selectedUser?.id],
-        queryFn: () => selectedUser ? userAPI.getUserById(String(selectedUser.id)) : null,
-        enabled: !!selectedUser, 
-    });
+  
 
     // Filter out admin users and apply search
     const filteredUsers = userList
@@ -98,14 +90,21 @@ export const UserList = () => {
             user.email.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
-    const handleUserClick = async (userId: string) => {
-        const user = userList?.find(u => u.id === userId);
-        if (user) {
-            setSelectedUser(user);
-        }
-    };
+        const handleUserClick = async (userId: string) => {
+            const basicUser = userList?.find(u => u.id === userId);
+            if (basicUser) {
+                // Fetch full user details before setting the state
+                const fullUserDetails = await userAPI.getUserById(String(basicUser.id));
+                setSelectedUser(fullUserDetails);
+            }
+        };
 
- 
+    const handleAddCategory = () => {
+        toast({
+            title: "Coming Soon",
+            description: "Category addition feature is under development",
+        });
+    };
 
     return (
         <div className="space-y-6">
@@ -170,7 +169,7 @@ export const UserList = () => {
             {/* User Details Modal */}
             {selectedUser && (
                 <UserModal
-                    user={userDetails || selectedUser}
+                    user={ selectedUser}
                     isOpen={!!selectedUser}
                     onClose={() => setSelectedUser(null)}
                 />

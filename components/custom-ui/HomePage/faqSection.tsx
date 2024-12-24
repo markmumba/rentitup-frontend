@@ -219,7 +219,7 @@ export default function FAQSection() {
                 Still have questions?
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-6">
-                Can't find the answer you're looking for? Our support team is here to help.
+                Can&apos;t find the answer you&apos;re looking for? Our support team is here to help.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button 

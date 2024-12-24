@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Shield
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function FeaturedEquipment() {
   const [activeView, setActiveView] = React.useState('trending');
@@ -111,10 +112,12 @@ export default function FeaturedEquipment() {
             >
               {/* Image */}
               <div className="aspect-video relative overflow-hidden">
-                <img 
+                <Image 
                   src={item.image} 
                   alt={item.title}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  width={800}
+                  height={800}
                 />
                 <Badge className="absolute top-3 left-3 bg-white/90 text-slate-900 
                   dark:bg-slate-800/90 dark:text-slate-100">

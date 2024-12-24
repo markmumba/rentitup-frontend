@@ -32,10 +32,10 @@ export default function AboutHeroSection() {
                             The idea for <span className="text-2xl font-bold text-orange-500 dark:text-orange-400">RentItUp</span> began when we noticed a recurring challenge faced by contractors, small business owners, and even everyday homeowners: finding quality machinery at the right time and cost.
                         </p>
                         <p className="text-lg opacity-0 animate-fade-in-delay-2">
-                            We asked ourselves, <span className="italic font-medium">"What if there was a way to connect those who have machinery with those who need it—quickly, safely, and affordably?"</span> That question sparked the creation of RentItUp.
+                            We asked ourselves, <span className="italic font-medium">&apos;What if there was a way to connect those who have machinery with those who need it—quickly, safely, and affordably?&apos;</span> That question sparked the creation of RentItUp.
                         </p>
                         <p className="text-lg opacity-0 animate-fade-in-delay-3">
-                            <span className="text-xl font-semibold text-orange-500 dark:text-orange-600">RentItUp</span> is more than a platform; it's a solution born out of necessity.
+                            <span className="text-xl font-semibold text-orange-500 dark:text-orange-600">RentItUp</span> is more than a platform; it&apos;s a solution born out of necessity.
                         </p>
                         <p className="text-lg opacity-0 animate-fade-in-delay-4">
                             Today, RentItUp serves as a trusted bridge between renters and machine owners, fostering connections that help businesses grow and individuals complete their projects efficiently.

@@ -10,8 +10,8 @@ import {
   MotionSpan
 } from '@/components/motion';
 
+const phrases = ["Rent Any Machine", "Book Any Machine", "Find Any Machine"];
 const TypewriterText = () => {
-  const phrases = ["Rent Any Machine", "Book Any Machine", "Find Any Machine"];
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
   const [currentText, setCurrentText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);

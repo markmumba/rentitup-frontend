@@ -22,7 +22,7 @@ export function ProtectedRoute({ children, allowedRoles = [] }: ProtectedRoutePr
             router.push('/unauthorized');
             return;
         }
-    }, [token, role, allowedRoles]);
+    }, [token, role, allowedRoles,router]);
 
     if (!token) {
         return null;

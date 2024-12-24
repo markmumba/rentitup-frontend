@@ -47,7 +47,7 @@ export default function VisionSection() {
                                     <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                                 </div>
                                 <p className="text-lg text-gray-600 dark:text-gray-300">
-                                    Machine owners can confidently monetize their assets, knowing they're protected by fair policies and transparent practices.
+                                    Machine owners can confidently monetize their assets, knowing they&apos;re protected by fair policies and transparent practices.
                                 </p>
                             </div>
                         </div>
@@ -62,7 +62,7 @@ export default function VisionSection() {
                             </h3>
                         </div>
                         <p className="text-lg text-gray-600 dark:text-gray-300">
-                            We also envision a sustainable future where the efficient sharing of resources reduces waste and promotes community growth. By unlocking the hidden potential of idle machinery, we're contributing to a more resourceful and eco-friendly world.
+                            We also envision a sustainable future where the efficient sharing of resources reduces waste and promotes community growth. By unlocking the hidden potential of idle machinery, we&apos;re contributing to a more resourceful and eco-friendly world.
                         </p>
                     </div>
                 </div>

@@ -18,6 +18,7 @@ import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { machineAPI } from "@/lib/service";
+import Image from "next/image";
 
 const machineUpdateSchema = z.object({
     name: z.string()
@@ -154,10 +155,12 @@ export default function MachineUpdateForm({
                                     <div className="grid grid-cols-4 gap-4">
                                         {machine.machineImages.map((image) => (
                                             <div key={`existing-${image.id}`} className="relative">
-                                                <img
+                                                <Image
                                                     src={image.url}
                                                     alt={`Machine image ${image.id}`}
                                                     className="w-full h-24 object-cover rounded-lg"
+                                                    width={800}
+                                                    height={800}
                                                 />
                                                 {image.isPrimary && (
                                                     <span className="absolute top-1 left-1 bg-green-500 text-white px-2 py-1 rounded-md text-xs">
