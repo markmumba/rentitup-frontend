@@ -6,9 +6,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { userAPI } from "@/lib/service";
 import { Spinner } from "@/components/ui/spinner";
 import { allRoles } from "@/lib/utils";
-import CustomerDetails from "@/components/custom-ui/dashboard/customer/customermainpage";
-import AdminDetails from "@/components/custom-ui/dashboard/admin/adminmainpage";
-import OwnerDetails from "@/components/custom-ui/dashboard/owner/ownermainpage";
+import CustomerDetails from "@/components/custom-ui/dashboard/customer/maincustomerpage";
+import AdminDetails from "@/components/custom-ui/dashboard/admin/mainadminpage";
+import OwnerDetails from "@/components/custom-ui/dashboard/owner/mainownerpage";
 
 
 export default function Dashboard() {

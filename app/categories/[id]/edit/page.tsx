@@ -1,5 +1,5 @@
 'use client';
-import { CategoryRequest, CategoryResponse } from "@/lib/definitions";
+import { CategoryRequest } from "@/lib/definitions";
 import { categoryAPI } from "@/lib/service"; // Assuming this is where your API functions are exported
 import CategoryForm from "@/components/custom-ui/categories/categoryform";
 import { toast } from "@/hooks/use-toast";
@@ -65,7 +65,7 @@ export default function UpdateCategory() {
             <div className="container mx-auto py-8">
                 <div className="text-center">
                     <h2 className="text-red-600">
-                        {fetchError instanceof Error ? fetchError.message : 'Failed to load category'}
+                        {fetchError.message}
                     </h2>
                 </div>
             </div>

@@ -21,7 +21,7 @@ import { ProtectedRoute } from '@/app/protector';
 import { allRoles } from '@/lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookingAPI } from '@/lib/service';
-import Statusbadge from '@/components/custom-ui/dashboard/owner/statusbadge';
+import StatusBadge from '@/components/custom-ui/dashboard/owner/statusbadge';
 
 export default function ProtectedSingleBookingPage() {
     return (
@@ -162,7 +162,7 @@ function SingleBookingPage() {
                             <CardTitle className="text-2xl">Booking Details</CardTitle>
                             <p className="text-sm text-gray-500">Booking Code: {booking.bookingCode}</p>
                         </div>
-                        <Statusbadge booking={booking} statusList={statusList} />
+                        <StatusBadge booking={booking} statusList={statusList} />
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
