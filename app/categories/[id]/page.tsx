@@ -7,7 +7,7 @@ import { AlertCircle, ArrowLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import {MachineListCard} from "@/components/custom-ui/machines/machinelistcard";
+import MachineListCard from "@/components/custom-ui/machines/machinelistcard";
 
 export default function CategoryPage() {
     const params = useParams();

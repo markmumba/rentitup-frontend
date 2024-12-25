@@ -14,7 +14,7 @@ import { useState } from "react";
 
 
 
-export function CategoryAccordion({ category }: { category: CategoryListResponse }) {
+export default function CategoryAccordion({ category }: { category: CategoryListResponse }) {
 
     const router = useRouter();
 
