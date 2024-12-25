@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 
 
-export function MachineListCard({ machine }: { machine: MachineListResponse }) {
+export default function MachineListCard({ machine }: { machine: MachineListResponse }) {
   const router = useRouter();
   return (
     <Card className="hover:bg-gray-100 dark:hover:bg-gray-900"  onClick={() => router.push(`/machines/${machine.id}`)}>
