@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingListResponse, BookingRequest, BookingResponse, CategoryListResponse, CategoryRequest, CategoryResponse, CollectorVerificationRequest, ForgotPasswordRequest, LoginRequest, LoginResponse, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, RegisterRequest, ResetPasswordRequest, ReviewRequest, UserDetails, UserDetailsList } from "./definitions";
+import { BookingListResponse, BookingRequest, BookingResponse, CategoryListResponse, CategoryRequest, CategoryResponse, CollectorVerificationRequest, ForgotPasswordRequest, LoginRequest, LoginResponse, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, MaintenanceRecordRequest, MaintenanceRecordResponse, RegisterRequest, ResetPasswordRequest, ReviewRequest, UserDetails, UserDetailsList } from "./definitions";
 
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -695,6 +695,120 @@ export const machineAPI = {
         }
     }
 };
+
+
+
+/**
+ * Endpoints associated with maintenance records 
+ */
+
+export const maintenanceAPI = {
+    createMaintenanceRecord: async (
+        machineId: string,
+        request: MaintenanceRecordRequest,
+        file: File
+    ): Promise<MaintenanceRecordResponse> => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('request', new Blob(
+                [JSON.stringify(request)],
+                { type: 'application/json' }
+            ));
+
+            const response = await axios.post<MaintenanceRecordResponse>(
+                `${BASE_URL}/machines/${machineId}/maintenance-records`,
+                formData,
+                {
+                    headers: {
+                        ...getHeader(),
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to create maintenance record.");
+            }
+            throw new Error("An unexpected error occurred while creating maintenance record.");
+        }
+    },
+
+    getMachineMaintenanceRecords: async (machineId: string): Promise<MaintenanceRecordResponse[]> => {
+        const response = await axios.get<MaintenanceRecordResponse[]>(
+            `${BASE_URL}/machines/${machineId}/maintenance-records`
+        );
+        return response.data;
+    },
+
+    getUncheckedMaintenanceRecords: async (): Promise<MaintenanceRecordResponse[]> => {
+        const response = await axios.get<MaintenanceRecordResponse[]>(
+            `${BASE_URL}/maintenance-records`,
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
+
+    getMaintenanceRecordById: async (id: string): Promise<MaintenanceRecordResponse> => {
+        const response = await axios.get<MaintenanceRecordResponse>(
+            `${BASE_URL}/maintenance-records/${id}`
+        );
+        return response.data;
+    },
+
+    updateMaintenanceRecord: async (
+        id: string,
+        request: MaintenanceRecordRequest
+    ): Promise<string> => {
+        try {
+            const formData = new FormData();
+            formData.append('request', new Blob(
+                [JSON.stringify(request)],
+                { type: 'application/json' }
+            ));
+
+            const response = await axios.put<string>(
+                `${BASE_URL}/maintenance-records/${id}`,
+                formData,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to update maintenance record.");
+            }
+            throw new Error("An unexpected error occurred while updating maintenance record.");
+        }
+    },
+
+    deleteMaintenanceRecord: async (id: string): Promise<string> => {
+        try {
+            const response = await axios.delete(
+                `${BASE_URL}/maintenance-records/${id}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to delete maintenance record.");
+            }
+            throw new Error("An unexpected error occurred while deleting maintenance record.");
+        }
+    },
+
+    verifyRecord: async (id: string): Promise<MaintenanceRecordResponse> => {
+        const response = await axios.patch<MaintenanceRecordResponse>(
+            `${BASE_URL}/maintenance-records/${id}/verify`,
+            {},
+            { headers: getHeader() }
+        );
+        return response.data;
+    }
+};
+
+
+
 
 
 /** Role-related functions */

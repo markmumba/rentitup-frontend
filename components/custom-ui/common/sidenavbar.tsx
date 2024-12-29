@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { isAdmin, isAuthenticated, isOwner, isCustomer } from '@/lib/service';
 import { LogoutButton } from './logoutbutton';
-import {ModeToggle} from "@/components/custom-ui/modaltoggle";
+import { ModeToggle } from "@/components/custom-ui/common/modaltoggle";
 
 export default function ProtectedSideNavbar() {
     const pathname = usePathname();
@@ -34,10 +34,10 @@ export default function ProtectedSideNavbar() {
 
         ...(isAuthenticated() ? [
             {
-                title:"dashboard",
-                url:"/dashboard",
-                icon:HomeIcon,
-                isVisible:true
+                title: "dashboard",
+                url: "/dashboard",
+                icon: HomeIcon,
+                isVisible: true
             },
         ] : []),
 
@@ -128,7 +128,7 @@ export default function ProtectedSideNavbar() {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenuItem>
-                    <ModeToggle/>
+                    <ModeToggle />
                     <SidebarMenuButton>
                         <div className="flex items-center space-x-2">
                             <LogOut />

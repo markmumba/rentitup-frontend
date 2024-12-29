@@ -186,3 +186,20 @@ export enum BookingStatus {
   CANCELLED = "CANCELLED",
   COMPLETED = "COMPLETED",
 }
+
+export interface MaintenanceRecordRequest {
+  serviceDate: string;        
+  description: string;
+  performedBy: string;
+  nextService: string;        
+}
+
+export interface MaintenanceRecordResponse {
+  id: string;
+  serviceDate: string;        
+  description: string;
+  checked: boolean;
+  performedBy: string;
+  nextService: string;      
+  imageRecordUrl: string | null;  
+}

@@ -5,7 +5,7 @@ import ClientNavbar from "@/components/custom-ui/clientnavbar";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "./query-provider";
-import MainLayout from "@/components/custom-ui/mainlayout";
+import MainLayout from "@/components/custom-ui/common/mainlayout";
 
 const inter = Inter({ subsets: ["latin"] });
 

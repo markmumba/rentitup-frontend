@@ -12,7 +12,7 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { LoginRequest } from "../../lib/definitions"
+import { LoginRequest } from "../../../lib/definitions"
 import Link from "next/link"
 
 
@@ -97,7 +97,7 @@ export function LoginForm(
                 <div className="p-2">
                     <Link href="/register" >Go back to register</Link>
                 </div>
-                
+
                 <div className="p-2">
                     <Link href="/" >Go back home </Link>
                 </div>

@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "../../lib/store";
+import { useAuthStore } from "../../../lib/store";
 import { Button } from "@/components/ui/button";
 
 export function LogoutButton() {
@@ -7,8 +7,8 @@ export function LogoutButton() {
     const logoutFn = useAuthStore(state => state.logout);
 
     const handleLogout = () => {
-        logoutFn();  
-        router.push('/');  
+        logoutFn();
+        router.push('/');
     };
 
     return (

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Menu, X } from 'lucide-react';
-import { useAuthStore } from '../../lib/store';
+import { useAuthStore } from '../../../lib/store';
 import { usePathname } from 'next/navigation';
 import { MotionDiv } from '@/components/motion';
 
