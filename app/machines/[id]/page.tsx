@@ -1,6 +1,6 @@
 'use client'
 import { BookingRequest, MachineImageResponse, MachineResponse } from "@/lib/definitions";
-import { machineAPI, categoryAPI, isAuthenticated, isCustomer, isOwner  } from "@/lib/service"; // Assuming this is where your API functions are exported
+import { machineAPI, categoryAPI, isAuthenticated, isCustomer, isOwner, userAPI, isAdmin } from "@/lib/service"; // Assuming this is where your API functions are exported
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -27,23 +27,33 @@ export default function MachinePage() {
     const [selectedImage, setSelectedImage] = useState<MachineImageResponse | null>(null);
 
     // Query for machine details
-    const { 
-        data: machine, 
+    const {
+        data: machine,
         isLoading: isLoadingMachine,
-        error: machineError 
+        error: machineError
     } = useQuery({
         queryKey: ['machine', machineId],
         queryFn: () => machineAPI.getMachineById(machineId),
     });
 
     // Query for category details (only runs when machine data is available)
-    const { 
+    const {
         data: category,
-        isLoading: isLoadingCategory 
+        isLoading: isLoadingCategory
     } = useQuery({
         queryKey: ['category', machine?.categoryId],
         queryFn: () => categoryAPI.getCategoryById(machine?.categoryId!),
         enabled: !!machine?.categoryId,
+    });
+
+    const {
+        data: userDetails,
+        isLoading: isProfileLoading,
+        error: profileError
+    } = useQuery({
+        queryKey: ['user', 'profile'],
+        queryFn: userAPI.getLoggedUserProfile,
+        retry: 1
     });
 
     const openModal = (image: MachineImageResponse) => {
@@ -61,9 +71,16 @@ export default function MachinePage() {
             const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
             router.push(`/login?redirect=${currentPath}`);
         } else {
-            router.push(`/booking?machineId=${machineId}&basePrice=${machine?.basePrice}&rate=${category?.priceCalculationType}`);
+            router.push(`/dashboard/booking?machineId=${machineId}&basePrice=${machine?.basePrice}&rate=${category?.priceCalculationType}`);
         }
     };
+    const handleUpdateMachine = (machineId: string) => {
+        router.push(`/machines/${machineId}/edit`);
+    };
+
+    const canUpdateMachine = () => {
+        return machine?.owner.id === userDetails?.id
+    }
 
     // Loading state
     if (isLoadingMachine || isLoadingCategory) {
@@ -135,7 +152,7 @@ export default function MachinePage() {
                                                 {machine.isAvailable ? 'Available' : 'Not Available'}
                                             </Badge>
                                         </div>
-                                        {isCustomer() && (
+                                        {!isAdmin()  && (
                                             <>
                                                 {machine.isAvailable && (
                                                     <Button onClick={handleBooking}>Book</Button>
@@ -143,8 +160,8 @@ export default function MachinePage() {
                                             </>
                                         )}
 
-                                        {isOwner() && (
-                                            <Button onClick={handleBooking}>Update machine</Button>
+                                        {canUpdateMachine() && (
+                                            <Button onClick={() => handleUpdateMachine(machine.id)}>Update machine</Button>
                                         )}
                                     </div>
                                 </div>
@@ -190,30 +207,29 @@ export default function MachinePage() {
                     </div>
                 </>
             )}
-            
-            <ImageModal 
-                open={isModalOpen} 
-                onClose={closeModal} 
-                image={selectedImage} 
+
+            <ImageModal
+                open={isModalOpen}
+                onClose={closeModal}
+                image={selectedImage}
             />
         </div>
     );
 }
 
-const ImageModal = ({ 
-    open, 
-    onClose, 
-    image 
-}: { 
-    open: boolean; 
-    onClose: () => void; 
+const ImageModal = ({
+    open,
+    onClose,
+    image
+}: {
+    open: boolean;
+    onClose: () => void;
     image: MachineImageResponse | null;
 }) => {
     return (
         <div
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 transition-opacity ${
-                open ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
+            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 transition-opacity ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}
         >
             <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
                 <div className="flex justify-end">

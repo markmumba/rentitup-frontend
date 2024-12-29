@@ -158,10 +158,7 @@ export default function AllBookings() {
 
     return (
         <div className="space-y-6">
-            <Button variant="secondary" onClick={handleAddCategory} className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add Category
-            </Button>
+           
             
             <div className="flex justify-end">
                 <div className="relative w-64">

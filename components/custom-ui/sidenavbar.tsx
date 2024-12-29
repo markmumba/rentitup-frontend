@@ -45,7 +45,7 @@ export default function ProtectedSideNavbar() {
         ...(isAuthenticated() && isCustomer() ? [
             {
                 title: "Schedule",
-                url: "/dashboard/waste-category",
+                url: "/categories",
                 icon: CalendarCheck,
                 isVisible: true
             }
@@ -55,8 +55,14 @@ export default function ProtectedSideNavbar() {
         ...(isAuthenticated() && isOwner() ? [
             {
                 title: "Requests",
-                url: "/dashboard/requests",
+                url: "/dashboard/orders",
                 icon: ListTodo,
+                isVisible: true
+            },
+            {
+                title: "Schedule",
+                url: "/categories",
+                icon: CalendarCheck,
                 isVisible: true
             }
         ] : []),
@@ -64,8 +70,8 @@ export default function ProtectedSideNavbar() {
         // refactor Routes
         ...(isAuthenticated() && isAdmin() ? [
             {
-                title: "Waste Categories",
-                url: "/dashboard/waste-category",
+                title: "Categories",
+                url: "/categories",
                 icon: CalendarCheck,
                 isVisible: true
             },
@@ -93,7 +99,7 @@ export default function ProtectedSideNavbar() {
                     href="/dashboard"
                     className={`flex items-center space-x-3 px-4 ${isActive("/dashboard") ? "text-primary" : ""}`}
                 >
-                    <span className="font-bold text-3xl">Bollo App</span>
+                    <span className="font-bold text-3xl">Rentitup</span>
                 </Link>
             </SidebarHeader>
             <SidebarContent>

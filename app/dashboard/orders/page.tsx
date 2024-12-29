@@ -39,7 +39,7 @@ export default function Orders() {
     });
 
     const handleBookingClick = (booking: BookingListResponse) => {
-        router.push(`dashboard/bookings/${booking.id}`);
+        router.push(`/dashboard/bookings/${booking.id}`);
     };
 
     const formatDate = (dateString: string) => {

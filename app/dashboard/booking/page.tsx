@@ -1,17 +1,17 @@
 'use client'
 import { useRouter, useSearchParams } from "next/navigation";
-import { BookingListResponse, BookingRequest } from "../../../lib/definitions";
+import {  BookingRequest } from "../../../lib/definitions";
 import { toast } from "@/hooks/use-toast";
 import { BookingForm } from "@/components/custom-ui/Booking/bookingform";
 import { ProtectedRoute } from "../../protector";
 import CalendarView from "@/components/custom-ui/Booking/calendarview";
-import { customer } from "@/lib/utils";
+import { customer, owner } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userAPI, bookingAPI } from "@/lib/service"; // Assuming this is where your API functions are exported
 
 export default function ProtectedBookingPage() {
     return (
-        <ProtectedRoute allowedRoles={customer}>
+        <ProtectedRoute allowedRoles={[...customer,...owner]}>
             <BookingPage />
         </ProtectedRoute>
     );
@@ -26,7 +26,6 @@ function BookingPage() {
     const basePrice = searchParams.get("basePrice") ?? "";
     const rate = searchParams.get("rate") ?? "";
 
-    // Query for user profile
     const { 
         data: userProfile,
         error: userError,
@@ -36,7 +35,6 @@ function BookingPage() {
         queryFn: userAPI.getLoggedUserProfile,
     });
 
-    // Query for machine bookings
     const {
         data: existingBookings,
         error: bookingsError,
@@ -44,10 +42,9 @@ function BookingPage() {
     } = useQuery({
         queryKey: ['machineBookings', machineId],
         queryFn: () => bookingAPI.getBookingsByMachine(machineId),
-        enabled: !!machineId, // Only fetch if machineId exists
+        enabled: !!machineId, 
     });
 
-    // Mutation for creating booking
     const { 
         mutate: createNewBooking,
         isPending: isCreatingBooking 
@@ -59,7 +56,6 @@ function BookingPage() {
                 description: "Your machine has been booked successfully",
             });
             
-            // Invalidate and refetch relevant queries
             queryClient.invalidateQueries({ queryKey: ['machineBookings'] });
             queryClient.invalidateQueries({ queryKey: ['userBookings'] });
             
@@ -74,13 +70,12 @@ function BookingPage() {
         },
     });
 
-    // Handle booking request
     const handleBookRequest = (data: BookingRequest) => {
+        console.log(data);
         createNewBooking(data);
     };
 
-    // Loading state
-    if (isLoadingProfile || !userProfile) {
+    if (isLoadingProfile || !userProfile || isLoadingBookings) {
         return (
             <div className="container mx-auto py-8 text-center">
                 <p>Loading...</p>
@@ -88,7 +83,6 @@ function BookingPage() {
         );
     }
 
-    // Error states
     const error = userError || bookingsError;
     if (error) {
         return (
