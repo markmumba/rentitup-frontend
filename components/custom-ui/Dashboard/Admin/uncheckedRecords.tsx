@@ -28,13 +28,12 @@ export default function UncheckedMaintenanceRecords() {
     } = useQuery<MaintenanceRecordResponse[], Error>({
         queryKey: ['uncheckedMaintenance'],
         queryFn: maintenanceAPI.getUncheckedMaintenanceRecords,
-        // Optional: configure stale time and refetch interval
-        staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-        refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+        staleTime: 5 * 60 * 1000, 
+        refetchInterval: 10 * 60 * 1000, 
     });
 
     const handleRecordClick = (recordId: string) => {
-        router.push(`/dashboard/maintenance/${recordId}`);
+        router.push(`/dashboard/maintenance-record/${recordId}`);
     };
 
     if (isLoading) {

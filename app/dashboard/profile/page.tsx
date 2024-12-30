@@ -185,7 +185,7 @@ function Profile() {
                     <Button
                       onClick={() =>
                         router.push(
-                          `/machines/${machine.id}/maintenance-record`,
+                          `/machines/${machine.id}/maintenance-record/add`,
                         )
                       }
                       className="bg-primary text-white hover:bg-primary/90"
