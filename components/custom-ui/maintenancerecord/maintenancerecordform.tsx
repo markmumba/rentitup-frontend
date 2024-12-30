@@ -14,7 +14,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-// Form schema type (what the form handles)
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+
 const formSchema = z.object({
     serviceDate: z.string().min(1, { message: "Service date is required" }),
     description: z.string()
@@ -49,7 +57,7 @@ interface SubmissionData {
 }
 
 interface MaintenanceRecordFormProps {
-    onSubmit: (data: SubmissionData) => void;
+    onSubmit: (data: SubmissionData) =>Promise<void>;
     isSubmitting?: boolean;
 }
 
@@ -67,18 +75,24 @@ export default function MaintenanceRecordForm({
         }
     });
 
-    const handleSubmit = (values: FormData) => {
-        const submissionData: SubmissionData = {
-            serviceDate: values.serviceDate,
-            description: values.description,
-            performedBy: values.performedBy,
-            nextService: values.nextService,
-            file: values.file[0]
-        };
-        
-        onSubmit(submissionData);
+    const handleSubmit = async (values: FormData) => {
+        try {
+            const submissionData: SubmissionData = {
+                serviceDate: new Date(values.serviceDate).toISOString().split('T')[0],
+                description: values.description,
+                performedBy: values.performedBy,
+                nextService: new Date(values.nextService).toISOString().split('T')[0],
+                file: values.file[0]
+            };
+            
+            console.log('Submitting data:', submissionData);
+            await onSubmit(submissionData);
+        } catch (error) {
+            // Handle any errors here, or let them propagate up
+            console.error('Error submitting form:', error);
+            throw error;
+        }
     };
-
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
@@ -88,12 +102,31 @@ export default function MaintenanceRecordForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Service Date</FormLabel>
-                            <FormControl>
-                                <Input 
-                                    type="date"
-                                    {...field}
-                                />
-                            </FormControl>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                            variant="outline"
+                                            className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                                        >
+                                            {field.value ? (
+                                                format(new Date(field.value), "PPP")
+                                            ) : (
+                                                <span>Pick a service date</span>
+                                            )}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value ? new Date(field.value) : undefined}
+                                        onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -143,15 +176,31 @@ export default function MaintenanceRecordForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Next Service Date</FormLabel>
-                            <FormControl>
-                                <Input 
-                                    type="date"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                When should the next maintenance be performed?
-                            </FormDescription>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                            variant="outline"
+                                            className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                                        >
+                                            {field.value ? (
+                                                format(new Date(field.value), "PPP")
+                                            ) : (
+                                                <span>Pick next service date</span>
+                                            )}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value ? new Date(field.value) : undefined}
+                                        onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
                             <FormMessage />
                         </FormItem>
                     )}

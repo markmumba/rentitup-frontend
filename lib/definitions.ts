@@ -85,6 +85,7 @@ export interface MachineListResponse {
   id: string;
   name: string;
   basePrice: string;
+  verified:boolean
   isAvailable: boolean;
   machineImageUrl: string;
   description: string;

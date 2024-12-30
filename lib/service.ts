@@ -699,7 +699,7 @@ export const machineAPI = {
 
 
 /**
- * Endpoints associated with maintenance records 
+ * Endpoints associated with maintenance records
  */
 
 export const maintenanceAPI = {
@@ -709,15 +709,24 @@ export const maintenanceAPI = {
         file: File
     ): Promise<MaintenanceRecordResponse> => {
         try {
+            // First create the maintenance record
+            const jsonResponse = await axios.post<MaintenanceRecordResponse>(
+                `${BASE_URL}/machines/${machineId}/maintenance-records/json`,
+                request,
+                {
+                    headers: {
+                        ...getHeader(),
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            // Then upload the file
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('request', new Blob(
-                [JSON.stringify(request)],
-                { type: 'application/json' }
-            ));
 
-            const response = await axios.post<MaintenanceRecordResponse>(
-                `${BASE_URL}/machines/${machineId}/maintenance-records`,
+            await axios.post(
+                `${BASE_URL}/maintenance-records/${jsonResponse.data.id}/file`,
                 formData,
                 {
                     headers: {
@@ -726,7 +735,8 @@ export const maintenanceAPI = {
                     }
                 }
             );
-            return response.data;
+
+            return jsonResponse.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 throw new Error(error.response.data?.message || "Failed to create maintenance record.");
@@ -735,12 +745,6 @@ export const maintenanceAPI = {
         }
     },
 
-    getMachineMaintenanceRecords: async (machineId: string): Promise<MaintenanceRecordResponse[]> => {
-        const response = await axios.get<MaintenanceRecordResponse[]>(
-            `${BASE_URL}/machines/${machineId}/maintenance-records`
-        );
-        return response.data;
-    },
 
     getUncheckedMaintenanceRecords: async (): Promise<MaintenanceRecordResponse[]> => {
         const response = await axios.get<MaintenanceRecordResponse[]>(
@@ -762,16 +766,10 @@ export const maintenanceAPI = {
         request: MaintenanceRecordRequest
     ): Promise<string> => {
         try {
-            const formData = new FormData();
-            formData.append('request', new Blob(
-                [JSON.stringify(request)],
-                { type: 'application/json' }
-            ));
-
             const response = await axios.put<string>(
                 `${BASE_URL}/maintenance-records/${id}`,
-                formData,
-                { headers: getHeader() }
+                request,
+                { headers: { ...getHeader(), 'Content-Type': 'application/json' } }
             );
             return response.data;
         } catch (error) {
