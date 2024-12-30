@@ -1,7 +1,7 @@
 'use client';
+
 import { UserDetailsList } from "@/lib/definitions";
 import { toast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react"
 import {
     Table,
     TableBody,
@@ -9,42 +9,43 @@ import {
     TableHead,
     TableHeader,
     TableRow
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { userAPI } from "@/lib/service";
+import { useQuery } from "@tanstack/react-query";
 
 export default function UnverifiedOwners() {
-    const [collectors, setCollectors] = useState<UserDetailsList[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
-    async function handleGetCollectors() {
-        try {
-            setIsLoading(true);
-            const response = await userAPI.collectors.getUnverified();
-            setCollectors(response);
-        } catch (error) {
-            toast({
-                title: "Error getting collectors",
-                description: error instanceof Error ? error.message : "Please try again later",
-                variant: "destructive"
-            })
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        handleGetCollectors();
-    }, []);
+    const { 
+        data: collectors,
+        isLoading,
+        isError,
+        error
+    } = useQuery<UserDetailsList[], Error>({
+        queryKey: ['unverifiedOwners'],
+        queryFn: userAPI.collectors.getUnverified,
+        staleTime: 5 * 60 * 1000,      // Consider data fresh for 5 minutes
+        refetchInterval: 10 * 60 * 1000 // Refetch every 10 minutes
+    });
 
     const handleCollectorClick = (collectorEmail: string) => {
         router.push(`dashboard/owners/${collectorEmail}`);
+    };
+
+    // Show error toast when query fails
+    if (isError) {
+        toast({
+            title: "Error getting collectors",
+            description: error?.message || "Please try again later",
+            variant: "destructive"
+        });
     }
 
+    // Loading state
     if (isLoading) {
         return (
             <div className="space-y-2">
@@ -68,10 +69,10 @@ export default function UnverifiedOwners() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {collectors.length === 0 ? (
+                        {!collectors || collectors.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={5} className="h-24 text-center">
-                                    No unverified collectors found.
+                                    No unverified owners found.
                                 </TableCell>
                             </TableRow>
                         ) : (
@@ -84,7 +85,9 @@ export default function UnverifiedOwners() {
                                     <TableCell className="font-medium">{collector.fullName}</TableCell>
                                     <TableCell>{collector.email}</TableCell>
                                     <TableCell>
-                                        <Badge variant="default"> {collector.role} </Badge>
+                                        <Badge variant="default" className="whitespace-nowrap">
+                                            {collector.role}
+                                        </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Button

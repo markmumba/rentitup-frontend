@@ -2,11 +2,11 @@
 
 import { UserDetails } from "@/lib/definitions";
 import { Bell, Plus, Search, User } from "lucide-react";
-import AllBookings from './bookings';
 import { UserList } from "@/components/custom-ui/dashboard/admin/userlist";
 import UnverifiedOwners from "@/components/custom-ui/dashboard/admin/unverifiedowners";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import UncheckedMaintenanceRecords from "./uncheckedRecords";
 
 interface AdminProps {
   data: UserDetails;
@@ -37,7 +37,7 @@ export default function AdminDashboard({ data }: AdminProps) {
           </div>
         </div>
         <div className="flex items-center space-x-4">
-         
+
           <button className="p-2 hover:bg-gray-100 rounded-full">
             <Bell className="h-5 w-5 text-gray-500" />
           </button>
@@ -51,9 +51,8 @@ export default function AdminDashboard({ data }: AdminProps) {
           </Button>
         </div>
       </div>
+      <UncheckedMaintenanceRecords/>
       <UnverifiedOwners />
-      <AllBookings />
-      <UserList />
     </div>
   );
 }

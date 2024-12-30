@@ -756,7 +756,8 @@ export const maintenanceAPI = {
 
     getMaintenanceRecordById: async (id: string): Promise<MaintenanceRecordResponse> => {
         const response = await axios.get<MaintenanceRecordResponse>(
-            `${BASE_URL}/maintenance-records/${id}`
+            `${BASE_URL}/maintenance-records/${id}`,
+            { headers: getHeader() }
         );
         return response.data;
     },

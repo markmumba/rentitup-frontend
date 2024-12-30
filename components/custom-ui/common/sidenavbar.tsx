@@ -76,6 +76,12 @@ export default function ProtectedSideNavbar() {
                 isVisible: true
             },
             {
+                title: "All Bookings",
+                url: "/dashboard/bookings",
+                icon: CalendarCheck,
+                isVisible: true
+            },
+            {
                 title: "Users",
                 url: "/dashboard/users",
                 icon: User,
