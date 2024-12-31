@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import { RegisterRequest, UserDetails } from "../../lib/definitions";
+import { RegisterRequest, UserDetails } from "@/lib/definitions";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
