@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import ClientNavbar from "@/components/custom-ui/clientnavbar";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "./query-provider";
 import MainLayout from "@/components/custom-ui/common/mainlayout";
+import { satoshi } from "./fonts"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +22,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={satoshi.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

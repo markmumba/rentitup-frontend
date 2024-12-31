@@ -18,8 +18,6 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function UncheckedMaintenanceRecords() {
     const router = useRouter();
-
-    // Using React Query for data fetching
     const { 
         data: records,
         isLoading,
