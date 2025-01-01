@@ -202,5 +202,6 @@ export interface MaintenanceRecordResponse {
   checked: boolean;
   performedBy: string;
   nextService: string;      
+  machineId:string;
   imageRecordUrl: string | null;  
 }

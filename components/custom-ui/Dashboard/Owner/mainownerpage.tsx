@@ -76,7 +76,7 @@ export default function OwnerDetails({ data }: OwnerProps) {
   const totalMachines = data.ownedMachines?.length || 0;
   const availableMachines = data.ownedMachines?.filter(m => m.isAvailable).length || 0;
   const occupancyRate = totalMachines ? ((totalMachines - availableMachines) / totalMachines) * 100 : 0;
-  const monthlyRevenue = data.ownedMachines.reduce((acc, machine) => acc + (parseInt(machine.basePrice) || 0), 0);
+  const monthlyRevenue =0; 
 
   const handleAddMachine = () => {
     router.push(`/machines/add`);

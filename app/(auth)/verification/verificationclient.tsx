@@ -27,7 +27,7 @@ const verificationSchema = z.object({
 type VerificationSchema = z.infer<typeof verificationSchema>;
 
 // Constants
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export function VerificationClient() {
@@ -162,9 +162,9 @@ export function VerificationClient() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Collector Verification</h2>
+        <h2 className="text-2xl font-bold mb-2">Owner Verification</h2>
         <p className="text-muted-foreground">
-          We need to verify your identity as a collector. Please follow the instructions below.
+          We need to verify your identity as a Owner. Please follow the instructions below.
         </p>
         <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">
           <p className="text-yellow-700">

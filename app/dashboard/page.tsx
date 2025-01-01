@@ -33,7 +33,6 @@ export default function Dashboard() {
         );
     }
 
-    console.log(userDetails)
 
     if (profileError) {
         return (

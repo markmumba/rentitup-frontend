@@ -20,7 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function MachinePage() {
     const params = useParams();
-    const machineId = params.id as string;
+    const machineId = params.machineId as string;
     const router = useRouter();
 
     const [isModalOpen, setIsModalOpen] = useState(false);

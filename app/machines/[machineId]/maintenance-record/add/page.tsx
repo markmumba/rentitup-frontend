@@ -25,12 +25,11 @@ function MaintenanceRecordPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const machineId = params.id as string;
+  const machineId = params.machineId as string;
 
   const { mutate: addMaintenanceRecord, isPending: isAddingRecord } = useMutation({
     mutationFn: async (formData: MaintenanceFormData) => {
       const { file, ...data } = formData;
-      // Don't need to format dates here since they're already formatted in the form
       return maintenanceAPI.createMaintenanceRecord(machineId, data, file);
     },
     onSuccess: () => {

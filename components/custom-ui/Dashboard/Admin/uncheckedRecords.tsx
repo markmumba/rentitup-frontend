@@ -30,8 +30,9 @@ export default function UncheckedMaintenanceRecords() {
         refetchInterval: 10 * 60 * 1000, 
     });
 
-    const handleRecordClick = (recordId: string) => {
-        router.push(`/dashboard/maintenance-record/${recordId}`);
+
+    const handleRecordClick = (recordId: string,machineId:string) => {
+        router.push(`/machines/${machineId}/maintenance-record/${recordId}`);
     };
 
     if (isLoading) {
@@ -78,7 +79,7 @@ export default function UncheckedMaintenanceRecords() {
                                 <TableRow
                                     key={record.id}
                                     className="hover:bg-muted/50 cursor-pointer"
-                                    onClick={() => handleRecordClick(record.id)}
+                                    onClick={() => handleRecordClick(record.id,record.machineId)}
                                 >
                                     <TableCell>
                                         {new Date(record.serviceDate).toLocaleDateString()}
@@ -104,7 +105,7 @@ export default function UncheckedMaintenanceRecords() {
                                             size="sm"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleRecordClick(record.id);
+                                                handleRecordClick(record.id, record.machineId);
                                             }}
                                         >
                                             View Details
