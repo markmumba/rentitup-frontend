@@ -79,7 +79,7 @@ export default function UncheckedMaintenanceRecords() {
                                 <TableRow
                                     key={record.id}
                                     className="hover:bg-muted/50 cursor-pointer"
-                                    onClick={() => handleRecordClick(record.id,record.machineId)}
+                                    onClick={() => handleRecordClick(record.id,record.machine.id)}
                                 >
                                     <TableCell>
                                         {new Date(record.serviceDate).toLocaleDateString()}
@@ -105,7 +105,7 @@ export default function UncheckedMaintenanceRecords() {
                                             size="sm"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleRecordClick(record.id, record.machineId);
+                                                handleRecordClick(record.id, record.machine.id);
                                             }}
                                         >
                                             View Details

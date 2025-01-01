@@ -4,24 +4,27 @@
 
 import Image from 'next/image';
 import { ProtectedRoute } from "@/app/protector";
-import { MaintenanceRecordResponse } from "@/lib/definitions";
-import { maintenanceAPI } from "@/lib/service";
+import { MachineResponse, MaintenanceRecordResponse } from "@/lib/definitions";
+import { machineAPI, maintenanceAPI } from "@/lib/service";
 import { admin } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-    AlertCircle, 
-    Calendar, 
-    User, 
-    Wrench, 
+import {
+    AlertCircle,
+    Calendar,
+    User,
+    Wrench,
     ClipboardCheck,
     ImageIcon,
-    X
+    X,
+    FileText,
+    Phone,
+    Mail
 } from "lucide-react";
-import { 
-    Card, 
-    CardContent, 
-    CardHeader, 
-    CardTitle 
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,14 +46,14 @@ import { toast } from '@/hooks/use-toast';
 function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } }) {
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const queryClient = useQueryClient();
-    
+
     // Mutation for verifying record
     const verifyMutation = useMutation({
         mutationFn: maintenanceAPI.verifyRecord,
         onSuccess: (updatedRecord) => {
             // Update the cache with new data
             queryClient.setQueryData(
-                ['maintenanceRecord', params.recordId], 
+                ['maintenanceRecord', params.recordId],
                 updatedRecord
             );
             toast({
@@ -77,6 +80,9 @@ function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } 
         retry: false,
         throwOnError: true
     });
+
+
+
 
     if (recordError) {
         return (
@@ -169,7 +175,7 @@ function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } 
                     {maintenanceRecord.imageRecordUrl && (
                         <div className="pt-4">
                             <p className="text-sm font-medium mb-2">Service Record Image</p>
-                            <div 
+                            <div
                                 className="relative cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => setIsImageModalOpen(true)}
                             >
@@ -193,10 +199,82 @@ function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } 
                     )}
                 </CardContent>
             </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg">Machine & Owner Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {/* Machine Details */}
+                    <div className="space-y-4 pb-4 border-b">
+                        <div className="flex items-start gap-2 ">
+                            <Wrench className="h-4 w-4 mt-1 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm font-medium">Machine Name</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {maintenanceRecord.machine.name}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-2 ">
+                            <AlertCircle className="h-4 w-4 mt-1 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm font-medium">Condition</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {maintenanceRecord.machine.condition}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-2">
+                            <FileText className="h-4 w-4 mt-1 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm font-medium">Specification</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {maintenanceRecord.machine.specification}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Owner Details */}
+                    <div className="space-y-4">
+                        <div className="flex items-start gap-2">
+                            <User className="h-4 w-4 mt-1 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm font-medium">Owner Name</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {maintenanceRecord.machine.owner.fullName}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-2">
+                            <Phone className="h-4 w-4 mt-1 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm font-medium">Contact Number</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {maintenanceRecord.machine.owner.phone}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-2">
+                            <Mail className="h-4 w-4 mt-1 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm font-medium">Email</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {maintenanceRecord.machine.owner.email}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-2">
-                <Button 
+                <Button
                     variant="default"
                     onClick={() => verifyMutation.mutate(params.recordId)}
                     disabled={maintenanceRecord.checked || verifyMutation.isPending}
@@ -214,7 +292,7 @@ function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } 
                         </span>
                     )}
                 </Button>
-                <Button 
+                <Button
                     variant="destructive"
                     disabled={maintenanceRecord.checked}
                     onClick={() => toast({
@@ -233,9 +311,9 @@ function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } 
                     <DialogHeader>
                         <div className="flex items-center justify-between">
                             <DialogTitle>Maintenance Record Image</DialogTitle>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
+                            <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => setIsImageModalOpen(false)}
                             >
                                 <X className="h-4 w-4" />
