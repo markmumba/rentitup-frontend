@@ -25,10 +25,9 @@ function AddMachineImages() {
     const params = useParams();
     const searchParams = useSearchParams();
     const queryClient = useQueryClient();
-    const machineId = params.id as string;
+    const machineId = params.machineId as string;
 
     const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const { isAddingImages, setIsAddingImages } = useMachineStore();
 
     // Mutation for uploading images
     const { mutate: uploadImages, isPending } = useMutation({

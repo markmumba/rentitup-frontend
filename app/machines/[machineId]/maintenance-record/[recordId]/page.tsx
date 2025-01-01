@@ -40,7 +40,7 @@ import {
 import { useState } from "react";
 import { toast } from '@/hooks/use-toast';
 
-function SingleMaintenanceRecordPage({ params }: { params: { id: string } }) {
+function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } }) {
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const queryClient = useQueryClient();
     
@@ -50,7 +50,7 @@ function SingleMaintenanceRecordPage({ params }: { params: { id: string } }) {
         onSuccess: (updatedRecord) => {
             // Update the cache with new data
             queryClient.setQueryData(
-                ['maintenanceRecord', params.id], 
+                ['maintenanceRecord', params.recordId], 
                 updatedRecord
             );
             toast({
@@ -72,8 +72,8 @@ function SingleMaintenanceRecordPage({ params }: { params: { id: string } }) {
         isLoading: loadingRecord,
         error: recordError
     } = useQuery<MaintenanceRecordResponse>({
-        queryKey: ['maintenanceRecord', params.id],
-        queryFn: () => maintenanceAPI.getMaintenanceRecordById(params.id),
+        queryKey: ['maintenanceRecord', params.recordId],
+        queryFn: () => maintenanceAPI.getMaintenanceRecordById(params.recordId),
         retry: false,
         throwOnError: true
     });
@@ -198,7 +198,7 @@ function SingleMaintenanceRecordPage({ params }: { params: { id: string } }) {
             <div className="flex justify-end gap-2">
                 <Button 
                     variant="default"
-                    onClick={() => verifyMutation.mutate(params.id)}
+                    onClick={() => verifyMutation.mutate(params.recordId)}
                     disabled={maintenanceRecord.checked || verifyMutation.isPending}
                     className="min-w-[100px]"
                 >
@@ -260,7 +260,7 @@ function SingleMaintenanceRecordPage({ params }: { params: { id: string } }) {
     );
 }
 
-export default function ProtectedSingleMaintenanceRecordPage({ params }: { params: { id: string } }) {
+export default function ProtectedSingleMaintenanceRecordPage({ params }: { params: { recordId: string } }) {
     return (
         <ProtectedRoute allowedRoles={admin}>
             <SingleMaintenanceRecordPage params={params} />
