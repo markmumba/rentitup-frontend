@@ -26,9 +26,10 @@ import { useRouter } from "next/navigation";
 import { ProtectedRoute } from "@/app/protector";
 import { allRoles } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import React, { useState } from "react";
 import { isOwner, machineAPI, userAPI } from "@/lib/service";
 import Image from "next/image";
+import MachineCard from "@/components/custom-ui/machines/machinecard";
 
 export default function ProtectedProfile() {
   return (
@@ -54,6 +55,8 @@ function Profile() {
     queryFn: userAPI.getLoggedUserProfile,
   });
 
+  console.log(userDetails);
+
   // Mutation for deleting a machine
   const deleteMachineMutation = useMutation({
     mutationFn: (machineId: string) => machineAPI.deleteMachine(machineId),
@@ -63,17 +66,12 @@ function Profile() {
       setMachineToDelete(null);
     },
   });
-
-  const handleDeleteClick = (e: React.MouseEvent, machineId: string) => {
-    // Prevent the click from bubbling up to the card
-    e.stopPropagation();
+  const handleDeleteClick = (machineId: string) => {
     setMachineToDelete(machineId);
     setShowDeleteDialog(true);
   };
-
-  const handleUpdateMachine = (e: React.MouseEvent, machineId: string) => {
-    // Prevent the click from bubbling up to the card
-    e.stopPropagation();
+  
+  const handleUpdateMachine = (machineId: string) => {
     router.push(`/machines/${machineId}/edit`);
   };
 
@@ -182,91 +180,16 @@ function Profile() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {userDetails.ownedMachines?.map((machine) => (
-              <Card
+              <MachineCard
                 key={machine.id}
-                className={`overflow-hidden relative ${
-                  !machine.verified ? "opacity-75" : ""
-                } cursor-pointer hover:shadow-lg transition-shadow`}
-                onClick={() => handleMachineClick(machine.id)}
-              >
-                {/* Overlay button for unverified machines */}
-                {!machine.verified && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/5">
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        router.push(`/machines/${machine.id}/maintenance-record/add`);
-                      }}
-                      className="bg-primary text-white hover:bg-primary/90"
-                    >
-                      Add Maintenance Records
-                    </Button>
-                  </div>
-                )}
-
-                <div className="aspect-video relative">
-                  <Image
-                    src={machine.machineImages.find((img) => img.isPrimary)?.url!}
-                    alt={machine.name}
-                    className="object-cover w-full h-full"
-                    width={800}
-                    height={800}
-                    priority
-                  />
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <Badge variant={machine.isAvailable ? "success" : "secondary"}>
-                      {machine.isAvailable ? "Available" : "Unavailable"}
-                    </Badge>
-                    <Badge variant={machine.verified ? "success" : "destructive"}>
-                      {machine.verified ? "Verified" : "Unverified"}
-                    </Badge>
-                  </div>
-                </div>
-                <CardHeader>
-                  <CardTitle>{machine.name}</CardTitle>
-                  <CardDescription>{machine.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <BanknoteIcon className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">
-                      KES {machine.basePrice.toLocaleString()} / base price
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                    <Badge variant="outline">{machine.condition}</Badge>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {machine.specification.split(",").map((spec, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <span>•</span>
-                        <span>{spec.trim()}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex space-x-2">
-                  <Button
-                    variant="destructive"
-                    className="text-xs"
-                    onClick={(e) => handleDeleteClick(e, machine.id)}
-                    disabled={deleteMachineMutation.isPending}
-                  >
-                    {deleteMachineMutation.isPending &&
-                    machineToDelete === machine.id
-                      ? "Deleting..."
-                      : "Remove machine"}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    className="text-xs"
-                    onClick={(e) => handleUpdateMachine(e, machine.id)}
-                  >
-                    Update machine
-                  </Button>
-                </CardFooter>
-              </Card>
+                machine={machine}
+                onDelete={handleDeleteClick}
+                onUpdate={handleUpdateMachine}
+                onClick={handleMachineClick}
+                onAddMaintenanceRecords={(id:any) =>
+                  router.push(`/machines/${id}/maintenance-record/add`)
+                }
+              />
             ))}
           </div>
         </div>

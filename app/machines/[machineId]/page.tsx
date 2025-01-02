@@ -28,7 +28,6 @@ export default function MachinePage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<MachineImageResponse | null>(null);
 
-    // Query for machine details
     const {
         data: machine,
         isLoading: isLoadingMachine,
@@ -38,7 +37,6 @@ export default function MachinePage() {
         queryFn: () => machineAPI.getMachineById(machineId),
     });
 
-    // Query for category details (only runs when machine data is available)
     const {
         data: category,
         isLoading: isLoadingCategory
@@ -57,7 +55,6 @@ export default function MachinePage() {
         retry: 1
     });
 
-    // Query for maintenance records (only runs when machine data is available)
     const {
         data: machineMaintenanceRecords,
         isLoading: loadingMaintenanceRecords,
@@ -253,7 +250,7 @@ export default function MachinePage() {
                     )}
 
                     {/* Maintenance Records Section */}
-                    { canViewRecords() && (
+                    { (isOwner() && canUpdateMachine()) || isAdmin() && (
                         <div>
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-2xl font-bold">Maintenance Records</h2>

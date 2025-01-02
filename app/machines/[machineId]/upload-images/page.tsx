@@ -38,12 +38,13 @@ function AddMachineImages() {
             });
             return machineAPI.images.upload(machineId, formData);
         },
-        onSuccess: () => {
+        onSuccess: (response) => {
             toast({
                 title: "Images Uploaded",
                 description: "Machine images added successfully"
             });
 
+            console.log(response);
             // Invalidate relevant queries
             queryClient.invalidateQueries({ queryKey: ['machine', machineId] });
             queryClient.invalidateQueries({ queryKey: ['machineImages', machineId] });

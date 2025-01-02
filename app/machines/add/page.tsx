@@ -28,6 +28,7 @@ function AddMachine() {
   const { mutate: addMachine, isPending } = useMutation({
     mutationFn: (data: MachineRequest) => machineAPI.createMachine(data),
     onSuccess: (response) => {
+      console.log(response);
       toast({
         title: "Machine created successfully",
         description: "Add images for your machine",
@@ -48,6 +49,7 @@ function AddMachine() {
   });
 
   const handleAddMachine = (data: MachineRequest) => {
+    console.log("Machine that is added ",data);
     addMachine(data);
   };
 

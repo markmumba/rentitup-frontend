@@ -85,7 +85,7 @@ export interface MachineListResponse {
   id: string;
   name: string;
   basePrice: string;
-  verified:boolean
+  verified: boolean
   isAvailable: boolean;
   machineImageUrl: string;
   description: string;
@@ -108,6 +108,14 @@ export interface OwnerResponse {
   verifiedAt: string | null;
 }
 
+export enum VerificationState{
+
+  PENDING = "PENDING",
+  ONGOING = "ONGOING",
+  COMPLETE = "COMPLETE"
+
+}
+
 export interface MachineResponse {
   id: string;
   name: string;
@@ -119,6 +127,7 @@ export interface MachineResponse {
   owner: OwnerResponse;
   categoryId: string;
   verified: boolean;
+  verificationState: VerificationState;
   machineImages: MachineImageResponse[];
 }
 
@@ -188,20 +197,21 @@ export enum BookingStatus {
   COMPLETED = "COMPLETED",
 }
 
+
 export interface MaintenanceRecordRequest {
-  serviceDate: string;        
+  serviceDate: string;
   description: string;
   performedBy: string;
-  nextService: string;        
+  nextService: string;
 }
 
 export interface MaintenanceRecordResponse {
   id: string;
-  serviceDate: string;        
+  serviceDate: string;
   description: string;
   checked: boolean;
   performedBy: string;
-  nextService: string;      
-  machine:MachineResponse;
-  imageRecordUrl: string | null;  
+  nextService: string;
+  machine: MachineResponse;
+  imageRecordUrl: string | null;
 }
