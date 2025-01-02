@@ -30,8 +30,8 @@ export default function CollectorPage() {
             userAPI.collectors.verifyCollector(userId, verify),
         onSuccess: (_, { verify }) => {
             toast({
-                title: verify ? "collector Verified" : "collector Not Verified",
-                description: `Collector has been ${verify ? 'verified' : 'marked as not verified'}`,
+                title: verify ? "owner" : "Owner Not Verified",
+                description: `Owner has been ${verify ? 'verified' : 'marked as not verified'}`,
                 variant: verify ? "default" : "destructive"
             });
 
@@ -61,6 +61,7 @@ export default function CollectorPage() {
             </div>
         );
     }
+    console.log(userDetails);
 
     if (!userDetails) {
         return <div>No user details found</div>;
@@ -70,8 +71,8 @@ export default function CollectorPage() {
         <div className="container mx-auto my-20 p-6">
             <Card className="max-w-4xl mx-auto">
                 <CardHeader>
-                    <CardTitle>Collector Verification Details</CardTitle>
-                    <CardDescription>Review collector information and verification document</CardDescription>
+                    <CardTitle>Owner Verification Details</CardTitle>
+                    <CardDescription>Review owner information and verification document</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {/* Personal Information */}

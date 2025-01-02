@@ -102,7 +102,7 @@ export default function MachineUpdateForm({
 
     const handleAddImages = () => {
         const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
-        router.push(`/machines/${String(machine.id)}/uploadImages?redirect=${currentPath}`);
+        router.push(`/machines/${String(machine.id)}/upload-images?redirect=${currentPath}`);
     };
 
     const handleSubmitForm = (values: z.infer<typeof machineUpdateSchema>) => {

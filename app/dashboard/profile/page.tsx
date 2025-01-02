@@ -58,19 +58,22 @@ function Profile() {
   const deleteMachineMutation = useMutation({
     mutationFn: (machineId: string) => machineAPI.deleteMachine(machineId),
     onSuccess: () => {
-      // Invalidate and refetch user profile after successful deletion
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       setShowDeleteDialog(false);
       setMachineToDelete(null);
     },
   });
 
-  const handleDeleteClick = (machineId: string) => {
+  const handleDeleteClick = (e: React.MouseEvent, machineId: string) => {
+    // Prevent the click from bubbling up to the card
+    e.stopPropagation();
     setMachineToDelete(machineId);
     setShowDeleteDialog(true);
   };
 
-  const handleUpdateMachine = (machineId: string) => {
+  const handleUpdateMachine = (e: React.MouseEvent, machineId: string) => {
+    // Prevent the click from bubbling up to the card
+    e.stopPropagation();
     router.push(`/machines/${machineId}/edit`);
   };
 
@@ -84,13 +87,16 @@ function Profile() {
     }
   };
 
+  const handleMachineClick = (machineId: string) => {
+    router.push(`/machines/${machineId}`);
+  };
+
   if (error) {
     return (
       <Card className="max-w-4xl mx-auto mt-8">
         <CardContent className="p-6">
           <div className="flex items-center justify-center text-red-500">
-            Error:{" "}
-            {error instanceof Error ? error.message : "Something went wrong"}
+            Error: {error instanceof Error ? error.message : "Something went wrong"}
           </div>
         </CardContent>
       </Card>
@@ -121,6 +127,7 @@ function Profile() {
     <div className="container mx-auto p-6 space-y-6">
       {/* Profile Card */}
       <Card className="max-w-4xl mx-auto">
+        {/* Profile card content remains the same */}
         <CardHeader className="pb-4">
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
@@ -177,17 +184,19 @@ function Profile() {
             {userDetails.ownedMachines?.map((machine) => (
               <Card
                 key={machine.id}
-                className={`overflow-hidden relative ${!machine.verified ? "opacity-75" : ""}`}
+                className={`overflow-hidden relative ${
+                  !machine.verified ? "opacity-75" : ""
+                } cursor-pointer hover:shadow-lg transition-shadow`}
+                onClick={() => handleMachineClick(machine.id)}
               >
                 {/* Overlay button for unverified machines */}
                 {!machine.verified && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/5">
                     <Button
-                      onClick={() =>
-                        router.push(
-                          `/machines/${machine.id}/maintenance-record/add`,
-                        )
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/machines/${machine.id}/maintenance-record/add`);
+                      }}
                       className="bg-primary text-white hover:bg-primary/90"
                     >
                       Add Maintenance Records
@@ -197,23 +206,18 @@ function Profile() {
 
                 <div className="aspect-video relative">
                   <Image
-                    src={
-                      machine.machineImages.find((img) => img.isPrimary)?.url!
-                    }
+                    src={machine.machineImages.find((img) => img.isPrimary)?.url!}
                     alt={machine.name}
                     className="object-cover w-full h-full"
                     width={800}
                     height={800}
+                    priority
                   />
                   <div className="absolute top-2 right-2 flex gap-2">
-                    <Badge
-                      variant={machine.isAvailable ? "success" : "secondary"}
-                    >
+                    <Badge variant={machine.isAvailable ? "success" : "secondary"}>
                       {machine.isAvailable ? "Available" : "Unavailable"}
                     </Badge>
-                    <Badge
-                      variant={machine.verified ? "success" : "destructive"}
-                    >
+                    <Badge variant={machine.verified ? "success" : "destructive"}>
                       {machine.verified ? "Verified" : "Unverified"}
                     </Badge>
                   </div>
@@ -246,7 +250,7 @@ function Profile() {
                   <Button
                     variant="destructive"
                     className="text-xs"
-                    onClick={() => handleDeleteClick(machine.id)}
+                    onClick={(e) => handleDeleteClick(e, machine.id)}
                     disabled={deleteMachineMutation.isPending}
                   >
                     {deleteMachineMutation.isPending &&
@@ -257,7 +261,7 @@ function Profile() {
                   <Button
                     variant="secondary"
                     className="text-xs"
-                    onClick={() => handleUpdateMachine(machine.id)}
+                    onClick={(e) => handleUpdateMachine(e, machine.id)}
                   >
                     Update machine
                   </Button>

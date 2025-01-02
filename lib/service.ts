@@ -108,82 +108,82 @@ export const authAPI = {
 export const userAPI = {
     // Get all users (admin endpoint)
     getAllUsers: async (): Promise<UserDetailsList[]> => {
-      const response = await axios.get(
-        `${BASE_URL}/users`,
-        { headers: getHeader() }
-      );
-      return response.data;
+        const response = await axios.get(
+            `${BASE_URL}/users`,
+            { headers: getHeader() }
+        );
+        return response.data;
     },
-  
+
     // Get specific user by ID
     getUserById: async (id: string): Promise<UserDetails> => {
-      const response = await axios.get(
-        `${BASE_URL}/users/${id}`,
-        { headers: getHeader() }
-      );
-      return response.data;
+        const response = await axios.get(
+            `${BASE_URL}/users/${id}`,
+            { headers: getHeader() }
+        );
+        return response.data;
     },
-  
+
     // Get logged-in user's profile
     getLoggedUserProfile: async (): Promise<UserDetails> => {
-      const response = await axios.get(
-        `${BASE_URL}/users/user-profile`,
-        { headers: getHeader() }
-      );
-      return response.data;
+        const response = await axios.get(
+            `${BASE_URL}/users/user-profile`,
+            { headers: getHeader() }
+        );
+        return response.data;
     },
-  
+
     // Update user profile (supports file upload)
     updateUser: async (id: string, formData: FormData): Promise<UserDetails> => {
-      const response = await axios.put(
-        `${BASE_URL}/users/${id}`,
-        formData,
-        {
-          headers: {
-            ...getHeader(),
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
-      return response.data;
+        const response = await axios.put(
+            `${BASE_URL}/users/${id}`,
+            formData,
+            {
+                headers: {
+                    ...getHeader(),
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        );
+        return response.data;
     },
-  
+
     // Delete user
     deleteUser: async (id: string): Promise<string> => {
-      const response = await axios.delete(
-        `${BASE_URL}/users/${id}`,
-        { headers: getHeader() }
-      );
-      return response.data;
+        const response = await axios.delete(
+            `${BASE_URL}/users/${id}`,
+            { headers: getHeader() }
+        );
+        return response.data;
     },
-  
-    // collector verification related endpoints
-  
-    collectors: {
-  
-      // Get unverified collectors
-      getUnverified: async (): Promise<UserDetails[]> => {
-        const response = await axios.get(
-          `${BASE_URL}/users/unverified-users`,
-          { headers: getHeader() }
-        );
-        return response.data;
-      },
-  
-      // Verify or reject a collector
-      verifyCollector: async (collectorId: string, verify: boolean): Promise<string> => {
-        const response = await axios.post(
-          `${BASE_URL}/users/verify-collector`,
-          { id: collectorId, status: verify } as CollectorVerificationRequest,
-          { headers: getHeader() }
-        );
-        return response.data;
-      }
-    }
-  };
-  
 
-  export const categoryAPI = {
+    // collector verification related endpoints
+
+    collectors: {
+
+        // Get unverified collectors
+        getUnverified: async (): Promise<UserDetails[]> => {
+            const response = await axios.get(
+                `${BASE_URL}/users/unverified-users`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        },
+
+        // Verify or reject a collector
+        verifyCollector: async (collectorId: string, verify: boolean): Promise<string> => {
+            const response = await axios.post(
+                `${BASE_URL}/users/verify-collector`,
+                { id: collectorId, status: verify } as CollectorVerificationRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        }
+    }
+};
+
+
+export const categoryAPI = {
     // Get all categories (public endpoint)
     getAllCategories: async (): Promise<CategoryListResponse[]> => {
         const response = await axios.get<CategoryListResponse[]>(
@@ -762,6 +762,14 @@ export const maintenanceAPI = {
         return response.data;
     },
 
+    getMachineMaintenanceRecords: async (machineId: string): Promise<MaintenanceRecordResponse[]> => {
+        const response = await axios.get<MaintenanceRecordResponse[]>(
+            `${BASE_URL}/machines/${machineId}/maintenance-records`,
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
+
     updateMaintenanceRecord: async (
         id: string,
         request: MaintenanceRecordRequest
@@ -770,7 +778,7 @@ export const maintenanceAPI = {
             const response = await axios.put<string>(
                 `${BASE_URL}/maintenance-records/${id}`,
                 request,
-                { headers: { ...getHeader(), 'Content-Type': 'application/json' } }
+                { headers: getHeader() }
             );
             return response.data;
         } catch (error) {
