@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import CategoryAccordion from "@/components/custom-ui/categories/categorylistaccordion";
+import CategoryAccordion from "@/components/custom-ui/categories/category-list-accordion";
 
 export default function Categories() {
     const router = useRouter();
