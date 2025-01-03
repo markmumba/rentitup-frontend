@@ -25,10 +25,9 @@ function AddMachineImages() {
     const params = useParams();
     const searchParams = useSearchParams();
     const queryClient = useQueryClient();
-    const machineId = params.id as string;
+    const machineId = params.machineId as string;
 
     const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const { isAddingImages, setIsAddingImages } = useMachineStore();
 
     // Mutation for uploading images
     const { mutate: uploadImages, isPending } = useMutation({
@@ -39,12 +38,13 @@ function AddMachineImages() {
             });
             return machineAPI.images.upload(machineId, formData);
         },
-        onSuccess: () => {
+        onSuccess: (response) => {
             toast({
                 title: "Images Uploaded",
                 description: "Machine images added successfully"
             });
 
+            console.log(response);
             // Invalidate relevant queries
             queryClient.invalidateQueries({ queryKey: ['machine', machineId] });
             queryClient.invalidateQueries({ queryKey: ['machineImages', machineId] });

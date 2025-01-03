@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { isAdmin, isAuthenticated, isOwner, isCustomer } from '@/lib/service';
 import { LogoutButton } from './logoutbutton';
-import {ModeToggle} from "@/components/custom-ui/modaltoggle";
+import { ModeToggle } from "@/components/custom-ui/common/modaltoggle";
 
 export default function ProtectedSideNavbar() {
     const pathname = usePathname();
@@ -34,10 +34,10 @@ export default function ProtectedSideNavbar() {
 
         ...(isAuthenticated() ? [
             {
-                title:"dashboard",
-                url:"/dashboard",
-                icon:HomeIcon,
-                isVisible:true
+                title: "dashboard",
+                url: "/dashboard",
+                icon: HomeIcon,
+                isVisible: true
             },
         ] : []),
 
@@ -45,7 +45,7 @@ export default function ProtectedSideNavbar() {
         ...(isAuthenticated() && isCustomer() ? [
             {
                 title: "Schedule",
-                url: "/dashboard/waste-category",
+                url: "/categories",
                 icon: CalendarCheck,
                 isVisible: true
             }
@@ -55,8 +55,14 @@ export default function ProtectedSideNavbar() {
         ...(isAuthenticated() && isOwner() ? [
             {
                 title: "Requests",
-                url: "/dashboard/requests",
+                url: "/dashboard/orders",
                 icon: ListTodo,
+                isVisible: true
+            },
+            {
+                title: "Schedule",
+                url: "/categories",
+                icon: CalendarCheck,
                 isVisible: true
             }
         ] : []),
@@ -64,8 +70,14 @@ export default function ProtectedSideNavbar() {
         // refactor Routes
         ...(isAuthenticated() && isAdmin() ? [
             {
-                title: "Waste Categories",
-                url: "/dashboard/waste-category",
+                title: "Categories",
+                url: "/categories",
+                icon: CalendarCheck,
+                isVisible: true
+            },
+            {
+                title: "All Bookings",
+                url: "/dashboard/bookings",
                 icon: CalendarCheck,
                 isVisible: true
             },
@@ -93,7 +105,7 @@ export default function ProtectedSideNavbar() {
                     href="/dashboard"
                     className={`flex items-center space-x-3 px-4 ${isActive("/dashboard") ? "text-primary" : ""}`}
                 >
-                    <span className="font-bold text-3xl">Bollo App</span>
+                    <span className="font-bold text-3xl">Rentitup</span>
                 </Link>
             </SidebarHeader>
             <SidebarContent>
@@ -122,7 +134,7 @@ export default function ProtectedSideNavbar() {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenuItem>
-                    <ModeToggle/>
+                    <ModeToggle />
                     <SidebarMenuButton>
                         <div className="flex items-center space-x-2">
                             <LogOut />

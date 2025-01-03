@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import { RegisterRequest, UserDetails } from "../../lib/definitions";
+import { RegisterRequest, UserDetails } from "@/lib/definitions";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { authAPI } from "@/lib/service";
-import { RegistrationForm } from "@/components/custom-ui/registration";
+import { RegistrationForm } from "@/components/custom-ui/common/registration";
 
 export default function Registration() {
     const router = useRouter()

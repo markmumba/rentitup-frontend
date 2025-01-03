@@ -24,6 +24,7 @@ export default function Dashboard() {
         retry: 1
     });
 
+
     if (isProfileLoading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -31,6 +32,7 @@ export default function Dashboard() {
             </div>
         );
     }
+
 
     if (profileError) {
         return (
@@ -50,7 +52,7 @@ export default function Dashboard() {
                 return <CustomerDetails data={userDetails!} />;
             case 'ADMIN':
                 return <AdminDetails data={userDetails!} />;
-            case 'COLLECTOR':
+            case 'OWNER':
                 return <OwnerDetails data={userDetails!} />;
             default:
                 return null;

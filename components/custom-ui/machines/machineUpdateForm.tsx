@@ -19,6 +19,9 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { machineAPI } from "@/lib/service";
 import Image from "next/image";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const machineUpdateSchema = z.object({
     name: z.string()
@@ -56,23 +59,15 @@ export default function MachineUpdateForm({
     const router = useRouter();
     const queryClient = useQueryClient();
 
-    // Mutation for deleting machine images
     const { mutate: deleteImage, isPending: isDeletingImage } = useMutation({
         mutationFn: (imageId: string) => machineAPI.images.delete(String(machine.id), imageId),
         onMutate: async (imageId) => {
-            // Cancel any outgoing refetches
             await queryClient.cancelQueries({ queryKey: ['machine', machine.id] });
-
-
-            // Snapshot the previous value
             const previousMachine = queryClient.getQueryData(['machine', machine.id]);
-
-            // Optimistically update
             queryClient.setQueryData(['machine', machine.id], (old: any) => ({
                 ...old,
                 machineImages: old.machineImages.filter((img: MachineImageResponse) => img.id !== imageId)
             }));
-
             return { previousMachine };
         },
         onSuccess: () => {
@@ -81,15 +76,10 @@ export default function MachineUpdateForm({
                 description: "Image deleted successfully",
                 variant: "default",
             });
-
-            // Invalidate and refetch
             queryClient.invalidateQueries({ queryKey: ['machine', machine.id] });
-
         },
         onError: (error, _, context) => {
-            // Rollback to the previous value
             queryClient.setQueryData(['machine', machine.id], context?.previousMachine);
-
             toast({
                 title: "Error",
                 description: error instanceof Error ? error.message : "Failed to delete image",
@@ -102,6 +92,7 @@ export default function MachineUpdateForm({
         resolver: zodResolver(machineUpdateSchema),
         defaultValues: {
             name: machine.name || "",
+            description: machine.description || "",
             basePrice: machine.basePrice?.toString() || "0",
             condition: machine.condition || "GOOD",
             specification: machine.specification || "",
@@ -111,7 +102,7 @@ export default function MachineUpdateForm({
 
     const handleAddImages = () => {
         const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
-        router.push(`/machines/${String(machine.id)}/uploadImages?redirect=${currentPath}`);
+        router.push(`/machines/${String(machine.id)}/upload-images?redirect=${currentPath}`);
     };
 
     const handleSubmitForm = (values: z.infer<typeof machineUpdateSchema>) => {
@@ -144,7 +135,132 @@ export default function MachineUpdateForm({
                             )}
                         />
 
-                        {/* ... other form fields ... */}
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            disabled={isLoadingUpdate}
+                                            placeholder="Enter machine description"
+                                            className="min-h-32"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormDescription className="text-sm text-gray-500">
+                                        Provide a detailed description of the machine
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="basePrice"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Base Price</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="text"
+                                            disabled={isLoadingUpdate}
+                                            placeholder="0.00"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormDescription className="text-sm text-gray-500">
+                                        Enter price in decimal format (e.g., 99.99)
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="condition"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Condition</FormLabel>
+                                    <Select
+                                        disabled={isLoadingUpdate}
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select condition" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {machineConditions.map((condition) => (
+                                                <SelectItem key={condition} value={condition}>
+                                                    {condition}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="specification"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Specifications</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            disabled={isLoadingUpdate}
+                                            placeholder="Enter machine specifications"
+                                            className="min-h-32"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormDescription className="text-sm text-gray-500">
+                                        List technical specifications and features
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="categoryId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Category</FormLabel>
+                                    <Select
+                                        disabled={isLoadingUpdate}
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select category" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {categoriesList.map((category) => (
+                                                <SelectItem 
+                                                    key={category.id} 
+                                                    value={category.id.toString()}
+                                                >
+                                                    {category.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <div className="space-y-4">
                             <FormLabel>Machine Images</FormLabel>

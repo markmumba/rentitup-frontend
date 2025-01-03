@@ -20,7 +20,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 
 // Updated base schema to include startDate and endDate
@@ -56,6 +56,7 @@ const bookingSchema = z.discriminatedUnion("calculationType", [
 ]);
 
 type BookingRequest = z.infer<typeof bookingSchema>;
+
 
 export function BookingForm({
   onSubmit,
@@ -121,20 +122,62 @@ export function BookingForm({
         break;
     }
 
-    // Update total amount field
     form.setValue("totalAmount", total.toString(), { shouldValidate: true });
   }, [hours, startDate, endDate, distance, basePrice, priceCalculationType, form]);
+
+  // Helper function to format price calculation type for display
+  const formatPriceType = (type: string) => {
+    return type.split('_').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    ).join(' ');
+  };
+
+  // Helper function to format the rate description
+  const getRateDescription = () => {
+    const formattedPrice = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'KES',
+    }).format(parseFloat(basePrice));
+
+    switch (priceCalculationType) {
+      case "HOURLY":
+        return `${formattedPrice}/hour`;
+      case "DAILY":
+        return `${formattedPrice}/day`;
+      case "DISTANCE_BASED":
+        return `${formattedPrice}/km`;
+      default:
+        return formattedPrice;
+    }
+  };
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Machine Booking Form</CardTitle>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle>Machine Booking Form</CardTitle>
+            <CardDescription className="mt-2">
+              Book your machine with the following rates
+            </CardDescription>
+          </div>
+          <div className="bg-slate-50 p-4 rounded-lg">
+            <div className="text-sm font-medium">Pricing Details</div>
+            <div className="mt-1 text-sm text-muted-foreground">
+              {formatPriceType(priceCalculationType)}
+            </div>
+            <div className="mt-1 text-lg font-semibold text-primary">
+              {getRateDescription()}
+            </div>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Rest of the form content remains exactly the same */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Start Date Field - Always Visible */}
+              {/* Start Date Field */}
               <FormField
                 control={form.control}
                 name="startDate"
@@ -172,7 +215,7 @@ export function BookingForm({
                 )}
               />
 
-              {/* End Date Field - Always Visible */}
+              {/* End Date Field */}
               <FormField
                 control={form.control}
                 name="endDate"
@@ -255,7 +298,7 @@ export function BookingForm({
                 />
               )}
 
-              {/* Pickup Location - Always Visible */}
+              {/* Pickup Location */}
               <FormField
                 control={form.control}
                 name="pickUpLocation"
@@ -270,7 +313,7 @@ export function BookingForm({
                 )}
               />
 
-              {/* Total Amount - Always Visible */}
+              {/* Total Amount */}
               <FormField
                 control={form.control}
                 name="totalAmount"

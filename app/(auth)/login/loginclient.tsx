@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { authAPI } from "@/lib/service";
-import { LoginForm } from "@/components/custom-ui/login";
+import { LoginForm } from "@/components/custom-ui/common/login";
 
 export function LoginClient() {
   const router = useRouter();
@@ -69,10 +69,10 @@ export function LoginClient() {
           className="mt-4 max-w-xl"
           onClick={handleGoogleSignUp}
         >
-          <Image 
-            src="/logo.png" 
-            alt="google logo" 
-            width={20} 
+          <Image
+            src="/logo.png"
+            alt="google logo"
+            width={20}
             height={20}
             className="mr-2"
           />

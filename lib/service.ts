@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "./store";
-import { BookingListResponse, BookingRequest, BookingResponse, CategoryListResponse, CategoryRequest, CategoryResponse, CollectorVerificationRequest, ForgotPasswordRequest, LoginRequest, LoginResponse, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, RegisterRequest, ResetPasswordRequest, ReviewRequest, UserDetails, UserDetailsList } from "./definitions";
+import { BookingListResponse, BookingRequest, BookingResponse, CategoryListResponse, CategoryRequest, CategoryResponse, CollectorVerificationRequest, ForgotPasswordRequest, LoginRequest, LoginResponse, MachineListResponse, MachineRequest, MachineResponse, MachineUpdateRequest, MaintenanceRecordRequest, MaintenanceRecordResponse, RegisterRequest, ResetPasswordRequest, ReviewRequest, UserDetails, UserDetailsList } from "./definitions";
 
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -108,82 +108,82 @@ export const authAPI = {
 export const userAPI = {
     // Get all users (admin endpoint)
     getAllUsers: async (): Promise<UserDetailsList[]> => {
-      const response = await axios.get(
-        `${BASE_URL}/users`,
-        { headers: getHeader() }
-      );
-      return response.data;
+        const response = await axios.get(
+            `${BASE_URL}/users`,
+            { headers: getHeader() }
+        );
+        return response.data;
     },
-  
+
     // Get specific user by ID
     getUserById: async (id: string): Promise<UserDetails> => {
-      const response = await axios.get(
-        `${BASE_URL}/users/${id}`,
-        { headers: getHeader() }
-      );
-      return response.data;
+        const response = await axios.get(
+            `${BASE_URL}/users/${id}`,
+            { headers: getHeader() }
+        );
+        return response.data;
     },
-  
+
     // Get logged-in user's profile
     getLoggedUserProfile: async (): Promise<UserDetails> => {
-      const response = await axios.get(
-        `${BASE_URL}/users/user-profile`,
-        { headers: getHeader() }
-      );
-      return response.data;
+        const response = await axios.get(
+            `${BASE_URL}/users/user-profile`,
+            { headers: getHeader() }
+        );
+        return response.data;
     },
-  
+
     // Update user profile (supports file upload)
     updateUser: async (id: string, formData: FormData): Promise<UserDetails> => {
-      const response = await axios.put(
-        `${BASE_URL}/users/${id}`,
-        formData,
-        {
-          headers: {
-            ...getHeader(),
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
-      return response.data;
+        const response = await axios.put(
+            `${BASE_URL}/users/${id}`,
+            formData,
+            {
+                headers: {
+                    ...getHeader(),
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        );
+        return response.data;
     },
-  
+
     // Delete user
     deleteUser: async (id: string): Promise<string> => {
-      const response = await axios.delete(
-        `${BASE_URL}/users/${id}`,
-        { headers: getHeader() }
-      );
-      return response.data;
+        const response = await axios.delete(
+            `${BASE_URL}/users/${id}`,
+            { headers: getHeader() }
+        );
+        return response.data;
     },
-  
-    // collector verification related endpoints
-  
-    collectors: {
-  
-      // Get unverified collectors
-      getUnverified: async (): Promise<UserDetails[]> => {
-        const response = await axios.get(
-          `${BASE_URL}/users/unverified-users`,
-          { headers: getHeader() }
-        );
-        return response.data;
-      },
-  
-      // Verify or reject a collector
-      verifyCollector: async (collectorId: string, verify: boolean): Promise<string> => {
-        const response = await axios.post(
-          `${BASE_URL}/users/verify-collector`,
-          { id: collectorId, status: verify } as CollectorVerificationRequest,
-          { headers: getHeader() }
-        );
-        return response.data;
-      }
-    }
-  };
-  
 
-  export const categoryAPI = {
+    // collector verification related endpoints
+
+    collectors: {
+
+        // Get unverified collectors
+        getUnverified: async (): Promise<UserDetails[]> => {
+            const response = await axios.get(
+                `${BASE_URL}/users/unverified-users`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        },
+
+        // Verify or reject a collector
+        verifyCollector: async (collectorId: string, verify: boolean): Promise<string> => {
+            const response = await axios.post(
+                `${BASE_URL}/users/verify-collector`,
+                { id: collectorId, status: verify } as CollectorVerificationRequest,
+                { headers: getHeader() }
+            );
+            return response.data;
+        }
+    }
+};
+
+
+export const categoryAPI = {
     // Get all categories (public endpoint)
     getAllCategories: async (): Promise<CategoryListResponse[]> => {
         const response = await axios.get<CategoryListResponse[]>(
@@ -695,6 +695,127 @@ export const machineAPI = {
         }
     }
 };
+
+
+
+/**
+ * Endpoints associated with maintenance records
+ */
+
+export const maintenanceAPI = {
+    createMaintenanceRecord: async (
+        machineId: string,
+        request: MaintenanceRecordRequest,
+        file: File
+    ): Promise<MaintenanceRecordResponse> => {
+        try {
+            // First create the maintenance record
+            const jsonResponse = await axios.post<MaintenanceRecordResponse>(
+                `${BASE_URL}/machines/${machineId}/maintenance-records/json`,
+                request,
+                {
+                    headers: {
+                        ...getHeader(),
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            // Then upload the file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            await axios.post(
+                `${BASE_URL}/maintenance-records/${jsonResponse.data.id}/file`,
+                formData,
+                {
+                    headers: {
+                        ...getHeader(),
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+
+            return jsonResponse.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to create maintenance record.");
+            }
+            throw new Error("An unexpected error occurred while creating maintenance record.");
+        }
+    },
+
+
+    getUncheckedMaintenanceRecords: async (): Promise<MaintenanceRecordResponse[]> => {
+        const response = await axios.get<MaintenanceRecordResponse[]>(
+            `${BASE_URL}/maintenance-records`,
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
+
+    getMaintenanceRecordById: async (id: string): Promise<MaintenanceRecordResponse> => {
+        const response = await axios.get<MaintenanceRecordResponse>(
+            `${BASE_URL}/maintenance-records/${id}`,
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
+
+    getMachineMaintenanceRecords: async (machineId: string): Promise<MaintenanceRecordResponse[]> => {
+        const response = await axios.get<MaintenanceRecordResponse[]>(
+            `${BASE_URL}/machines/${machineId}/maintenance-records`,
+            { headers: getHeader() }
+        );
+        return response.data;
+    },
+
+    updateMaintenanceRecord: async (
+        id: string,
+        request: MaintenanceRecordRequest
+    ): Promise<string> => {
+        try {
+            const response = await axios.put<string>(
+                `${BASE_URL}/maintenance-records/${id}`,
+                request,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to update maintenance record.");
+            }
+            throw new Error("An unexpected error occurred while updating maintenance record.");
+        }
+    },
+
+    deleteMaintenanceRecord: async (id: string): Promise<string> => {
+        try {
+            const response = await axios.delete(
+                `${BASE_URL}/maintenance-records/${id}`,
+                { headers: getHeader() }
+            );
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(error.response.data?.message || "Failed to delete maintenance record.");
+            }
+            throw new Error("An unexpected error occurred while deleting maintenance record.");
+        }
+    },
+
+    verifyRecord: async (id: string): Promise<MaintenanceRecordResponse> => {
+        const response = await axios.patch<MaintenanceRecordResponse>(
+            `${BASE_URL}/maintenance-records/${id}/verify`,
+            {},
+            { headers: getHeader() }
+        );
+        return response.data;
+    }
+};
+
+
+
 
 
 /** Role-related functions */
