@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImageIcon, UploadIcon } from "lucide-react";
-import { useMachineStore } from "@/lib/store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function ProtectedAddMachineImages() {
@@ -38,13 +37,12 @@ function AddMachineImages() {
             });
             return machineAPI.images.upload(machineId, formData);
         },
-        onSuccess: (response) => {
+        onSuccess: () => {
             toast({
                 title: "Images Uploaded",
                 description: "Machine images added successfully"
             });
 
-            console.log(response);
             // Invalidate relevant queries
             queryClient.invalidateQueries({ queryKey: ['machine', machineId] });
             queryClient.invalidateQueries({ queryKey: ['machineImages', machineId] });
