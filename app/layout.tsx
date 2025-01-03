@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "./query-provider";
 import MainLayout from "@/components/custom-ui/common/mainlayout";
 import { satoshi } from "./fonts"
+import { GeistSans } from 'geist/font/sans';
 
-const inter = Inter({ subsets: ["latin"] });
+
+
 
 export const metadata: Metadata = {
   title: "RentItUp",
@@ -22,7 +23,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={satoshi.className}>
+      <body className={GeistSans.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
