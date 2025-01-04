@@ -8,18 +8,18 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import CategoryAccordion from "@/components/custom-ui/categories/category-list-accordion";
+import CategoryAccordion from "@/components/customui/categories/categorylistaccordion";
 
 export default function Categories() {
     const router = useRouter();
 
     // Query for categories
-    const { 
+    const {
         data: categoriesList,
         isLoading,
         isError,
         error,
-        refetch 
+        refetch
     } = useQuery({
         queryKey: ['categories'],
         queryFn: categoryAPI.getAllCategories,
@@ -56,9 +56,9 @@ export default function Categories() {
         <div className="container mx-auto p-6">
             <Card>
                 {isAdmin() && (
-                    <Button 
-                        variant="secondary" 
-                        onClick={handleAddCategory} 
+                    <Button
+                        variant="secondary"
+                        onClick={handleAddCategory}
                         className="flex items-center gap-2"
                     >
                         <Plus className="h-4 w-4" />

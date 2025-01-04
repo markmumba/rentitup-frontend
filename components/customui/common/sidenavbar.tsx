@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { isAdmin, isAuthenticated, isOwner, isCustomer } from '@/lib/service';
 import { LogoutButton } from './logoutbutton';
-import { ModeToggle } from "@/components/custom-ui/common/modaltoggle";
+import { ModeToggle } from "@/components/customui/common/modaltoggle";
 
 export default function ProtectedSideNavbar() {
     const pathname = usePathname();

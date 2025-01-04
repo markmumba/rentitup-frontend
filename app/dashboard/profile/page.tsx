@@ -29,7 +29,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { isOwner, machineAPI, userAPI } from "@/lib/service";
 import Image from "next/image";
-import MachineCard from "@/components/custom-ui/machines/machinecard";
+import MachineCard from "@/components/customui/machines/machinecard";
 
 export default function ProtectedProfile() {
   return (
@@ -70,7 +70,7 @@ function Profile() {
     setMachineToDelete(machineId);
     setShowDeleteDialog(true);
   };
-  
+
   const handleUpdateMachine = (machineId: string) => {
     router.push(`/machines/${machineId}/edit`);
   };
@@ -186,7 +186,7 @@ function Profile() {
                 onDelete={handleDeleteClick}
                 onUpdate={handleUpdateMachine}
                 onClick={handleMachineClick}
-                onAddMaintenanceRecords={(id:any) =>
+                onAddMaintenanceRecords={(id: any) =>
                   router.push(`/machines/${id}/maintenance-record/add`)
                 }
               />

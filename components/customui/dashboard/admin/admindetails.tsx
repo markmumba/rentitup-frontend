@@ -1,10 +1,10 @@
 'use client';
 import { UserDetails, UserDetailsList, MaintenanceRecordResponse } from "@/lib/definitions";
-import { Bell, Plus, User, Users, ClipboardCheck, Settings, ArrowUpRight, ArrowDownRight} from "lucide-react";
-import UnverifiedOwners from "@/components/custom-ui/dashboard/admin/unverifiedowners";
+import { Bell, Plus, User, Users, ClipboardCheck, Settings, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import UnverifiedOwners from "@/components/customui/dashboard/admin/unverifiedowners";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import UncheckedMaintenanceRecords from "./uncheckedRecords";
+import UncheckedMaintenanceRecords from "./uncheckedrecords";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { userAPI, maintenanceAPI } from "@/lib/service";
@@ -14,13 +14,13 @@ interface AdminProps {
 }
 
 
-const StatsCard = ({ 
-  title, 
-  value, 
-  icon: Icon, 
+const StatsCard = ({
+  title,
+  value,
+  icon: Icon,
   description,
   trend,
-  trendValue 
+  trendValue
 }: {
   title: string;
   value: string | number;
@@ -70,7 +70,7 @@ const StatsCard = ({
   );
 };
 
-export default function AdminDashboard({ data }: AdminProps) {
+export default function AdminDetails({ data }: AdminProps) {
   const router = useRouter();
 
   // Fetch unverified owners

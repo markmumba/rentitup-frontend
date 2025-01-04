@@ -1,7 +1,7 @@
 
 'use client';
 import { admin } from "@/lib/utils";
-import AllBookings from "@/components/custom-ui/dashboard/admin/AllBookings";
+import AllBookings from "@/components/customui/dashboard/admin/allbookings";
 import { ProtectedRoute } from "@/app/protector";
 
 

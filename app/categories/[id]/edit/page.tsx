@@ -1,7 +1,7 @@
 'use client';
 import { CategoryRequest } from "@/lib/definitions";
 import { categoryAPI } from "@/lib/service"; // Assuming this is where your API functions are exported
-import CategoryForm from "@/components/custom-ui/categories/categoryform";
+import CategoryForm from "@/components/customui/categories/categoryform";
 import { toast } from "@/hooks/use-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -13,10 +13,10 @@ export default function UpdateCategory() {
     const queryClient = useQueryClient();
 
     // Query for fetching category details
-    const { 
+    const {
         data: category,
         isLoading: isLoadingCategory,
-        error: fetchError 
+        error: fetchError
     } = useQuery({
         queryKey: ['category', categoryId],
         queryFn: () => categoryAPI.getCategoryById(categoryId),
@@ -24,11 +24,11 @@ export default function UpdateCategory() {
     });
 
     // Mutation for updating category
-    const { 
+    const {
         mutate: updateCategoryMutation,
-        isPending: isUpdating 
+        isPending: isUpdating
     } = useMutation({
-        mutationFn: (data: CategoryRequest) => 
+        mutationFn: (data: CategoryRequest) =>
             categoryAPI.updateCategory(categoryId, data),
         onSuccess: () => {
             toast({

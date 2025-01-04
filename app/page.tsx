@@ -1,10 +1,10 @@
-import ContactSection from "@/components/custom-ui/homepage/contactus";
-import FeaturedEquipment from "@/components/custom-ui/homepage/featuredequipments";
-import ModernHeroSection from "@/components/custom-ui/homepage/homeherosection";
-import TestimonialsSection from "@/components/custom-ui/homepage/testimonial";
-import HowItWorksSection from "@/components/custom-ui/homepage/howitworks";
-import CategoriesSection from "@/components/custom-ui/homepage/categorysection";
-import FAQSection from "@/components/custom-ui/homepage/faqsection";
+import CategoriesSection from "@/components/customui/homepage/categorysection";
+import ContactSection from "@/components/customui/homepage/contactus";
+import FAQSection from "@/components/customui/homepage/faqsection";
+import FeaturedEquipment from "@/components/customui/homepage/featuredequipments";
+import ModernHeroSection from "@/components/customui/homepage/homeherosection";
+import HowItWorksSection from "@/components/customui/homepage/howitworks";
+import TestimonialsSection from "@/components/customui/homepage/testimonial";
 
 export default function Home() {
   return (

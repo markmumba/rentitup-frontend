@@ -15,7 +15,7 @@ import {
   Plus
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Orders from "@/components/custom-ui/dashboard/owner/orderlist";
+import Orders from "@/components/customui/dashboard/owner/orderlist";
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
@@ -76,7 +76,7 @@ export default function OwnerDetails({ data }: OwnerProps) {
   const totalMachines = data.ownedMachines?.length || 0;
   const availableMachines = data.ownedMachines?.filter(m => m.isAvailable).length || 0;
   const occupancyRate = totalMachines ? ((totalMachines - availableMachines) / totalMachines) * 100 : 0;
-  const monthlyRevenue =0; 
+  const monthlyRevenue = 0;
 
   const handleAddMachine = () => {
     router.push(`/machines/add`);

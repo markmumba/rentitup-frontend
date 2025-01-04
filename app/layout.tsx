@@ -3,7 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "./query-provider";
-import MainLayout from "@/components/custom-ui/common/mainlayout";
+import MainLayout from "@/components/customui/common/mainlayout";
 import { satoshi } from "./fonts"
 import { GeistSans } from 'geist/font/sans';
 

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { authAPI } from "@/lib/service";
-import { LoginForm } from "@/components/custom-ui/common/login";
+import { LoginForm } from "@/components/customui/common/login";
 
 export function LoginClient() {
   const router = useRouter();

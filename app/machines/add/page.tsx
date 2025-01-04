@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useMachineStore } from "@/lib/store";
 import { useMutation } from "@tanstack/react-query";
 import { machineAPI } from "@/lib/service";
-import MachineForm from "@/components/custom-ui/machines/machineform";
+import MachineForm from "@/components/customui/machines/machineform";
 
 export default function ProtectedAddMachine() {
   return (
@@ -49,7 +49,7 @@ function AddMachine() {
   });
 
   const handleAddMachine = (data: MachineRequest) => {
-    console.log("Machine that is added ",data);
+    console.log("Machine that is added ", data);
     addMachine(data);
   };
 

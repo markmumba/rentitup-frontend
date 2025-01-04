@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import ProtectedSideNavbar from "@/components/custom-ui/common/sidenavbar";
+import ProtectedSideNavbar from "@/components/customui/common/sidenavbar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { isAuthenticated } from "@/lib/service";
 import Navbar from "./navbar";

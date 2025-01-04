@@ -1,17 +1,17 @@
 'use client'
 import { useRouter, useSearchParams } from "next/navigation";
-import {  BookingRequest } from "../../../lib/definitions";
+import { BookingRequest } from "../../../lib/definitions";
 import { toast } from "@/hooks/use-toast";
-import { BookingForm } from "@/components/custom-ui/Booking/bookingform";
+import { BookingForm } from "@/components/customui/booking/bookingform";
 import { ProtectedRoute } from "../../protector";
-import CalendarView from "@/components/custom-ui/Booking/calendarview";
+import CalendarView from "@/components/customui/booking/calendarview";
 import { customer, owner } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userAPI, bookingAPI } from "@/lib/service"; // Assuming this is where your API functions are exported
 
 export default function ProtectedBookingPage() {
     return (
-        <ProtectedRoute allowedRoles={[...customer,...owner]}>
+        <ProtectedRoute allowedRoles={[...customer, ...owner]}>
             <BookingPage />
         </ProtectedRoute>
     );
@@ -26,10 +26,10 @@ function BookingPage() {
     const basePrice = searchParams.get("basePrice") ?? "";
     const rate = searchParams.get("rate") ?? "";
 
-    const { 
+    const {
         data: userProfile,
         error: userError,
-        isLoading: isLoadingProfile 
+        isLoading: isLoadingProfile
     } = useQuery({
         queryKey: ['userProfile'],
         queryFn: userAPI.getLoggedUserProfile,
@@ -42,12 +42,12 @@ function BookingPage() {
     } = useQuery({
         queryKey: ['machineBookings', machineId],
         queryFn: () => bookingAPI.getBookingsByMachine(machineId),
-        enabled: !!machineId, 
+        enabled: !!machineId,
     });
 
-    const { 
+    const {
         mutate: createNewBooking,
-        isPending: isCreatingBooking 
+        isPending: isCreatingBooking
     } = useMutation({
         mutationFn: (data: BookingRequest) => bookingAPI.createBooking(data),
         onSuccess: () => {
@@ -55,10 +55,10 @@ function BookingPage() {
                 title: "Booking successful",
                 description: "Your machine has been booked successfully",
             });
-            
+
             queryClient.invalidateQueries({ queryKey: ['machineBookings'] });
             queryClient.invalidateQueries({ queryKey: ['userBookings'] });
-            
+
             router.push("/dashboard");
         },
         onError: (error) => {

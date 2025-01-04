@@ -4,7 +4,7 @@ import { machineAPI, categoryAPI } from "@/lib/service"; // Assuming this is whe
 import { toast } from "@/hooks/use-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import MachineUpdateForm from "@/components/custom-ui/machines/machineupdateform";
+import MachineUpdateForm from "@/components/customui/machines/machineupdateform";
 
 export default function UpdateMachine() {
     const params = useParams();
@@ -13,27 +13,27 @@ export default function UpdateMachine() {
     const queryClient = useQueryClient();
 
     // Query for machine details
-    const { 
+    const {
         data: machine,
-        isLoading: isLoadingMachine 
+        isLoading: isLoadingMachine
     } = useQuery({
         queryKey: ['machine', machineId],
         queryFn: () => machineAPI.getMachineById(machineId)
     });
 
     // Query for machine conditions
-    const { 
+    const {
         data: machineConditions = [],
-        isLoading: isLoadingConditions 
+        isLoading: isLoadingConditions
     } = useQuery({
         queryKey: ['machineConditions'],
         queryFn: machineAPI.getMachineConditions
     });
 
     // Query for categories
-    const { 
+    const {
         data: categoriesList = [],
-        isLoading: isLoadingCategories 
+        isLoading: isLoadingCategories
     } = useQuery({
         queryKey: ['categories'],
         queryFn: categoryAPI.getAllCategories
@@ -41,7 +41,7 @@ export default function UpdateMachine() {
 
     // Mutation for updating machine
     const { mutate: updateMachineMutation, isPending: isLoadingUpdate } = useMutation({
-        mutationFn: (data: MachineUpdateRequest) => 
+        mutationFn: (data: MachineUpdateRequest) =>
             machineAPI.updateMachine(machineId, data),
         onSuccess: () => {
             toast({

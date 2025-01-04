@@ -1,6 +1,6 @@
 'use client';
 import { ProtectedRoute } from "@/app/protector";
-import MaintenanceRecordForm from "@/components/custom-ui/maintenancerecord/maintenancerecordform";
+import MaintenanceRecordForm from "@/components/customui/maintenancerecord/maintenancerecordform";
 import { toast } from "@/hooks/use-toast";
 import { MaintenanceRecordRequest, MaintenanceRecordResponse } from "@/lib/definitions";
 import { maintenanceAPI } from "@/lib/service";
@@ -36,20 +36,20 @@ function MaintenanceRecordPage() {
       queryClient.invalidateQueries({
         queryKey: ['maintenanceRecords', machineId]
       });
-      
+
       toast({
         title: "Success!",
         description: "Maintenance record has been added successfully",
         variant: "default"
       });
-      
+
       router.push(`/dashboard/profile`);
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: error instanceof Error 
-          ? error.message 
+        description: error instanceof Error
+          ? error.message
           : "Failed to add maintenance record",
         variant: "destructive"
       });
@@ -71,8 +71,8 @@ function MaintenanceRecordPage() {
             Add the details for the maintenance that has been done to your machine
           </p>
         </div>
-        
-        <MaintenanceRecordForm 
+
+        <MaintenanceRecordForm
           onSubmit={handleFormSubmit}
           isSubmitting={isAddingRecord}
         />
