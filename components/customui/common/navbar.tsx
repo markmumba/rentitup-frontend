@@ -7,6 +7,7 @@ import { Menu, X } from 'lucide-react';
 import { useAuthStore } from '../../../lib/store';
 import { usePathname } from 'next/navigation';
 import { MotionDiv } from '@/components/motion';
+import Image from 'next/image';
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -77,14 +78,13 @@ export function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     <Link
                         href="/"
-                        className={cn(
-                            "font-bold text-2xl tracking-tight transition-colors",
-                            scrolled ?
-                                "text-slate-900 dark:text-white" :
-                                "text-slate-900 dark:text-white"
-                        )}
                     >
-                        RentItUp
+                        <Image 
+                        src="/icons/1.png"
+                        alt="Comany logo"
+                        height={200}
+                        width={200}
+                         />
                     </Link>
 
                     <div className="hidden md:flex items-center space-x-2">

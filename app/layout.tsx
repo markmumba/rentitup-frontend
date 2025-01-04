@@ -13,6 +13,9 @@ import { GeistSans } from 'geist/font/sans';
 export const metadata: Metadata = {
   title: "RentItUp",
   description: "Software that gets the work done",
+  icons :{
+    icon:"/icons/0.png"
+  }
 };
 
 export default function RootLayout({

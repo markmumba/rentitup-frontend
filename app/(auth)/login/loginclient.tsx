@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { authAPI } from "@/lib/service";
 import { LoginForm } from "@/components/customui/common/login";
+import FirstTimeLoginAlert from "@/components/customui/common/firsttimelogin";
 
 export function LoginClient() {
   const router = useRouter();
@@ -52,6 +53,7 @@ export function LoginClient() {
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold">Log in to your account</h1>
       </div>
+      <FirstTimeLoginAlert />
 
       <LoginForm
         onSubmit={handleLogin}

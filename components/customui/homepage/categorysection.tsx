@@ -3,11 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   PackagePlus,
-  Truck,
-  Building2,
-  Hammer,
-  Construction,
-  Combine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
