@@ -21,7 +21,7 @@ import { ProtectedRoute } from '@/app/protector';
 import { allRoles } from '@/lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookingAPI } from '@/lib/service';
-import StatusBadge from '../../../../components/custom-ui/dashboard/owner/StatusBadge';
+import StatusBadge from '@/components/custom-ui/dashboard/owner/StatusBadge';
 
 export default function ProtectedSingleBookingPage() {
     return (
