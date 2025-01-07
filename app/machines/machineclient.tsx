@@ -9,24 +9,17 @@ import { machineAPI } from '@/lib/service';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-interface Machine {
-  id: string;
-  name: string;
-  machineImageUrl: string;
-  condition: string;
-  isAvailable: boolean;
-  basePrice: number;
-}
+
 
 export const MachinesContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get('query');
 
-  const { 
-    data: machines = [], 
-    isLoading, 
-    error 
+  const {
+    data: machines = [],
+    isLoading,
+    error
   } = useQuery({
     queryKey: ['machines', 'search', searchTerm],
     queryFn: () => machineAPI.searchMachines(searchTerm || ''),
@@ -66,7 +59,7 @@ export const MachinesContent = () => {
             <p className="text-gray-500">No machines found</p>
           </div>
         ) : (
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
+          <div className="pt-20 lg:pt-20 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
             {machines.map((machine) => (
               <Card
                 key={machine.id}
@@ -78,12 +71,13 @@ export const MachinesContent = () => {
                     <Image
                       src={machine.machineImageUrl}
                       alt={machine.name}
-                      className="w-full h-full object-cover"
+                      className="object-cover"
                       width={800}
                       height={800}
+                      style={{ width: '100%', height: 'auto' }}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
                       {machine.name}
@@ -92,11 +86,10 @@ export const MachinesContent = () => {
                       <span className="text-sm font-medium text-gray-600">
                         {machine.condition}
                       </span>
-                      <span className={`text-sm font-medium px-2 py-1 rounded ${
-                        machine.isAvailable 
+                      <span className={`text-sm font-medium px-2 py-1 rounded ${machine.isAvailable
                           ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
-                      }`}>
+                        }`}>
                         {machine.isAvailable ? "Available" : "Not Available"}
                       </span>
                     </div>
@@ -104,7 +97,7 @@ export const MachinesContent = () => {
                       ksh{machine.basePrice}
                     </p>
                     <Button
-                      variant="outline" 
+                      variant="outline"
                       className="w-full"
                     >
                       View Details

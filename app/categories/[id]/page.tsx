@@ -26,8 +26,6 @@ export default function CategoryPage() {
         enabled: !!categoryId, // Only run query if categoryId exists
     });
 
-    // Filter verified machines
-    const verifiedMachines = category?.machines.filter(machine => machine.verified) ?? [];
 
     // Loading state
     if (isLoading) {
@@ -87,12 +85,12 @@ export default function CategoryPage() {
                             </Badge>
                         </p>
                         <p className="text-muted-foreground">
-                            Showing {verifiedMachines.length} verified machines
+                            Showing {category.machines.length} verified machines
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {verifiedMachines.map((machine) => (
+                        {category.machines.map((machine) => (
                             <MachineListCard key={machine.id} machine={machine} />
                         ))}
                     </div>

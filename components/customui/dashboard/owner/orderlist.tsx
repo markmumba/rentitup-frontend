@@ -230,7 +230,7 @@ export function Orders({ ownerId, userDetails }:{ownerId:string, userDetails:Use
             <div className="grid gap-6">
                 <BookingsTable bookings={pendingBookings} title="Pending Booking Requests" />
                 <BookingsTable bookings={confirmedBookings} title="Confirmed Bookings" />
-                <MachinesTable machines={userDetails?.ownedMachines} />
+                <MachinesTable machines={userDetails?.ownedMachines.filter((machine) => machine.verified)} />
             </div>
         </div>
     );
