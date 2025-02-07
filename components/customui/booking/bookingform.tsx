@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,8 +23,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 
-// Updated base schema to include startDate and endDate
-const baseBookingSchema = z.object({
+const bookingSchema = z.object({
   pickUpLocation: z.string().min(1, "Pickup location is required"),
   totalAmount: z.string().min(1, "Total amount is required"),
   machineId: z.string(),
@@ -33,37 +32,13 @@ const baseBookingSchema = z.object({
   endDate: z.string().min(1, "End date is required"),
 });
 
-// Create type-specific schemas with additional fields
-const hourlyBookingSchema = baseBookingSchema.extend({
-  calculationType: z.literal("HOURLY"),
-  hours: z.number().min(1, "Number of hours is required"),
-});
-
-const dailyBookingSchema = baseBookingSchema.extend({
-  calculationType: z.literal("DAILY"),
-});
-
-const distanceBookingSchema = baseBookingSchema.extend({
-  calculationType: z.literal("DISTANCE_BASED"),
-  distance: z.number().min(1, "Distance is required"),
-});
-
-// Combine them into a discriminated union
-const bookingSchema = z.discriminatedUnion("calculationType", [
-  hourlyBookingSchema,
-  dailyBookingSchema,
-  distanceBookingSchema,
-]);
-
 type BookingRequest = z.infer<typeof bookingSchema>;
-
 
 export function BookingForm({
   onSubmit,
   isLoading,
   machineId,
   customerId,
-  priceCalculationType,
   basePrice
 }: {
   onSubmit: (data: BookingRequest) => void;
@@ -76,80 +51,30 @@ export function BookingForm({
   const form = useForm<BookingRequest>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
-      calculationType: priceCalculationType as "HOURLY" | "DAILY" | "DISTANCE_BASED",
       pickUpLocation: "",
       totalAmount: "",
       machineId,
       customerId,
       startDate: "",
       endDate: "",
-      ...(priceCalculationType === "HOURLY" ? { hours: 0 } :
-        priceCalculationType === "DISTANCE_BASED" ? { distance: 0 } : {})
     },
   });
 
-  // Watch relevant fields for auto-calculation
-  const hours = form.watch("hours");
   const startDate = form.watch("startDate");
   const endDate = form.watch("endDate");
-  const distance = form.watch("distance");
 
-  // Calculate total whenever dependent fields change
+  // Calculate total amount when dates change
   useEffect(() => {
-    const baseprice = parseFloat(basePrice);
-    let total = 0;
-
-    switch (priceCalculationType) {
-      case "HOURLY":
-        if (hours && startDate && endDate) {
-          total = baseprice * hours;
-        }
-        break;
-      case "DAILY":
-        if (startDate && endDate) {
-          const start = new Date(startDate);
-          const end = new Date(endDate);
-          const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) + 1;
-          if (days > 0) {
-            total = baseprice * days;
-          }
-        }
-        break;
-      case "DISTANCE_BASED":
-        if (distance && startDate && endDate) {
-          total = baseprice * distance;
-        }
-        break;
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const days = differenceInDays(end, start) + 1; // Add 1 to include both start and end dates
+      const total = (parseFloat(basePrice) * days).toString();
+      form.setValue("totalAmount", total);
     }
+  }, [startDate, endDate, basePrice, form]);
 
-    form.setValue("totalAmount", total.toString(), { shouldValidate: true });
-  }, [hours, startDate, endDate, distance, basePrice, priceCalculationType, form]);
-
-  // Helper function to format price calculation type for display
-  const formatPriceType = (type: string) => {
-    return type.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    ).join(' ');
-  };
-
-  // Helper function to format the rate description
-  const getRateDescription = () => {
-    const formattedPrice = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'KES',
-    }).format(parseFloat(basePrice));
-
-    switch (priceCalculationType) {
-      case "HOURLY":
-        return `${formattedPrice}/hour`;
-      case "DAILY":
-        return `${formattedPrice}/day`;
-      case "DISTANCE_BASED":
-        return `${formattedPrice}/km`;
-      default:
-        return formattedPrice;
-    }
-  };
+ 
 
   return (
     <Card className="w-full">
@@ -163,11 +88,8 @@ export function BookingForm({
           </div>
           <div className="bg-slate-50 p-4 rounded-lg">
             <div className="text-sm font-medium">Pricing Details</div>
-            <div className="mt-1 text-sm text-muted-foreground">
-              {formatPriceType(priceCalculationType)}
-            </div>
             <div className="mt-1 text-lg font-semibold text-primary">
-              {getRateDescription()}
+              KES {basePrice} / Daily
             </div>
           </div>
         </div>
@@ -175,9 +97,7 @@ export function BookingForm({
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Rest of the form content remains exactly the same */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Start Date Field */}
               <FormField
                 control={form.control}
                 name="startDate"
@@ -215,7 +135,6 @@ export function BookingForm({
                 )}
               />
 
-              {/* End Date Field */}
               <FormField
                 control={form.control}
                 name="endDate"
@@ -255,50 +174,6 @@ export function BookingForm({
                 )}
               />
 
-              {/* Conditional Fields Based on Calculation Type */}
-              {priceCalculationType === "HOURLY" && (
-                <FormField
-                  control={form.control}
-                  name="hours"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Number of Hours</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Enter hours"
-                          {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {priceCalculationType === "DISTANCE_BASED" && (
-                <FormField
-                  control={form.control}
-                  name="distance"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Distance (km)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Enter distance"
-                          {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Pickup Location */}
               <FormField
                 control={form.control}
                 name="pickUpLocation"
@@ -313,7 +188,6 @@ export function BookingForm({
                 )}
               />
 
-              {/* Total Amount */}
               <FormField
                 control={form.control}
                 name="totalAmount"

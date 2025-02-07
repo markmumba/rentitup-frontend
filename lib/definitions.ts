@@ -31,7 +31,6 @@ export interface CollectorVerificationRequest {
 export interface CategoryRequest {
   name: string;
   description: string;
-  priceCalculationType: string;
 }
 
 export interface MachineRequest {

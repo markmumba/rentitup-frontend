@@ -57,7 +57,7 @@ export default function CategoryPage() {
 
     // Success state
     return (
-        <div className="p-6 space-y-6 pt-20">
+        <div className="p-2 space-y-2 ">
             {/* Back Button */}
             <div className="flex justify-end w-full">
                 <Button
@@ -81,7 +81,7 @@ export default function CategoryPage() {
                         <p className="text-muted-foreground">
                             Pricing type:{' '}
                             <Badge variant="secondary">
-                                {category.priceCalculationType}
+                                Daily
                             </Badge>
                         </p>
                         <p className="text-muted-foreground">

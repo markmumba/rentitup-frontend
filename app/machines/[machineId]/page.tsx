@@ -37,14 +37,6 @@ export default function MachinePage() {
         queryFn: () => machineAPI.getMachineById(machineId),
     });
 
-    const {
-        data: category,
-        isLoading: isLoadingCategory
-    } = useQuery({
-        queryKey: ['category', machine?.categoryId],
-        queryFn: () => categoryAPI.getCategoryById(machine?.categoryId!),
-        enabled: !!machine?.categoryId,
-    });
 
     const {
         data: userDetails,
@@ -80,7 +72,7 @@ export default function MachinePage() {
             const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
             router.push(`/login?redirect=${currentPath}`);
         } else {
-            router.push(`/dashboard/booking?machineId=${machineId}&basePrice=${machine?.basePrice}&rate=${category?.priceCalculationType}`);
+            router.push(`/dashboard/booking?machineId=${machineId}&basePrice=${machine?.basePrice}`);
         }
     };
 
@@ -100,7 +92,7 @@ export default function MachinePage() {
     }
 
     // Loading state
-    if (isLoadingMachine || isLoadingCategory) {
+    if (isLoadingMachine ) {
         return (
             <div className="container mx-auto space-y-6 p-6">
                 <Skeleton className="h-8 w-[250px]" />
@@ -177,7 +169,7 @@ export default function MachinePage() {
                                         </div>
                                         <div>
                                             <h3 className="font-medium mb-1">Base Price</h3>
-                                            <p className="text-xl font-semibold">KSH {machine.basePrice.toLocaleString()}</p>
+                                            <p className="text-xl font-semibold">KSH {machine.basePrice.toLocaleString()} / per day </p>
                                         </div>
                                     </div>
 
