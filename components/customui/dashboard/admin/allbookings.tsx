@@ -190,7 +190,7 @@ export default function AllBookings() {
                                             <TableCell>
                                                 <StatusBadge status={booking.status} />
                                             </TableCell>
-                                            <TableCell className="text-right font-medium">${booking.totalAmount}</TableCell>
+                                            <TableCell className="text-right font-medium">Ksh {booking.totalAmount}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
