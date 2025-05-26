@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BanknoteIcon, Info } from "lucide-react";
 import Image from "next/image";
 import { MachineResponse, VerificationState } from '@/lib/definitions';
+import { BACKEND_URL } from '@/lib/utils';
 
 
 
@@ -24,6 +25,31 @@ const MachineCard: React.FC<MachineCardProps> = ({
     onClick,
     onAddMaintenanceRecords
 }) => {
+    const primaryImage = machine.machineImages.find(img => img.isPrimary);
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
+
+
+    useEffect(() => {
+        if (primaryImage) {
+            // Check if image is a local file stored in localStorage
+            const storedImage = localStorage.getItem(primaryImage.url);
+            if (storedImage) {
+                setImageSrc(storedImage);
+            } else {
+                // Construct full URL for backend images
+                const imageUrl = primaryImage.url.startsWith('http') 
+                    ? primaryImage.url 
+                    : `${BACKEND_URL}/${primaryImage.url}`;
+                setImageSrc(imageUrl);
+            }
+        }
+    }, [primaryImage]);
+
+    const handleCardClick = () => {
+        if (machine.verificationState === VerificationState.COMPLETE) {
+            onClick(machine.id);
+        }
+    };
 
     const renderOverlay = () => {
         switch (machine.verificationState) {
@@ -56,15 +82,7 @@ const MachineCard: React.FC<MachineCardProps> = ({
         }
     };
 
-    const primaryImage = machine.machineImages.find(img => img.isPrimary);
-    const handleCardClick = () => {
-        // Only allow card click if verification is COMPLETE
-        if (machine.verificationState === VerificationState.COMPLETE) {
-            onClick(machine.id);
-        }
-    }
     return (
-
         <Card
             className={`overflow-hidden relative ${machine.verificationState !== VerificationState.COMPLETE ? "opacity-75" : ""
                 } cursor-${machine.verificationState === VerificationState.COMPLETE ? 'pointer' : 'default'} hover:shadow-lg transition-shadow`}
@@ -72,9 +90,9 @@ const MachineCard: React.FC<MachineCardProps> = ({
         >
             {renderOverlay()}
             <div className="aspect-video relative">
-                {primaryImage && (
+                {imageSrc && (
                     <Image
-                        src={primaryImage.url}
+                        src={imageSrc}
                         alt={machine.name}
                         className="object-cover w-full h-full"
                         width={800}

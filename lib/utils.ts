@@ -7,6 +7,9 @@ export const customer = ["CUSTOMER"];
 export const owner = ["OWNER"];
 export const allRoles = ["ADMIN","OWNER","CUSTOMER"];
 
+// lib/utils.ts or .env.local
+export const BACKEND_URL = 'http://localhost:8080'; // adjust to match your backend URL
+
 export function shortenDescription(description: string) {
   const maxlength: number = 100
 

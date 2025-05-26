@@ -26,6 +26,9 @@ export default function CategoryPage() {
         enabled: !!categoryId, // Only run query if categoryId exists
     });
 
+   
+
+
 
     // Loading state
     if (isLoading) {

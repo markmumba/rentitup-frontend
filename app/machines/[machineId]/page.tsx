@@ -1,5 +1,5 @@
 'use client'
-import {  MachineImageResponse, } from "@/lib/definitions";
+import { MachineImageResponse, } from "@/lib/definitions";
 import { machineAPI, categoryAPI, isAuthenticated, isOwner, userAPI, isAdmin, maintenanceAPI } from "@/lib/service";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,6 +19,15 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Clock, Calendar, User, Settings } from "lucide-react";
+import { BACKEND_URL } from "@/lib/utils";
+
+
+const getImageUrl = (url: string | null | undefined): string => {
+    if (!url) return '/placeholder-image.jpg'; // Provide a default placeholder
+    return url.startsWith('http') ? url : `${BACKEND_URL}/${url}`;
+};
+
+
 
 export default function MachinePage() {
     const params = useParams();
@@ -92,7 +101,7 @@ export default function MachinePage() {
     }
 
     // Loading state
-    if (isLoadingMachine ) {
+    if (isLoadingMachine) {
         return (
             <div className="container mx-auto space-y-6 p-6">
                 <Skeleton className="h-8 w-[250px]" />
@@ -128,7 +137,7 @@ export default function MachinePage() {
                             {/* Left Column - Image */}
                             <div className="relative h-[400px]">
                                 <Image
-                                    src={machine.machineImages.find((img) => img.isPrimary)?.url || ''}
+                                    src={getImageUrl(machine.machineImages.find((img) => img.isPrimary)?.url)}
                                     alt={machine.name}
                                     fill
                                     className="object-cover"
@@ -180,9 +189,9 @@ export default function MachinePage() {
                                             </Button>
                                         )}
                                         {canUpdateMachine() && (
-                                            <Button 
-                                                variant="outline" 
-                                                size="lg" 
+                                            <Button
+                                                variant="outline"
+                                                size="lg"
                                                 className="flex-1"
                                                 onClick={() => handleUpdateMachine(machine.id)}
                                             >
@@ -230,7 +239,7 @@ export default function MachinePage() {
                                             onClick={() => openModal(img)}
                                         >
                                             <Image
-                                                src={img.url}
+                                                src={getImageUrl(img.url)}
                                                 alt={`Machine Image ${img.id}`}
                                                 fill
                                                 className="object-cover"
@@ -242,12 +251,12 @@ export default function MachinePage() {
                     )}
 
                     {/* Maintenance Records Section */}
-                    { (isOwner() && canUpdateMachine()) || isAdmin() && (
+                    {(isOwner() && canUpdateMachine()) || isAdmin() && (
                         <div>
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-2xl font-bold">Maintenance Records</h2>
                             </div>
-                            
+
                             {loadingMaintenanceRecords ? (
                                 <div className="space-y-4">
                                     {[1, 2].map((i) => (
@@ -268,7 +277,7 @@ export default function MachinePage() {
                                             <Card key={record.id}>
                                                 <CardContent className="p-6">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                                                                                                    <div className="space-y-1">
+                                                        <div className="space-y-1">
                                                             <div className="flex items-center gap-2 text-muted-foreground">
                                                                 <Calendar className="h-4 w-4" />
                                                                 <span>Service Date</span>
@@ -313,7 +322,7 @@ export default function MachinePage() {
                                                                 <h4 className="text-sm text-muted-foreground mb-2">Service Image</h4>
                                                                 <div className="relative h-[200px] w-full rounded-lg overflow-hidden">
                                                                     <Image
-                                                                        src={record.imageRecordUrl}
+                                                                        src={getImageUrl(record.imageRecordUrl)}
                                                                         alt="Service Record Image"
                                                                         fill
                                                                         className="object-cover"
@@ -359,13 +368,12 @@ const ImageModal = ({
 }) => {
     return (
         <div
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 transition-opacity ${
-                open ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
+            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 transition-opacity ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}
         >
             <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl m-4">
                 <div className="flex justify-end mb-2">
-                    <button 
+                    <button
                         onClick={onClose}
                         className="text-gray-500 hover:text-gray-700 transition-colors"
                     >
@@ -384,7 +392,7 @@ const ImageModal = ({
                 {image && (
                     <div className="relative h-[600px]">
                         <Image
-                            src={image.url}
+                            src={getImageUrl(image.url)}
                             alt={`Machine Image ${image.id}`}
                             fill
                             className="object-contain"

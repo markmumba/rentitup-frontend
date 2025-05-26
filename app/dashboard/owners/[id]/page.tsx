@@ -8,15 +8,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import Image from 'next/image';
-import { dateConverter } from '@/lib/utils';
+import { BACKEND_URL, dateConverter } from '@/lib/utils';
 import { userAPI } from '@/lib/service';
 import { toast } from '@/hooks/use-toast';
+import { useEffect, useState } from 'react';
 
 export default function CollectorPage() {
     const params = useParams();
     const router = useRouter();
     const queryClient = useQueryClient();
     const userId = params.id as string;
+    const [verificationImageSrc, setVerificationImageSrc] = useState<string | null>(null);
+
 
     const { data: userDetails, isLoading } = useQuery({
         queryKey: ['user', userId],
@@ -25,6 +28,25 @@ export default function CollectorPage() {
         staleTime: 5 * 60 * 1000,
     });
 
+    console.log(userDetails);
+
+    useEffect(() => {
+        if (userDetails?.verificationImage) {
+            // Check if image is stored in localStorage
+            const storedImage = localStorage.getItem(userDetails.verificationImage);
+            if (storedImage) {
+                setVerificationImageSrc(storedImage);
+            } else {
+                // Construct full URL for backend images
+                const imageUrl = userDetails.verificationImage.startsWith('http') 
+                    ? userDetails.verificationImage 
+                    : `${BACKEND_URL}/${userDetails.verificationImage}`;
+                setVerificationImageSrc(imageUrl);
+            }
+        }
+    }, [userDetails?.verificationImage]);
+
+        console.log(verificationImageSrc);
     const verifyCollectorMutation = useMutation({
         mutationFn: ({ verify }: { verify: boolean }) =>
             userAPI.collectors.verifyCollector(userId, verify),
@@ -61,7 +83,8 @@ export default function CollectorPage() {
             </div>
         );
     }
-    console.log(userDetails);
+
+    console.log();
 
     if (!userDetails) {
         return <div>No user details found</div>;
@@ -96,36 +119,40 @@ export default function CollectorPage() {
                     </div>
 
                     {/* Verification Image */}
-                    <div>
-                        <p className="text-sm text-muted-foreground mb-2">Verification Document</p>
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <div className="cursor-pointer hover:opacity-80 transition-opacity">
-                                    <Image
-                                        src={userDetails.verificationImage}
-                                        alt="Verification Document"
-                                        width={300}
-                                        height={200}
-                                        className="rounded-lg object-cover"
-                                    />
-                                </div>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl">
-                                <DialogHeader>
-                                    <DialogTitle>Verification Document</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex justify-center">
-                                    <Image
-                                        src={userDetails.verificationImage}
-                                        alt="Verification Document (Full Size)"
-                                        width={800}
-                                        height={600}
-                                        className="rounded-lg object-contain max-h-[70vh]"
-                                    />
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
+                    {verificationImageSrc && (
+                        <div>
+                            <p className="text-sm text-muted-foreground mb-2">Verification Document</p>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <div className="cursor-pointer hover:opacity-80 transition-opacity">
+                                        <Image
+                                            src={verificationImageSrc}
+                                            alt="Verification Document"
+                                            width={300}
+                                            height={200}
+                                            className="rounded-lg object-cover"
+                                            priority
+                                        />
+                                    </div>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-4xl">
+                                    <DialogHeader>
+                                        <DialogTitle>Verification Document</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="flex justify-center">
+                                        <Image
+                                            src={verificationImageSrc}
+                                            alt="Verification Document (Full Size)"
+                                            width={800}
+                                            height={600}
+                                            className="rounded-lg object-contain max-h-[70vh]"
+                                            priority
+                                        />
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                    )}
 
                     {/* Verification Actions */}
                     <div className="flex justify-between items-center">

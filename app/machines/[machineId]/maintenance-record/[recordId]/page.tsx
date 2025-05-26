@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ProtectedRoute } from "@/app/protector";
 import { MachineResponse, MaintenanceRecordResponse } from "@/lib/definitions";
 import { machineAPI, maintenanceAPI } from "@/lib/service";
-import { admin } from "@/lib/utils";
+import { admin, BACKEND_URL } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
     AlertCircle,
@@ -40,11 +40,12 @@ import {
     AlertTitle,
     AlertDescription,
 } from "@/components/ui/alert";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from '@/hooks/use-toast';
 
 function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } }) {
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
     // Mutation for verifying record
@@ -81,7 +82,23 @@ function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } 
         throwOnError: true
     });
 
+    console.log(maintenanceRecord);
 
+    useEffect(() => {
+        if (maintenanceRecord?.imageRecordUrl) {
+            // Check if image is stored in localStorage
+            const storedImage = localStorage.getItem(maintenanceRecord.imageRecordUrl);
+            if (storedImage) {
+                setImageSrc(storedImage);
+            } else {
+                // Construct full URL for backend images
+                const imageUrl = maintenanceRecord.imageRecordUrl.startsWith('http')
+                    ? maintenanceRecord.imageRecordUrl
+                    : `${BACKEND_URL}${maintenanceRecord.imageRecordUrl}`;
+                setImageSrc(imageUrl);
+            }
+        }
+    }, [maintenanceRecord?.imageRecordUrl]);
 
 
     if (recordError) {
@@ -172,16 +189,15 @@ function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } 
                         </div>
                     </div>
 
-                    {maintenanceRecord.imageRecordUrl && (
+                    {imageSrc && (
                         <div className="pt-4">
                             <p className="text-sm font-medium mb-2">Service Record Image</p>
                             <div
                                 className="relative cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => setIsImageModalOpen(true)}
                             >
-                                {/* Image preview */}
                                 <Image
-                                    src={maintenanceRecord.imageRecordUrl}
+                                    src={imageSrc}
                                     alt="Maintenance Record"
                                     width={400}
                                     height={192}
@@ -320,10 +336,10 @@ function SingleMaintenanceRecordPage({ params }: { params: { recordId: string } 
                             </Button>
                         </div>
                     </DialogHeader>
-                    {maintenanceRecord.imageRecordUrl && (
+                    {imageSrc && (
                         <div className="relative w-full h-[80vh]">
                             <Image
-                                src={maintenanceRecord.imageRecordUrl}
+                                src={imageSrc}
                                 alt="Maintenance Record"
                                 width={1200}
                                 height={800}
