@@ -250,14 +250,7 @@ export const categoryAPI = {
         }
     },
 
-    // Get price calculation types (protected endpoint)
-    getPriceCalculationTypes: async (): Promise<string[]> => {
-        const response = await axios.get<string[]>(
-            `${BASE_URL}/categories/calculation-types`,
-            { headers: getHeader() }
-        );
-        return response.data;
-    }
+
 };
 
 export const bookingAPI = {

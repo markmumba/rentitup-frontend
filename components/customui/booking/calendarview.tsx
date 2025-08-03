@@ -12,7 +12,7 @@ export default function CalendarView({
 }) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
     const bookedDates = existingBookings.filter(
-        booking => ['CONFIRMED', 'ONGOING'].includes(booking.status)
+        booking => ['CONFIRMED', 'ONGOING','PENDING'].includes(booking.status)
     )
 
     // Function to determine if a date is booked
@@ -40,7 +40,7 @@ export default function CalendarView({
                             head_row: "w-full grid grid-cols-7",
                             row: "grid grid-cols-7 w-full",
                             cell: "text-center p-1 aspect-square",
-                            day: "w-full h-full"
+                            day: "w-full h-full rounded-full"
                         }}
                         modifiers={{
                             disabled: isDateBooked
@@ -48,7 +48,7 @@ export default function CalendarView({
                         selected={selectedDate}
                         onSelect={setSelectedDate}
                         modifiersClassNames={{
-                            disabled: 'text-red-500 bg-red-100 line-through',
+                            disabled: 'text-red-500 bg-orange-200 line-through',
                             selected: 'bg-green-500'
                         }}
                     />

@@ -1,8 +1,4 @@
-
-
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
 import {
     Card,
     CardContent,
@@ -18,199 +14,268 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, ExternalLink,Clock, Truck, } from 'lucide-react';
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Clock, ExternalLink, ChevronDown, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+    getPaginationRowModel,
+    getSortedRowModel,
+    getFilteredRowModel,
+    SortingState,
+    ColumnFiltersState,
+    VisibilityState,
+} from "@tanstack/react-table";
+import { useState } from 'react';
+import { BookingListResponse, UserDetails } from '@/lib/definitions';
+import { useQuery } from '@tanstack/react-query';
 import { bookingAPI } from '@/lib/service';
-import { BookingListResponse, MachineResponse, UserDetails } from '@/lib/definitions';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-// Enhanced Bookings Table Component
-const BookingsTable = ({ bookings, title }:{bookings:BookingListResponse[],title:string}) => (
-    <Card>
-        <CardHeader className="py-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <CardTitle className="text-xl font-semibold">{title}</CardTitle>
-                    <CardDescription className="text-sm text-muted-foreground mt-1">
-                        Showing bookings from latest to oldest
-                    </CardDescription>
-                </div>
-                {bookings.length > 0 && (
-                    <Badge variant="outline" className="ml-auto">
-                        {bookings.length} bookings
-                    </Badge>
-                )}
+// Define columns for the DataTable
+const columns: ColumnDef<BookingListResponse>[] = [
+    {
+        accessorKey: "bookingCode",
+        header: "Booking Code",
+        cell: ({ row }) => <div className="font-medium">{row.getValue("bookingCode")}</div>
+    },
+    {
+        accessorKey: "startDate",
+        header: "Start Date",
+        cell: ({ row }) => new Date(row.getValue("startDate")).toLocaleDateString()
+    },
+    {
+        accessorKey: "endDate",
+        header: "End Date",
+        cell: ({ row }) => new Date(row.getValue("endDate")).toLocaleDateString()
+    },
+    {
+        accessorKey: "totalAmount",
+        header: "Amount",
+        cell: ({ row }) => (
+            <div className="font-mono">
+                KES {parseFloat(row.getValue("totalAmount")).toLocaleString()}
             </div>
-        </CardHeader>
-        <CardContent className="p-0">
-            <ScrollArea className="w-full border-t">
-                <div className="relative w-full">
-                    <Table>
-                        <TableHeader className="bg-muted/50 sticky top-0 z-10">
-                            <TableRow className="hover:bg-transparent">
-                                <TableHead className="w-[200px]">Booking Code</TableHead>
-                                <TableHead className="w-[200px]">Start Date</TableHead>
-                                <TableHead className="w-[200px]">End Date</TableHead>
-                                <TableHead className="w-[150px]">Amount</TableHead>
-                                <TableHead className="w-[100px]">Status</TableHead>
-                                <TableHead className="w-[100px]">Details</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {bookings.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="h-32 text-center">
-                                        <div className="flex flex-col items-center justify-center text-muted-foreground">
-                                            <Clock className="h-8 w-8 mb-2" />
-                                            <p>No bookings found</p>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                bookings.map((booking) => (
-                                    <TableRow
-                                        key={booking.bookingCode}
-                                        className="group hover:bg-muted/50"
-                                    >
-                                        <TableCell className="font-medium">{booking.bookingCode}</TableCell>
-                                        <TableCell>{new Date(booking.startDate).toLocaleDateString()}</TableCell>
-                                        <TableCell>{new Date(booking.endDate).toLocaleDateString()}</TableCell>
-                                        <TableCell className="font-mono">
-                                            KES {parseFloat(booking.totalAmount).toLocaleString()}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge 
-                                                variant={booking.status.toLowerCase() === 'pending' ? 'secondary' : 'success'}
-                                                className="capitalize"
-                                            >
-                                                {booking.status.toLowerCase()}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Link
-                                                href={`dashboard/bookings/${booking.id}`}
-                                                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors group-hover:underline"
-                                            >
-                                                View
-                                                <ExternalLink className="h-4 w-4" />
-                                            </Link>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-        </CardContent>
-    </Card>
-);
-
-// Machines Table Component
-const MachinesTable = ({ machines }:{machines:MachineResponse[]}) => (
-    <Card>
-        <CardHeader className="py-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <CardTitle className="text-xl font-semibold">Owned Machines</CardTitle>
-                    <CardDescription className="text-sm text-muted-foreground mt-1">
-                        Manage your machine inventory
-                    </CardDescription>
-                </div>
-                <Badge variant="outline" className="ml-auto">
-                    {machines?.length || 0} machines
+        )
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+            const status = row.getValue("status") as string;
+            return (
+                <Badge
+                    variant={status.toLowerCase() === 'pending' ? 'secondary' : 'success'}
+                    className="capitalize"
+                >
+                    {status.toLowerCase()}
                 </Badge>
-            </div>
-        </CardHeader>
-        <CardContent className="p-0">
-            <ScrollArea className="w-full border-t">
-                <div className="relative w-full">
-                    <Table>
-                        <TableHeader className="bg-muted/50 sticky top-0 z-10">
-                            <TableRow className="hover:bg-transparent">
-                                <TableHead className="w-[200px]">Name</TableHead>
-                                <TableHead className="w-[150px]">Base Price</TableHead>
-                                <TableHead className="w-[150px]">Condition</TableHead>
-                                <TableHead className="w-[150px]">Status</TableHead>
-                                <TableHead className="w-[100px]">Details</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {!machines || machines.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="h-32 text-center">
-                                        <div className="flex flex-col items-center justify-center text-muted-foreground">
-                                            <Truck className="h-8 w-8 mb-2" />
-                                            <p>No machines available</p>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                machines.map((machine) => (
-                                    <TableRow key={machine.id} className="group hover:bg-muted/50">
-                                        <TableCell className="font-medium">{machine.name}</TableCell>
-                                        <TableCell className="font-mono">
-                                            Ksh {parseFloat(machine.basePrice).toLocaleString()}
-                                        </TableCell>
-                                        <TableCell className="capitalize">{machine.condition.toLowerCase()}</TableCell>
-                                        <TableCell>
-                                            <Badge 
-                                                variant={machine.isAvailable ? "success" : "secondary"}
-                                                className="capitalize"
-                                            >
-                                                {machine.isAvailable ? "Available" : "Unavailable"}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Link
-                                                href={`/machines/${machine.id}`}
-                                                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors group-hover:underline"
-                                            >
-                                                View
-                                                <ExternalLink className="h-4 w-4" />
-                                            </Link>
+            );
+        }
+    },
+    {
+        id: "actions",
+        header: "Details",
+        cell: ({ row }) => (
+            <Link
+                href={`dashboard/bookings/${row.original.id}`}
+                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors group-hover:underline"
+            >
+                View
+                <ExternalLink className="h-4 w-4" />
+            </Link>
+        )
+    }
+];
+
+interface DataTableProps {
+    data: BookingListResponse[];
+    title: string;
+}
+
+export function DataTable({ data, title }: DataTableProps) {
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+    const { data: bookingStatusList = [] } = useQuery({
+        queryKey: ['bookingStatusList'],
+        queryFn: bookingAPI.getBookingStatusList
+    })
+
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
+        onColumnVisibilityChange: setColumnVisibility,
+        state: {
+            sorting,
+            columnFilters,
+            columnVisibility,
+        },
+    });
+
+    return (
+        <Card>
+            <CardHeader className="py-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle className="text-xl font-semibold">{title}</CardTitle>
+                        <CardDescription className="text-sm text-muted-foreground mt-1">
+                            Showing bookings from latest to oldest
+                        </CardDescription>
+                    </div>
+                    {data.length > 0 && (
+                        <Badge variant="outline" className="ml-auto">
+                            {data.length} bookings
+                        </Badge>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                <div className="flex items-center gap-4 p-4 border-t">
+                    <Input
+                        placeholder="Filter booking codes..."
+                        value={(table.getColumn("bookingCode")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn("bookingCode")?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
+                    />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto">
+                                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => {
+                                    return (
+                                        <DropdownMenuCheckboxItem
+                                            key={column.id}
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        >
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                <ScrollArea className="w-full">
+                    <div className="relative w-full">
+                        <Table>
+                            <TableHeader className="bg-muted/50 sticky top-0 z-10">
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                                        {headerGroup.headers.map((header) => {
+                                            return (
+                                                <TableHead key={header.id}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                </TableHead>
+                                            )
+                                        })}
+                                    </TableRow>
+                                ))}
+                            </TableHeader>
+                            <TableBody>
+                                {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <TableRow
+                                            key={row.id}
+                                            className="group hover:bg-muted/50"
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={columns.length} className="h-32 text-center">
+                                            <div className="flex flex-col items-center justify-center text-muted-foreground">
+                                                <Clock className="h-8 w-8 mb-2" />
+                                                <p>No bookings found</p>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+                <div className="flex items-center justify-end space-x-2 p-4 border-t">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Next
+                    </Button>
                 </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-        </CardContent>
-    </Card>
+            </CardContent>
+        </Card>
+    );
+}
+
+// Updated BookingsTable component using the new DataTable
+const BookingsTable = ({ bookings, title }: { bookings: BookingListResponse[], title: string }) => (
+    <DataTable data={bookings} title={title} />
 );
 
-export function Orders({ ownerId, userDetails }:{ownerId:string, userDetails:UserDetails}) {
-    const { 
-        data: bookingList = [], 
-        isLoading, 
-        isError, 
-        error 
+
+export function Orders({ ownerId, userDetails }: { ownerId: string, userDetails: UserDetails }) {
+    const {
+        data: bookingList = [],
+        isLoading,
+        isError,
+        error
     } = useQuery({
         queryKey: ['ownerBookings', ownerId],
         queryFn: () => bookingAPI.getBookingsForOwner(ownerId),
         select: (data) => [...data].sort((a, b) => b.id - a.id),
     });
-
-    const pendingBookings = bookingList.filter(booking => 
-        booking.status.toLowerCase() === 'pending'
-    );
-    
-    const confirmedBookings = bookingList.filter(booking => 
-        booking.status.toLowerCase() === 'confirmed'
-    );
-
-    const availableMachines = userDetails?.ownedMachines?.filter(
-        machine => machine.isAvailable
-    ).length || 0;
-
-    const totalRevenue = bookingList
-        .filter(booking => booking.status === 'COMPLETED')
-        .reduce((sum, booking) => sum + parseFloat(booking.totalAmount), 0);
 
     if (isError) {
         return (
@@ -225,12 +290,8 @@ export function Orders({ ownerId, userDetails }:{ownerId:string, userDetails:Use
 
     return (
         <div className="p-6 space-y-6">
-
-            {/* Booking Tables */}
             <div className="grid gap-6">
-                <BookingsTable bookings={pendingBookings} title="Pending Booking Requests" />
-                <BookingsTable bookings={confirmedBookings} title="Confirmed Bookings" />
-                <MachinesTable machines={userDetails?.ownedMachines.filter((machine) => machine.verified)} />
+                <BookingsTable bookings={bookingList} title="Pending Booking Requests" />
             </div>
         </div>
     );

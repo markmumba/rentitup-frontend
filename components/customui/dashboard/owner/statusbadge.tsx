@@ -36,28 +36,22 @@ const StatusBadge = ({ booking, statusList }: { booking: BookingResponse, status
     const [open, setOpen] = React.useState(false);
     const queryClient = useQueryClient();
 
-    // Create mutation for status update
     const { mutate: updateBookingStatus, isPending: isUpdating } = useMutation({
         mutationFn: ({ bookingId, newStatus }: { bookingId: string, newStatus: string }) => 
             bookingAPI.updateStatus(bookingId, newStatus),
         onMutate: async ({ bookingId, newStatus }) => {
-            // Cancel any outgoing refetches
             await queryClient.cancelQueries({ queryKey: ['booking', bookingId] });
 
-            // Snapshot the previous value
             const previousBooking = queryClient.getQueryData(['booking', bookingId]);
 
-            // Optimistically update the booking status
             queryClient.setQueryData(['booking', bookingId], (old: any) => ({
                 ...old,
                 status: newStatus
             }));
 
-            // Return the snapshot to use in case of rollback
             return { previousBooking };
         },
         onError: (error, variables, context) => {
-            // Rollback to the previous value if there's an error
             if (context?.previousBooking) {
                 queryClient.setQueryData(
                     ['booking', variables.bookingId],
@@ -76,9 +70,9 @@ const StatusBadge = ({ booking, statusList }: { booking: BookingResponse, status
                 title: "Success",
                 description: "Booking status updated successfully",
             });
+            window.location.reload();
         },
         onSettled: (_, __, variables) => {
-            // Invalidate and refetch booking data
             queryClient.invalidateQueries({ queryKey: ['booking', variables.bookingId] });
             queryClient.invalidateQueries({ queryKey: ['bookings'] });
         },

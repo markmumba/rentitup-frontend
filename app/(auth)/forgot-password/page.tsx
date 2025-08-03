@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
             email: "",
         },
     });
-
+    
     const { mutate: sendResetLink, isPending } = useMutation({
         mutationFn: (email: string) => authAPI.forgotPassword(email),
         onSuccess: (response) => {

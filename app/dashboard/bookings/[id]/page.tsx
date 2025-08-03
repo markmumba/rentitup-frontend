@@ -49,7 +49,7 @@ function SingleBookingPage() {
     });
 
     const {
-        data: statusList = [],
+        data: statusList,
         isLoading: isLoadingStatus
     } = useQuery({
         queryKey: ['bookingStatusList'],
@@ -146,7 +146,7 @@ function SingleBookingPage() {
                                 <p className="text-gray-500">Booking Code: {booking.bookingCode}</p>
                             </div>
                             <div className="flex items-center gap-4">
-                                <StatusBadge booking={booking} statusList={statusList} />
+                                <StatusBadge booking={booking} statusList={statusList!} />
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                                     <Package className="w-8 h-8 text-green-600" />
                                 </div>
@@ -186,7 +186,7 @@ function SingleBookingPage() {
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 w-12 h-12 mr-4">
                                                     <Image
-                                                        src={booking.machine.imageUrl}
+                                                        src={`${process.env.NEXT_PUBLIC_BASE_URL_OAUTH}/${booking.machine.imageUrl}`}
                                                         alt={booking.machine.name}
                                                         width={48}
                                                         height={48}
@@ -235,6 +235,7 @@ function SingleBookingPage() {
                                 </div>
                             </div>
                         </div>
+
 
                         {/* Action Buttons */}
                         {canModifyBooking() && (
